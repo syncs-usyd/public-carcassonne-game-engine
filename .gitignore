@@ -26,3 +26,4 @@ wheels/
 .vscode/
 *.swp
 *.swo
+pyrightconfig.json
