@@ -20,7 +20,7 @@ build-backend = "hatchling.build"
 # packages = ["src/engine"]
 
 [tool.hatch.build]
-include = ["src/engine"]
+include = ["src/engine", "src/lib", "src/shared"]
 sources = ["src"]
 
 [dependency-groups]
