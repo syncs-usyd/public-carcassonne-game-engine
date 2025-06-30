@@ -1,7 +1,8 @@
 from engine.config.game_config import NUM_PLAYERS
 from engine.state.player_state import PlayerState
 
-from lib.map import Map
+from lib.interact.tile import Tile, TileModifier
+from lib.interact.map import Map
 
 
 class GameState:
@@ -11,6 +12,10 @@ class GameState:
         self.map = Map()
 
         self.game_over = False
+
+        self.placed_tiles = []
+        self.river_tiles = []
+        self.regular_tiles = []
 
     def start_new_round(self) -> None:
         pass
@@ -27,3 +32,20 @@ class GameState:
 
     def calc_final_points(self):
         pass
+
+    def place_card(self, player: "PlayerState", card: "Tile") -> None:
+        self.placed_tiles.append(card)
+
+        if TileModifier.RIVER in card.modifier:
+            self.river_tiles.remove(card)
+            return
+
+        self.regular_tiles.remove(card)
+        #TODO record event
+
+    def place_meeple(self, player: "PlayerState", tile: "Tile") -> None
+        pass
+
+    def _check_reward(self) -> None:
+        pass
+
