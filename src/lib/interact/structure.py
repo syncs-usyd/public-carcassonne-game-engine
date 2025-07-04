@@ -7,7 +7,3 @@ class StructureType(Enum):
     ROAD_START = auto()
     CITY = auto()
     GRASS = auto()
-
-
-class StructureSet(set):
-    pass
