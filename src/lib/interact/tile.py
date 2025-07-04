@@ -6,26 +6,6 @@ from copy import copy
 from typing import final, Self
 
 
-# class NodeType(Enum):
-#     CENTER = auto()
-#     TOP_LEFT = auto()
-#     TOP = auto()
-#     TOP_RIGHT = auto()
-#     RIGHT = auto()
-#     BOTTOM_RIGHT = auto()
-#     BOTTOM = auto()
-#     BOTTOM_LEFT = auto()
-#     LEFT = auto()
-#
-#
-# class Node:
-#     def __init__(self, tile: "Tile", type: NodeType) -> None:
-#         self.parent_tile = tile
-#         self.parent_node = self
-#         self.type = type
-#         self.edges: list[Node] = []
-
-
 class TileModifier(Enum):
     """
     TileModifier
@@ -39,6 +19,8 @@ class TileModifier(Enum):
     MONESTERY = auto()
     SHIELD = auto()
     BROKEN_ROAD_CENTER = auto()
+    OPP_ROAD_BRIDGE = auto()
+    OPP_CITY_BRIDGE = auto()
 
 
 class Tile:
@@ -100,10 +82,102 @@ class Tile:
 
 
 def create_river_tiles():
-    pass
+    """
+    RiverTiles
+    _Type A River Tiles_
+    """
+
+    tiles: list["Tile"] = []
+
+    tiles.append(
+        Tile(
+            left_edge=StructureType.ROAD_START,
+            right_edge=StructureType.CITY,
+            top_edge=StructureType.RIVER,
+            bottom_edge=StructureType.RIVER,
+        )
+    )
+
+    tiles.extend(
+        Tile(
+            left_edge=StructureType.GRASS,
+            right_edge=StructureType.GRASS,
+            top_edge=StructureType.RIVER,
+            bottom_edge=StructureType.RIVER,
+        ).clone_add(2)
+    )
+
+    tiles.append(
+        Tile(
+            left_edge=StructureType.ROAD,
+            right_edge=StructureType.RIVER,
+            top_edge=StructureType.ROAD,
+            bottom_edge=StructureType.RIVER,
+        )
+    )
+
+    tiles.append(
+        Tile(
+            left_edge=StructureType.CITY,
+            right_edge=StructureType.CITY,
+            top_edge=StructureType.RIVER,
+            bottom_edge=StructureType.RIVER,
+        )
+    )
+
+    tiles.append(
+        Tile(
+            left_edge=StructureType.ROAD,
+            right_edge=StructureType.ROAD,
+            top_edge=StructureType.RIVER,
+            bottom_edge=StructureType.RIVER,
+            modifiers=[TileModifier.OPP_ROAD_BRIDGE],
+        )
+    )
+
+    tiles.append(
+        Tile(
+            left_edge=StructureType.RIVER,
+            right_edge=StructureType.CITY,
+            top_edge=StructureType.CITY,
+            bottom_edge=StructureType.RIVER,
+        )
+    )
+
+    tiles.append(
+        Tile(
+            left_edge=StructureType.RIVER,
+            right_edge=StructureType.RIVER,
+            top_edge=StructureType.GRASS,
+            bottom_edge=StructureType.GRASS,
+            modifiers=[TileModifier.MONESTERY],
+        )
+    )
+
+    tiles.append(
+        Tile(
+            left_edge=StructureType.GRASS,
+            right_edge=StructureType.RIVER,
+            top_edge=StructureType.RIVER,
+            bottom_edge=StructureType.GRASS,
+        )
+    )
+
+    tiles.append(
+        Tile(
+            left_edge=StructureType.GRASS,
+            right_edge=StructureType.GRASS,
+            top_edge=StructureType.GRASS,
+            bottom_edge=StructureType.RIVER,
+        )
+    )
 
 
-def create_regular_tiles():
+def create_base_tiles():
+    """
+    BaseTiles
+    """
+
     tiles: list["Tile"] = []
 
     # Tile Type A
@@ -165,7 +239,7 @@ def create_regular_tiles():
             right_edge=StructureType.CITY,
             top_edge=StructureType.GRASS,
             bottom_edge=StructureType.GRASS,
-            modifiers=[TileModifier.SHIELD],
+            modifiers=[TileModifier.SHIELD, TileModifier.OPP_CITY_BRIDGE],
         ).clone_add(2)
     )
 
@@ -176,6 +250,7 @@ def create_regular_tiles():
             right_edge=StructureType.GRASS,
             top_edge=StructureType.CITY,
             bottom_edge=StructureType.CITY,
+            modifiers=[TileModifier.OPP_CITY_BRIDGE],
         ).clone_add(2)
     )
 
@@ -357,4 +432,7 @@ def create_regular_tiles():
 
 
 def create_expansion_tiles():
+    """
+    BaseTiles
+    """
     pass
