@@ -1,12 +1,15 @@
-from typing import Optional
 from lib.config.expansion import EXPANSION
 from lib.interact.tile import Tile
 
 
 class Meeple:
-    placed = Optional[Tile]
+    """
+    Meeple
+    """
 
-    def __init__(self, player_id: int, is_special: bool) -> None:
+    placed = Tile | None
+
+    def __init__(self, player_id: int, is_special: bool = False) -> None:
         if not EXPANSION:
             assert not self.is_special
 

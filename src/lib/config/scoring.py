@@ -1,0 +1,4 @@
+ROAD_POINTS = 1
+CITY_POINTS = 2
+FARM_POINTS = 1  # expansion coming
+NO_POINTS = 0
