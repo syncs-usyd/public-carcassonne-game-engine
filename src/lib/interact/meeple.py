@@ -13,6 +13,6 @@ class Meeple:
         self.is_special = is_special
         self.player_id = id
 
-    def _place_meeple(self, tile: Tile):
-        # TODO change to structure set
+    def _place_meeple(self, tile: Tile, edge: str):
         self.placed = tile
+        tile.internal_edge_claims[edge] = self
