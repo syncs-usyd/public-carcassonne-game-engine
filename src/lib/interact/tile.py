@@ -1,3 +1,4 @@
+from lib.config.scoring import NO_POINTS
 from lib.interact.structure import StructureType
 
 from enum import Enum, auto
@@ -5,7 +6,7 @@ from copy import copy
 from collections import namedtuple
 from dotmap import DotMap
 
-from typing import final, Self
+from typing import Callable, final, Self
 
 
 class TileModifier(Enum):
@@ -24,6 +25,35 @@ class TileModifier(Enum):
     OPP_ROAD_BRIDGE = auto()
     OPP_CITY_BRIDGE = auto()
 
+    @final
+    @staticmethod
+    def get_bridge_modifier(structure: StructureType) -> "TileModifier | None":
+        return {
+            StructureType.ROAD: TileModifier.OPP_ROAD_BRIDGE,
+            StructureType.CITY: TileModifier.OPP_CITY_BRIDGE,
+        }.get(structure, None)
+
+    @final
+    @staticmethod
+    def apply_point_modifiers(structure: StructureType) -> int:
+        def _get_point_modifiers(structure: StructureType) -> list["TileModifier"]:
+            return {
+                StructureType.CITY: [TileModifier.OPP_CITY_BRIDGE],
+            }.get(structure, [])
+
+        def _point_modifier_config(tm: "TileModifier") -> Callable[[int], int]:
+            return {
+                TileModifier.MONESTERY: lambda x: x + 9,
+                TileModifier.SHIELD: lambda x: x + 1,
+            }.get(tm, lambda x: x + NO_POINTS)
+
+        points = StructureType.get_points(structure)
+
+        for mod in _get_point_modifiers(structure):
+            points = _point_modifier_config(mod)(points)
+
+        return points
+
 
 class Tile:
     """
@@ -31,9 +61,39 @@ class Tile:
     Desc: _Stores all Tile Info by internal edges (Structures) and external connections_
     """
 
-    InternalEdges = namedtuple(
-        "InternalEdges", ["left_edge", "right_edge", "top_edge", "bottom_edge"]
+    EdgeTuple = namedtuple(
+        "EdgeTuple", ["left_edge", "right_edge", "top_edge", "bottom_edge"]
     )
+
+    @final
+    @staticmethod
+    def get_opposite(edge: str) -> str:
+        return {
+            "left_edge": "right_edge",
+            "right_edge": "left_edge",
+            "top_edge": "bottom_edge",
+            "bottom_edge": "top_edge",
+        }[edge]
+
+    @final
+    @staticmethod
+    def adjacent_edges(edge: str) -> list[str]:
+        return {
+            "left_edge": ["top_edge", "bottom_edge"],
+            "right_edge": ["top_edge", "bottom_edge"],
+            "top_edge": ["left_edge", "right_edge"],
+            "bottom_edge": ["left_edge", "right_edge"],
+        }[edge]
+
+    @staticmethod
+    def get_starting_tile() -> "Tile":
+        return Tile(
+            left_edge=StructureType.GRASS,
+            right_edge=StructureType.GRASS,
+            top_edge=StructureType.RIVER,
+            bottom_edge=StructureType.GRASS,
+            modifiers=[TileModifier.RIVER],
+        )
 
     def __init__(
         self,
@@ -44,7 +104,7 @@ class Tile:
         modifiers: list[TileModifier] = list(),
     ) -> None:
         self.internal_edges = DotMap(
-            Tile.InternalEdges(
+            Tile.EdgeTuple(
                 left_edge=left_edge,
                 right_edge=right_edge,
                 top_edge=top_edge,
@@ -54,7 +114,17 @@ class Tile:
         )
 
         self.internal_edge_claims = DotMap(
-            Tile.InternalEdges(
+            Tile.EdgeTuple(
+                left_edge=None,
+                right_edge=None,
+                top_edge=None,
+                bottom_edge=None,
+            )._asdict(),
+            _dynamic=False,
+        )
+
+        self.external_edges = DotMap(
+            Tile.EdgeTuple(
                 left_edge=None,
                 right_edge=None,
                 top_edge=None,
@@ -64,7 +134,7 @@ class Tile:
         )
 
         self.roation = 0
-        self.modifier = modifiers
+        self.modifiers = modifiers
 
         self.left_tile: "Tile"
         self.right_tile: "Tile"
@@ -80,19 +150,12 @@ class Tile:
                 self.left_edge,
             )
 
-    @staticmethod
-    def get_starting_tile() -> "Tile":
-        return Tile(
-            left_edge=StructureType.GRASS,
-            right_edge=StructureType.GRASS,
-            top_edge=StructureType.RIVER,
-            bottom_edge=StructureType.GRASS,
-            modifiers=[TileModifier.RIVER],
-        )
+    def _claim_edge(self, player_id: int, edge: str):
+        self.internal_edge_claims[edge] = player_id
 
     @final
     def clone_add(self, n: int) -> list[Self]:
-        cloned_tiles = [copy(self) for i in range(n)]
+        cloned_tiles = [copy(self) for _ in range(n)]
         cloned_tiles.append(self)
         return cloned_tiles
 

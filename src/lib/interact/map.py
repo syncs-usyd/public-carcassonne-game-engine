@@ -22,3 +22,6 @@ class Map:
         # TODO Record tile placment
         self.placed_tiles.append(Tile.get_starting_tile())
         self.available_tiles.extend(create_river_tiles())
+
+    def add_expansion_pack(self, expansion_pack) -> None:
+        pass
