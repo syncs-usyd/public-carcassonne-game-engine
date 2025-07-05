@@ -2,6 +2,8 @@ from lib.interact.structure import StructureType
 
 from enum import Enum, auto
 from copy import copy
+from collections import namedtuple
+from dotmap import DotMap
 
 from typing import final, Self
 
@@ -29,14 +31,9 @@ class Tile:
     Desc: _Stores all Tile Info by internal edges (Structures) and external connections_
     """
 
-    left_tile: "Tile"
-    right_tile: "Tile"
-    top_tile: "Tile"
-    bottom_tile: "Tile"
-
-    # Allows for connected componentes for structures within a tile
-    # For example: differenctiates between a three edge city and three distinct cities as edges
-    structure_edges: list["StructureType"]
+    InternalEdges = namedtuple(
+        "InternalEdges", ["left_edge", "right_edge", "top_edge", "bottom_edge"]
+    )
 
     def __init__(
         self,
@@ -46,14 +43,33 @@ class Tile:
         bottom_edge: StructureType,
         modifiers: list[TileModifier] = list(),
     ) -> None:
-        self.left_edge = left_edge
-        self.right_edge = right_edge
-        self.top_edge = top_edge
-        self.bottom_edge = bottom_edge
+        self.internal_edges = DotMap(
+            Tile.InternalEdges(
+                left_edge=left_edge,
+                right_edge=right_edge,
+                top_edge=top_edge,
+                bottom_edge=bottom_edge,
+            )._asdict(),
+            _dynamic=False,
+        )
+
+        self.internal_edge_claims = DotMap(
+            Tile.InternalEdges(
+                left_edge=None,
+                right_edge=None,
+                top_edge=None,
+                bottom_edge=None,
+            )._asdict(),
+            _dynamic=False,
+        )
 
         self.roation = 0
-
         self.modifier = modifiers
+
+        self.left_tile: "Tile"
+        self.right_tile: "Tile"
+        self.top_tile: "Tile"
+        self.bottom_tile: "Tile"
 
     def rotate_clockwise(self, number: int) -> None:
         for _ in range(number):
@@ -81,7 +97,7 @@ class Tile:
         return cloned_tiles
 
 
-def create_river_tiles():
+def create_river_tiles() -> list["Tile"]:
     """
     RiverTiles
     _Type A River Tiles_
@@ -172,8 +188,10 @@ def create_river_tiles():
         )
     )
 
+    return tiles
 
-def create_base_tiles():
+
+def create_base_tiles() -> list["Tile"]:
     """
     BaseTiles
     """
@@ -430,9 +448,11 @@ def create_base_tiles():
         ).clone_add(1)
     )
 
+    return tiles
+
 
 def create_expansion_tiles():
     """
-    BaseTiles
+    ExpansionTiles
     """
     pass
