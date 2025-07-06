@@ -1,5 +1,5 @@
 from engine.config.expansion import EXPANSION_PACKS
-from engine.config.game_config import NUM_PLAYERS
+from engine.config.game_config import NUM_PLAYERS,  NUM_CARDS_IN_HAND
 from engine.state.player_state import PlayerState
 
 from lib.interact.tile import Tile, TileModifier
@@ -7,6 +7,7 @@ from lib.interact.map import Map
 
 from typing import Generator
 from collections import deque
+from random import sample
 
 
 class GameState:
@@ -16,6 +17,11 @@ class GameState:
         self.map = Map()
 
         self.game_over = False
+        self.cards_exhausted = True
+
+    def replinish_player_cards(self) -> None:
+        for player in self.players:
+            player.cards.extend(sample(self.map.available_tiles, NUM_CARDS_IN_HAND))
 
     def start_river_phase(self) -> None:
         self.map.start_river_phase()
@@ -64,7 +70,7 @@ class GameState:
 
         return list(players)
 
-    def _get_reward(self, player: "PlayerState", tile: "Tile", edge: str) -> int:
+    def _get_reward(self, tile: "Tile", edge: str) -> int:
         visited_tiles = set()
         structure_type = tile.internal_edges[edge]
 
@@ -95,6 +101,13 @@ class GameState:
                 edges_complete.append(edge)
 
         return edges_complete
+
+    def _get_player_from_id(self, id: int) -> PlayerState | None:
+        for player in self.players:
+            if player.id == id:
+                return player
+
+        return None
 
     def _traverse_connected_component(
         self,
