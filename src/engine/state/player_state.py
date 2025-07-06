@@ -11,9 +11,9 @@ class PlayerState:
         self.meeples: list["Meeple"] = [Meeple(player_id) for _ in range(NUM_MEEPLE)]
 
     def _get_available_meeple(self) -> Meeple | None:
-        available_meeples = [m for m in self.meeples if not m._is_placed()]
+        available_meeples = [m for m in self.meeples if m.placed is not None]
 
         if available_meeples:
             return available_meeples[0]
-
+ 
         return None
