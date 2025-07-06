@@ -17,8 +17,12 @@ class PlayerConnection:
         self._init_pipes()
 
     def _init_pipes(self) -> None:
-        self._to_engine_pipe = open(f"{CORE_DIRECTORY}/submission{self.player_id}/io/to_engine.pipe", "r")
-        self._from_engine_pipe = open(f"{CORE_DIRECTORY}/submission{self.player_id}/io/from_engine.pipe", "w")
+        self._to_engine_pipe = open(
+            f"{CORE_DIRECTORY}/submission{self.player_id}/io/to_engine.pipe", "r"
+        )
+        self._from_engine_pipe = open(
+            f"{CORE_DIRECTORY}/submission{self.player_id}/io/from_engine.pipe", "w"
+        )
 
     def query_move(self) -> None:
         pass
@@ -28,6 +32,5 @@ class PlayerConnection:
         self._from_engine_pipe.write(data)
         self._from_engine_pipe.flush()
 
-
     def _recieve(self) -> None:
-
+        pass
