@@ -27,3 +27,6 @@ wheels/
 *.swp
 *.swo
 pyrightconfig.json
+
+# udit's specific files
+todo.md
