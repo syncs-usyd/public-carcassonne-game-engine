@@ -5,12 +5,16 @@ from lib.interact.tile import (
     # create_expansion_tiles,
 )
 
+from lib.config.map_config import MAX_MAP_LENGTH
+
 
 class Map:
     def __init__(self) -> None:
         self.placed_tiles = []
         self.available_tiles = []
-        self.feature_set: dict[Tile, list[Tile]]
+        self._grid: list[list[Tile | None]] = [
+            [None for _ in range(MAX_MAP_LENGTH)] for _ in range(MAX_MAP_LENGTH)
+        ]
 
     def start_base_phase(self) -> None:
         assert not self.available_tiles

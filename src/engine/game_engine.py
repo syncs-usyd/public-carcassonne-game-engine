@@ -1,8 +1,10 @@
 from engine.config.game_config import MAX_ROUNDS, NUM_CARDS_DRAWN_PER_ROUND, NUM_PLAYERS
+from engine.interface.io.input_validator import MoveValidator
 from engine.state.game_state import GameState
 
+from engine.state.player_state import PlayerState
+from engine.state.state_mutator import StateMutator
 from lib.config.expansion import EXPANSION
-from lib.interact.tile import Tile
 
 from random import sample
 
@@ -12,6 +14,10 @@ class GameEngine:
         print("Intialising game engine!")
 
         self.state = GameState()
+        self.validator = MoveValidator(self.state)
+        self.mutator = StateMutator(self.state)
+        self.recorder = None
+        self.censor = None
         # Logging
         # Output
 
@@ -40,25 +46,22 @@ class GameEngine:
                     sample(self.state.map.available_tiles, NUM_CARDS_DRAWN_PER_ROUND)
                 )
 
-                # wait for player to place card
-                placeholder_tile_placed: Tile = Tile.get_starting_tile()
-
-                completed_components = self.state.check_any_complete(
-                    placeholder_tile_placed
-                )
-
-                for edge in completed_components:
-                    reward = self.state._get_reward(placeholder_tile_placed, edge)
-
-                    for player_id in self.state._get_claims(
-                        placeholder_tile_placed, edge
-                    ):
-                        player = self.state._get_player_from_id(player_id)
-
-                        if player:
-                            player.points += reward
+                self.start_player_turn(player)
 
             if self.state.round > MAX_ROUNDS or any(
                 [p >= 50 for p in self.state.get_player_points()]
             ):
                 self.state.finalise_game()
+
+    def start_player_turn(self, player: PlayerState) -> None:
+        response = player.connection.query_place_tile(
+            self.state, self.validator, self.censor
+        )
+        self.mutator.commit(response)
+
+        response = player.connection.query_place_meeple(
+            self.state, self.validator, self.censor
+        )
+        self.mutator.commit(response)
+
+        # record this

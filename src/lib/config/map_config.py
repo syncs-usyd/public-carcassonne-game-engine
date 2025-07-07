@@ -1,0 +1,1 @@
+MAX_MAP_LENGTH = 84
