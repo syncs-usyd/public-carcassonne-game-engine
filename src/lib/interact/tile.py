@@ -8,6 +8,8 @@ from dotmap import DotMap
 
 from typing import Callable, final, Self
 
+from lib.models.tile_model import TileModel
+
 
 class TileModifier(Enum):
     """
@@ -88,6 +90,7 @@ class Tile:
     @staticmethod
     def get_starting_tile() -> "Tile":
         return Tile(
+            tile_id="R0",
             left_edge=StructureType.GRASS,
             right_edge=StructureType.GRASS,
             top_edge=StructureType.RIVER,
@@ -97,6 +100,7 @@ class Tile:
 
     def __init__(
         self,
+        tile_id: str,
         left_edge: StructureType,
         right_edge: StructureType,
         top_edge: StructureType,
@@ -135,6 +139,7 @@ class Tile:
 
         self.roation = 0
         self.modifiers = modifiers
+        self.tile_type = tile_id
 
         self.left_tile: "Tile"
         self.right_tile: "Tile"
@@ -159,6 +164,10 @@ class Tile:
         cloned_tiles.append(self)
         return cloned_tiles
 
+    @final
+    def to_model(self):
+        return TileModel(tile_type=self.tile_type)
+
 
 def create_river_tiles() -> list["Tile"]:
     """
@@ -170,6 +179,7 @@ def create_river_tiles() -> list["Tile"]:
 
     tiles.append(
         Tile(
+            tile_id="R1",
             left_edge=StructureType.ROAD_START,
             right_edge=StructureType.CITY,
             top_edge=StructureType.RIVER,
@@ -179,6 +189,7 @@ def create_river_tiles() -> list["Tile"]:
 
     tiles.extend(
         Tile(
+            tile_id="R2",
             left_edge=StructureType.GRASS,
             right_edge=StructureType.GRASS,
             top_edge=StructureType.RIVER,
@@ -188,6 +199,7 @@ def create_river_tiles() -> list["Tile"]:
 
     tiles.append(
         Tile(
+            tile_id="R3",
             left_edge=StructureType.ROAD,
             right_edge=StructureType.RIVER,
             top_edge=StructureType.ROAD,
@@ -197,6 +209,7 @@ def create_river_tiles() -> list["Tile"]:
 
     tiles.append(
         Tile(
+            tile_id="R4",
             left_edge=StructureType.CITY,
             right_edge=StructureType.CITY,
             top_edge=StructureType.RIVER,
@@ -206,6 +219,7 @@ def create_river_tiles() -> list["Tile"]:
 
     tiles.append(
         Tile(
+            tile_id="R5",
             left_edge=StructureType.ROAD,
             right_edge=StructureType.ROAD,
             top_edge=StructureType.RIVER,
@@ -216,6 +230,7 @@ def create_river_tiles() -> list["Tile"]:
 
     tiles.append(
         Tile(
+            tile_id="R6",
             left_edge=StructureType.RIVER,
             right_edge=StructureType.CITY,
             top_edge=StructureType.CITY,
@@ -225,6 +240,7 @@ def create_river_tiles() -> list["Tile"]:
 
     tiles.append(
         Tile(
+            tile_id="R7",
             left_edge=StructureType.RIVER,
             right_edge=StructureType.RIVER,
             top_edge=StructureType.GRASS,
@@ -235,6 +251,7 @@ def create_river_tiles() -> list["Tile"]:
 
     tiles.append(
         Tile(
+            tile_id="R8",
             left_edge=StructureType.GRASS,
             right_edge=StructureType.RIVER,
             top_edge=StructureType.RIVER,
@@ -244,6 +261,7 @@ def create_river_tiles() -> list["Tile"]:
 
     tiles.append(
         Tile(
+            tile_id="R9",
             left_edge=StructureType.GRASS,
             right_edge=StructureType.GRASS,
             top_edge=StructureType.GRASS,
@@ -264,6 +282,7 @@ def create_base_tiles() -> list["Tile"]:
     # Tile Type A
     tiles.extend(
         Tile(
+            tile_id="A",
             left_edge=StructureType.GRASS,
             right_edge=StructureType.GRASS,
             top_edge=StructureType.GRASS,
@@ -274,6 +293,7 @@ def create_base_tiles() -> list["Tile"]:
     # Tile Type B
     tiles.extend(
         Tile(
+            tile_id="B",
             left_edge=StructureType.GRASS,
             right_edge=StructureType.GRASS,
             top_edge=StructureType.GRASS,
@@ -285,6 +305,7 @@ def create_base_tiles() -> list["Tile"]:
     # Tile Type C
     tiles.extend(
         Tile(
+            tile_id="C",
             left_edge=StructureType.CITY,
             right_edge=StructureType.CITY,
             top_edge=StructureType.CITY,
@@ -296,6 +317,7 @@ def create_base_tiles() -> list["Tile"]:
     # Tile Type D
     tiles.extend(
         Tile(
+            tile_id="D",
             left_edge=StructureType.GRASS,
             right_edge=StructureType.CITY,
             top_edge=StructureType.ROAD,
@@ -306,6 +328,7 @@ def create_base_tiles() -> list["Tile"]:
     # Tile Type E
     tiles.extend(
         Tile(
+            tile_id="E",
             left_edge=StructureType.GRASS,
             right_edge=StructureType.GRASS,
             top_edge=StructureType.CITY,
@@ -316,6 +339,7 @@ def create_base_tiles() -> list["Tile"]:
     # Tile Type F
     tiles.extend(
         Tile(
+            tile_id="F",
             left_edge=StructureType.CITY,
             right_edge=StructureType.CITY,
             top_edge=StructureType.GRASS,
@@ -327,6 +351,7 @@ def create_base_tiles() -> list["Tile"]:
     # Tile Type G
     tiles.extend(
         Tile(
+            tile_id="G",
             left_edge=StructureType.GRASS,
             right_edge=StructureType.GRASS,
             top_edge=StructureType.CITY,
@@ -338,6 +363,7 @@ def create_base_tiles() -> list["Tile"]:
     # Tile Type H
     tiles.extend(
         Tile(
+            tile_id="H",
             left_edge=StructureType.CITY,
             right_edge=StructureType.CITY,
             top_edge=StructureType.GRASS,
@@ -348,6 +374,7 @@ def create_base_tiles() -> list["Tile"]:
     # Tile Type I
     tiles.extend(
         Tile(
+            tile_id="I",
             left_edge=StructureType.GRASS,
             right_edge=StructureType.CITY,
             top_edge=StructureType.GRASS,
@@ -358,6 +385,7 @@ def create_base_tiles() -> list["Tile"]:
     # Tile Type J
     tiles.extend(
         Tile(
+            tile_id="J",
             left_edge=StructureType.GRASS,
             right_edge=StructureType.ROAD,
             top_edge=StructureType.CITY,
@@ -368,6 +396,7 @@ def create_base_tiles() -> list["Tile"]:
     # Tile Type K
     tiles.extend(
         Tile(
+            tile_id="K",
             left_edge=StructureType.ROAD,
             right_edge=StructureType.CITY,
             top_edge=StructureType.ROAD,
@@ -378,6 +407,7 @@ def create_base_tiles() -> list["Tile"]:
     # Tile Type L
     tiles.extend(
         Tile(
+            tile_id="L",
             left_edge=StructureType.ROAD_START,
             right_edge=StructureType.CITY,
             top_edge=StructureType.ROAD_START,
@@ -388,6 +418,7 @@ def create_base_tiles() -> list["Tile"]:
     # Tile Type M
     tiles.extend(
         Tile(
+            tile_id="M",
             left_edge=StructureType.CITY,
             right_edge=StructureType.GRASS,
             top_edge=StructureType.CITY,
@@ -399,6 +430,7 @@ def create_base_tiles() -> list["Tile"]:
     # Tile Type N
     tiles.extend(
         Tile(
+            tile_id="N",
             left_edge=StructureType.CITY,
             right_edge=StructureType.GRASS,
             top_edge=StructureType.CITY,
@@ -409,6 +441,7 @@ def create_base_tiles() -> list["Tile"]:
     # Tile Type O
     tiles.extend(
         Tile(
+            tile_id="O",
             left_edge=StructureType.CITY,
             right_edge=StructureType.ROAD,
             top_edge=StructureType.CITY,
@@ -420,6 +453,7 @@ def create_base_tiles() -> list["Tile"]:
     # Tile Type P
     tiles.extend(
         Tile(
+            tile_id="P",
             left_edge=StructureType.CITY,
             right_edge=StructureType.ROAD,
             top_edge=StructureType.CITY,
@@ -430,6 +464,7 @@ def create_base_tiles() -> list["Tile"]:
     # Tile Type Q
     tiles.extend(
         Tile(
+            tile_id="Q",
             left_edge=StructureType.CITY,
             right_edge=StructureType.CITY,
             top_edge=StructureType.CITY,
@@ -441,6 +476,7 @@ def create_base_tiles() -> list["Tile"]:
     # Tile Type R
     tiles.extend(
         Tile(
+            tile_id="R",
             left_edge=StructureType.CITY,
             right_edge=StructureType.CITY,
             top_edge=StructureType.CITY,
@@ -451,6 +487,7 @@ def create_base_tiles() -> list["Tile"]:
     # Tile Type S
     tiles.extend(
         Tile(
+            tile_id="S",
             left_edge=StructureType.CITY,
             right_edge=StructureType.CITY,
             top_edge=StructureType.CITY,
@@ -462,6 +499,7 @@ def create_base_tiles() -> list["Tile"]:
     # Tile Type T
     tiles.extend(
         Tile(
+            tile_id="T",
             left_edge=StructureType.CITY,
             right_edge=StructureType.CITY,
             top_edge=StructureType.CITY,
@@ -472,6 +510,7 @@ def create_base_tiles() -> list["Tile"]:
     # Tile Type U
     tiles.extend(
         Tile(
+            tile_id="U",
             left_edge=StructureType.GRASS,
             right_edge=StructureType.GRASS,
             top_edge=StructureType.ROAD,
@@ -482,6 +521,7 @@ def create_base_tiles() -> list["Tile"]:
     # Tile Type V
     tiles.extend(
         Tile(
+            tile_id="V",
             left_edge=StructureType.ROAD,
             right_edge=StructureType.GRASS,
             top_edge=StructureType.GRASS,
@@ -492,6 +532,7 @@ def create_base_tiles() -> list["Tile"]:
     # Tile Type W
     tiles.extend(
         Tile(
+            tile_id="W",
             left_edge=StructureType.ROAD_START,
             right_edge=StructureType.ROAD_START,
             top_edge=StructureType.GRASS,
@@ -503,6 +544,7 @@ def create_base_tiles() -> list["Tile"]:
     # Tile Type X
     tiles.extend(
         Tile(
+            tile_id="X",
             left_edge=StructureType.ROAD_START,
             right_edge=StructureType.ROAD_START,
             top_edge=StructureType.ROAD_START,
