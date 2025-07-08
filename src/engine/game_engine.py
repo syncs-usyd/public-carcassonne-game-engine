@@ -42,9 +42,14 @@ class GameEngine:
             self.state.start_new_round()
 
             for player in turn_order:
-                player.cards.append(
-                    sample(self.state.map.available_tiles, NUM_CARDS_DRAWN_PER_ROUND)
+                cards_drawn = sample(
+                    self.state.map.available_tiles, NUM_CARDS_DRAWN_PER_ROUND
                 )
+
+                for card in cards_drawn:
+                    self.state.map.available_tiles.remove(card)
+
+                player.cards.extend(cards_drawn)
 
                 self.start_player_turn(player)
 

@@ -1,20 +1,23 @@
 from engine.game.tile_subscriber import MonastaryNeighbourSubsciber
 from engine.state.game_state import GameState
+
 from lib.config.map_config import MONASTARY_IDENTIFIER
 from lib.interface.events.moves.move_place_meeple import (
     MovePlaceMeeple,
     MovePlaceMeeplePass,
 )
 from lib.interface.events.moves.move_place_tile import MovePlaceTile
-from lib.interface.events.moves.typing import MoveType
+from lib.interface.events.typing import EventType
 
 
 class StateMutator:
     def __init__(self, state: GameState) -> None:
         self.state = state
 
-    def commit(self, move: MoveType):
-        match move:
+    def commit(self, event: EventType):
+        self.state.history.append(event)
+
+        match event:
             case MovePlaceTile() as r:
                 self._commit_place_tile(r)
 
@@ -25,6 +28,7 @@ class StateMutator:
         # Get tile from player hand
         tile = self.state.players[move.player_id].cards[move.player_tile_index]
         self.state.map._grid[move.tile.pos[0]][move.tile.pos[1]] = tile
+        self.state.map.placed_tiles.append(tile)
 
         # Keep track of tile placed for meeple placement
         self.state.tile_placed = tile
@@ -57,8 +61,11 @@ class StateMutator:
 
         # Check for monastary/special completed componentes
         for subscibed_complete in self.state.tile_publisher.check_notify(tile):
-            for player_id, reward in subscibed_complete._reward():
+            for player_id, reward, t, reward_edge in subscibed_complete._reward():
                 self.state.players[player_id].points += reward
+
+                # TODO record
+                t.internal_claims[reward_edge] = None
 
     def _commit_place_meeple(self, move: MovePlaceMeeple) -> None:
         player = self.state.players[move.player_id]
@@ -78,9 +85,12 @@ class StateMutator:
             for subscibed_complete in self.state.tile_publisher.check_notify(
                 self.state.tile_placed
             ):
-                for player_id, reward in subscibed_complete._reward():
+                for player_id, reward, t, e in subscibed_complete._reward():
                     self.state.players[player_id].points += reward
                     assert player_id == move.player_id
+
+                    # TODO record
+                    t.internal_claims[e] = None
 
         # Check the player completed a reguar component and claimed
         elif move.placed_on in completed_components:
