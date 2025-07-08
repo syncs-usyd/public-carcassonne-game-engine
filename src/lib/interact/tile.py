@@ -87,6 +87,23 @@ class Tile:
             "bottom_edge": ["left_edge", "right_edge"],
         }[edge]
 
+    @final
+    @staticmethod
+    def get_external_tile(
+        edge, pos: tuple[int, int], grid: list[list["Tile | None"]]
+    ) -> "Tile | None":
+        match edge:
+            case "left_edge":
+                return grid[pos[0]][pos[1] - 1]
+            case "right_edge":
+                return grid[pos[0]][pos[1] + 1]
+            case "top_edge":
+                return grid[pos[0] - 1][pos[1]]
+            case "bottom_edge":
+                return grid[pos[0] + 1][pos[1]]
+
+        assert False
+
     @staticmethod
     def get_starting_tile() -> "Tile":
         return Tile(
@@ -137,14 +154,15 @@ class Tile:
             _dynamic=False,
         )
 
-        self.roation = 0
+        self.rotation = 0
         self.modifiers = modifiers
         self.tile_type = tile_id
+        self.placed_pos: tuple[int, int] | None = None
 
-        self.left_tile: "Tile"
-        self.right_tile: "Tile"
-        self.top_tile: "Tile"
-        self.bottom_tile: "Tile"
+        # self.left_tile: "Tile"
+        # self.right_tile: "Tile"
+        # self.top_tile: "Tile"
+        # self.bottom_tile: "Tile"
 
     def rotate_clockwise(self, number: int) -> None:
         for _ in range(number):
@@ -165,8 +183,10 @@ class Tile:
         return cloned_tiles
 
     @final
-    def to_model(self):
-        return TileModel(tile_type=self.tile_type)
+    def to_model(self, index: int):
+        return TileModel(
+            player_tile_index=index, tile_type=self.tile_type, rotation=self.rotation
+        )
 
 
 def create_river_tiles() -> list["Tile"]:

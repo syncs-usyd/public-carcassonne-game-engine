@@ -8,7 +8,7 @@ class MovePlaceMeeple(BaseMove):
     event_type: Literal["move_place_meeple"] = "move_place_meeple"
     player_id: int
     tile: Tile
-    placed_on_edge: str
+    placed_on: str  # EDGES or MONESTARY
 
 
 class MovePlaceMeeplePass(BaseMove):

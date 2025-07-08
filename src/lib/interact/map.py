@@ -15,6 +15,7 @@ class Map:
         self._grid: list[list[Tile | None]] = [
             [None for _ in range(MAX_MAP_LENGTH)] for _ in range(MAX_MAP_LENGTH)
         ]
+        self._grid_subscribers = []
 
     def start_base_phase(self) -> None:
         assert not self.available_tiles
