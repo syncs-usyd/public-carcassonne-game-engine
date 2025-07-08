@@ -1,4 +1,6 @@
+from engine.game.tile_subscriber import MonastaryNeighbourSubsciber
 from engine.state.game_state import GameState
+from lib.config.map_config import MONASTARY_IDENTIFIER
 from lib.interface.events.moves.move_place_meeple import (
     MovePlaceMeeple,
     MovePlaceMeeplePass,
@@ -21,16 +23,17 @@ class StateMutator:
 
     def _commit_place_tile(self, move: MovePlaceTile) -> None:
         # Get tile from player hand
-        tile = self.state.players[move.player_id].cards[move.tile.player_tile_index]
-        self.state.map._grid[move.pos[0]][move.pos[1]] = tile
+        tile = self.state.players[move.player_id].cards[move.player_tile_index]
+        self.state.map._grid[move.tile.pos[0]][move.tile.pos[1]] = tile
 
         # Keep track of tile placed for meeple placement
         self.state.tile_placed = tile
-        tile.pos = move.pos
+        tile.placed_pos = move.tile.pos
 
         # Check for any complete connected componentes
         completed_components = self.state.check_any_complete(tile)
 
+        # Check for base/regular connected components
         for edge in completed_components:
             reward = self.state._get_reward(tile, edge)
 
@@ -44,33 +47,53 @@ class StateMutator:
                 self.state._traverse_connected_component(
                     tile,
                     edge,
-                    yield_cond=lambda t, e: t.internal_edge_claims[edge] is not None,
+                    yield_cond=lambda t, e: t.internal_claims[edge] is not None,
                 )
             )
 
             # TODO Record, may change this into a functional
             for t, e in meeples_to_return:
-                t.internal_edge_claims[e] = None
+                t.internal_claims[e] = None
+
+        # Check for monastary/special completed componentes
+        for subscibed_complete in self.state.tile_publisher.check_notify(tile):
+            for player_id, reward in subscibed_complete._reward():
+                self.state.players[player_id].points += reward
 
     def _commit_place_meeple(self, move: MovePlaceMeeple) -> None:
         player = self.state.players[move.player_id]
         assert self.state.tile_placed
 
-        # TODO linked to monesteryt issue below
-        self.state.tile_placed.internal_edge_claims[move.edge] = move.player_id
+        self.state.tile_placed.internal_claims[move.placed_on] = move.player_id
 
         completed_components = self.state.check_any_complete(self.state.tile_placed)
 
-        # TODO implement monestery functional modifier
-        if move.placed_on == "MONESTERY":
-            pass
+        # This segment checks if player placed a meeple on a completed tile
+        if move.placed_on == MONASTARY_IDENTIFIER:
+            tile_subsciber = MonastaryNeighbourSubsciber(
+                move.tile.pos, player.id, self.state.tile_placed, move.placed_on
+            )
+            tile_subsciber.register_to(self.state.tile_publisher)
 
+            for subscibed_complete in self.state.tile_publisher.check_notify(
+                self.state.tile_placed
+            ):
+                for player_id, reward in subscibed_complete._reward():
+                    self.state.players[player_id].points += reward
+                    assert player_id == move.player_id
+
+        # Check the player completed a reguar component and claimed
         elif move.placed_on in completed_components:
             player.points += self.state._get_reward(
                 self.state.tile_placed, move.placed_on
             )
 
+        # Cleanup intermeidate state variables
         self.state.tile_placed = None
 
     def _commit_place_meeple_pass(self, move: MovePlaceMeeplePass) -> None:
+        # Cleanup intermeidate state variables
         self.state.tile_placed = None
+
+    def _check_subscibers(self) -> None:
+        pass

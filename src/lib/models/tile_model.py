@@ -2,6 +2,6 @@ from pydantic import BaseModel
 
 
 class TileModel(BaseModel):
-    player_tile_index: int
     tile_type: str
+    pos: tuple[int, int]
     rotation: int

@@ -1,5 +1,6 @@
 from engine.config.expansion_config import EXPANSION_PACKS
 from engine.config.game_config import NUM_PLAYERS, NUM_CARDS_IN_HAND
+from engine.game.tile_watcher import TilePublisherBus
 from engine.interface.io.player_connection import PlayerConnection
 from engine.state.player_state import PlayerState
 
@@ -21,6 +22,7 @@ class GameState:
         self.cards_exhausted = True
 
         self.tile_placed: Tile | None = None
+        self.tile_publisher = TilePublisherBus()
 
     def replinish_player_cards(self) -> None:
         for player in self.players:
