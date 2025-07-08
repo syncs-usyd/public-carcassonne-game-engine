@@ -1,11 +1,12 @@
-from engine.config.expansion import EXPANSION_PACKS
-from engine.config.game_config import NUM_PLAYERS,  NUM_CARDS_IN_HAND
+from engine.config.expansion_config import EXPANSION_PACKS
+from engine.config.game_config import NUM_PLAYERS, NUM_CARDS_IN_HAND
+from engine.interface.io.player_connection import PlayerConnection
 from engine.state.player_state import PlayerState
 
 from lib.interact.tile import Tile, TileModifier
 from lib.interact.map import Map
 
-from typing import Generator
+from typing import Callable, Generator
 from collections import deque
 from random import sample
 
@@ -13,11 +14,13 @@ from random import sample
 class GameState:
     def __init__(self):
         self.round = -1
-        self.players = [PlayerState(i) for i in range(NUM_PLAYERS)]
+        self.players = [PlayerState(i, PlayerConnection(i)) for i in range(NUM_PLAYERS)]
         self.map = Map()
 
         self.game_over = False
         self.cards_exhausted = True
+
+        self.tile_placed: Tile | None = None
 
     def replinish_player_cards(self) -> None:
         for player in self.players:
@@ -113,6 +116,8 @@ class GameState:
         self,
         start_tile: "Tile",
         edge: str,
+        yield_cond: Callable[[Tile, str], bool] = lambda _1, _2: True,
+        modify: Callable[[Tile, str], None] = lambda _1, _2: None,
     ) -> Generator[tuple["Tile", str]]:
         visited = set()
         structure_type = start_tile.internal_edges[edge]
@@ -126,8 +131,12 @@ class GameState:
             if (tile, edge) in visited:
                 continue
 
+            # Visiting portion of traversal
             visited.add((tile, edge))
-            yield tile, edge
+            modify(tile, edge)
+
+            if yield_cond(tile, edge):
+                yield tile, edge
 
             connected_internal_edges = []
 
@@ -144,7 +153,11 @@ class GameState:
                     connected_internal_edges.append(Tile.get_opposite(edge))
 
             for cid in connected_internal_edges:
-                neighbouring_tile = tile.external_edges[cid]
+                # neighbouring_tile = tile.external_edges[cid] TODO
+                assert tile.placed_pos is not None
+                neighbouring_tile = Tile.get_external_tile(
+                    cid, tile.placed_pos, self.map._grid
+                )
 
                 if neighbouring_tile:
                     neighbouring_tile_edge = tile.get_opposite(cid)
