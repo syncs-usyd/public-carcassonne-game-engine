@@ -2,6 +2,8 @@ from engine.game.tile_subscriber import MonastaryNeighbourSubsciber
 from engine.state.game_state import GameState
 
 from lib.config.map_config import MONASTARY_IDENTIFIER
+from lib.interface.events.event_game_started import EventGameStarted
+from lib.interface.events.event_player_drew_cards import EventPlayerDrewCards
 from lib.interface.events.moves.move_place_meeple import (
     MovePlaceMeeple,
     MovePlaceMeeplePass,
@@ -18,11 +20,17 @@ class StateMutator:
         self.state.event_history.append(event)
 
         match event:
-            case MovePlaceTile() as r:
-                self._commit_place_tile(r)
+            case EventGameStarted() as e:
+                pass
 
-            case MovePlaceMeeple() as r:
-                self._commit_place_meeple(r)
+            case EventPlayerDrewCards() as e:
+                pass
+
+            case MovePlaceTile() as e:
+                self._commit_place_tile(e)
+
+            case MovePlaceMeeple() as e:
+                self._commit_place_meeple(e)
 
     def _commit_place_tile(self, move: MovePlaceTile) -> None:
         # Get tile from player hand
@@ -72,6 +80,7 @@ class StateMutator:
         assert self.state.tile_placed
 
         self.state.tile_placed.internal_claims[move.placed_on] = move.player_id
+        # player._get_available_meeple().placed =
 
         completed_components = self.state.check_any_complete(self.state.tile_placed)
 
