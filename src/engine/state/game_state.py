@@ -6,6 +6,7 @@ from engine.state.player_state import PlayerState
 
 from lib.interact.tile import Tile, TileModifier
 from lib.interact.map import Map
+from lib.interface.events.typing import EventType
 
 from typing import Callable, Generator
 from collections import deque
@@ -23,6 +24,8 @@ class GameState:
 
         self.tile_placed: Tile | None = None
         self.tile_publisher = TilePublisherBus()
+
+        self.event_history: list[EventType] = []
 
     def replinish_player_cards(self) -> None:
         for player in self.players:

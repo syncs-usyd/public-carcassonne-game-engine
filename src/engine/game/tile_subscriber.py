@@ -24,7 +24,7 @@ class TileSubsciber(ABC):
         pass
 
     @abstractmethod
-    def _reward(self) -> list[tuple[int, int, tuple[int, int], str]]:
+    def _reward(self) -> list[tuple[int, int, Tile, str]]:
         pass
 
 
@@ -71,9 +71,9 @@ class MonastaryNeighbourSubsciber(TileSubsciber):
         ]
 
     @final
-    def _reward(self) -> list[tuple[int, int, tuple[int, int], str]]:
+    def _reward(self) -> list[tuple[int, int, Tile, str]]:
         assert self.tile.placed_pos
-        return [(self.player_id, MONASTARY_POINTS, self.tile.placed_pos, self.claim)]
+        return [(self.player_id, MONASTARY_POINTS, self.tile, self.claim)]
 
 
 class TilePublisherBus:

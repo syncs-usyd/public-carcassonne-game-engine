@@ -10,8 +10,8 @@ from lib.config.map_config import MAX_MAP_LENGTH
 
 class Map:
     def __init__(self) -> None:
-        self.placed_tiles = []
-        self.available_tiles = []
+        self.placed_tiles: list[Tile] = []
+        self.available_tiles: list[Tile] = []
         self._grid: list[list[Tile | None]] = [
             [None for _ in range(MAX_MAP_LENGTH)] for _ in range(MAX_MAP_LENGTH)
         ]
