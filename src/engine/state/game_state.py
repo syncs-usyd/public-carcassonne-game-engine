@@ -1,6 +1,6 @@
 from engine.config.expansion_config import EXPANSION_PACKS
 from engine.config.game_config import NUM_PLAYERS, NUM_CARDS_IN_HAND
-from engine.game.tile_watcher import TilePublisherBus
+from engine.game.tile_subscriber import TilePublisherBus
 from engine.interface.io.player_connection import PlayerConnection
 from engine.state.player_state import PlayerState
 
@@ -69,7 +69,7 @@ class GameState:
         players = set()
 
         for connected_tile, _ in self._traverse_connected_component(tile, edge):
-            edge_claim = connected_tile.internal_edge_claims[edge]
+            edge_claim = connected_tile.internal_claims[edge]
             if edge_claim != -1:
                 players.add(edge_claim)
 
