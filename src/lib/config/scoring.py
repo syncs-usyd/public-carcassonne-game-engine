@@ -1,4 +1,5 @@
 ROAD_POINTS = 1
 CITY_POINTS = 2
+MONASTARY_POINTS = 9
 FARM_POINTS = 1  # expansion coming
 NO_POINTS = 0

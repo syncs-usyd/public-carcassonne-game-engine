@@ -1,3 +1,4 @@
+from lib.config.map_config import MONASTARY_IDENTIFIER
 from lib.config.scoring import NO_POINTS
 from lib.interact.structure import StructureType
 
@@ -134,7 +135,7 @@ class Tile:
             _dynamic=False,
         )
 
-        self.internal_edge_claims = DotMap(
+        self.internal_claims = DotMap(
             Tile.EdgeTuple(
                 left_edge=None,
                 right_edge=None,
@@ -143,6 +144,8 @@ class Tile:
             )._asdict(),
             _dynamic=False,
         )
+
+        self.internal_claims[MONASTARY_IDENTIFIER] = None
 
         self.external_edges = DotMap(
             Tile.EdgeTuple(
@@ -174,7 +177,7 @@ class Tile:
             )
 
     def _claim_edge(self, player_id: int, edge: str):
-        self.internal_edge_claims[edge] = player_id
+        self.internal_claims[edge] = player_id
 
     @final
     def clone_add(self, n: int) -> list[Self]:

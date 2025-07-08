@@ -1,5 +1,5 @@
 from lib.interface.events.moves.base_move import BaseMove
-from lib.interact.tile import Tile
+from lib.models.tile_model import TileModel
 
 from typing import Literal
 
@@ -7,7 +7,7 @@ from typing import Literal
 class MovePlaceMeeple(BaseMove):
     event_type: Literal["move_place_meeple"] = "move_place_meeple"
     player_id: int
-    tile: Tile
+    tile: TileModel
     placed_on: str  # EDGES or MONESTARY
 
 
