@@ -2,13 +2,14 @@ from engine.config.game_config import NUM_MEEPLE
 from engine.interface.io.player_connection import PlayerConnection
 
 from lib.interact.meeple import Meeple
+from lib.interact.tile import Tile
 
 
 class PlayerState:
     def __init__(self, player_id: int, connection: PlayerConnection) -> None:
         self.id = player_id
         self.points = 0
-        self.cards = []
+        self.cards: list[Tile] = []
         self.meeples: list["Meeple"] = [Meeple(player_id) for _ in range(NUM_MEEPLE)]
         self.connection = connection
 
