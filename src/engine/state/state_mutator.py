@@ -15,7 +15,7 @@ class StateMutator:
         self.state = state
 
     def commit(self, event: EventType):
-        self.state.history.append(event)
+        self.state.event_history.append(event)
 
         match event:
             case MovePlaceTile() as r:
@@ -27,7 +27,7 @@ class StateMutator:
     def _commit_place_tile(self, move: MovePlaceTile) -> None:
         # Get tile from player hand
         tile = self.state.players[move.player_id].cards[move.player_tile_index]
-        self.state.map._grid[move.tile.pos[0]][move.tile.pos[1]] = tile
+        self.state.map._grid[move.tile.pos[1]][move.tile.pos[0]] = tile
         self.state.map.placed_tiles.append(tile)
 
         # Keep track of tile placed for meeple placement
