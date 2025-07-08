@@ -183,6 +183,9 @@ class Tile:
     def _claim_edge(self, player_id: int, edge: str):
         self.internal_claims[edge] = player_id
 
+    def _to_model(self) -> "TileModel":
+        return TileModel(tile_type=self.tile_type, pos=(0, 0), rotation=0)
+
     @final
     def clone_add(self, n: int) -> list[Self]:
         cloned_tiles = [copy(self) for _ in range(n)]

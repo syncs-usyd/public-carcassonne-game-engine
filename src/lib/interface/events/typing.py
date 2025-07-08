@@ -13,6 +13,7 @@ from lib.interface.events.event_player_won import EventPlayerWon
 from lib.interface.events.event_river_phase_completed import EventRiverPhaseCompleted
 from lib.interface.events.event_structure_completed import EventStructureCompleted
 from lib.interface.events.event_player_met_point_limit import EventPlayerMetPointLimit
+from lib.interface.events.moves.typing import MoveType
 
 from typing import Union
 
@@ -28,4 +29,5 @@ EventType = Union[
     EventPlayerMetPointLimit,
     PublicEventGameStarted,
     PublicEventPlayerDrewCards,
+    MoveType,
 ]

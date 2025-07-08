@@ -26,6 +26,7 @@ class GameState:
         self.tile_publisher = TilePublisherBus()
 
         self.event_history: list[EventType] = []
+        self.turn_order: list[int] = [player.id for player in self.players]
 
     def replinish_player_cards(self) -> None:
         for player in self.players:
@@ -56,17 +57,6 @@ class GameState:
 
     def calc_final_points(self):
         pass
-
-    def place_card(self, player: "PlayerState", card: "Tile") -> None:
-        self.map.placed_tiles.append(card)
-        self.map.available_tiles.remove(card)
-        # TODO record event
-
-    def place_meeple(self, player: "PlayerState", tile: "Tile", edge: str) -> None:
-        meeple = player._get_available_meeple()
-        assert meeple is not None
-
-        meeple._place_meeple(tile, edge)
 
     def _get_claims(self, tile: "Tile", edge: str) -> list[int]:
         players = set()
