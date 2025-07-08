@@ -68,6 +68,8 @@ class Tile:
         "EdgeTuple", ["left_edge", "right_edge", "top_edge", "bottom_edge"]
     )
 
+    starting_tile: "Tile"
+
     @final
     @staticmethod
     def get_opposite(edge: str) -> str:
@@ -90,31 +92,38 @@ class Tile:
 
     @final
     @staticmethod
+    def get_edges() -> list[str]:
+        return ["left_edge", "right_edge", "top_edge", "bottom_edge"]
+
+    @final
+    @staticmethod
     def get_external_tile(
         edge, pos: tuple[int, int], grid: list[list["Tile | None"]]
     ) -> "Tile | None":
         match edge:
             case "left_edge":
-                return grid[pos[0]][pos[1] - 1]
+                return grid[pos[1]][pos[0] - 1]
             case "right_edge":
-                return grid[pos[0]][pos[1] + 1]
+                return grid[pos[1]][pos[0] + 1]
             case "top_edge":
-                return grid[pos[0] - 1][pos[1]]
+                return grid[pos[1] - 1][pos[0]]
             case "bottom_edge":
-                return grid[pos[0] + 1][pos[1]]
+                return grid[pos[1] + 1][pos[0]]
 
         assert False
 
     @staticmethod
     def get_starting_tile() -> "Tile":
-        return Tile(
-            tile_id="R0",
-            left_edge=StructureType.GRASS,
-            right_edge=StructureType.GRASS,
-            top_edge=StructureType.RIVER,
-            bottom_edge=StructureType.GRASS,
-            modifiers=[TileModifier.RIVER],
-        )
+        if not Tile.starting_tile:
+            Tile.starting_tile = Tile(
+                tile_id="R0",
+                left_edge=StructureType.GRASS,
+                right_edge=StructureType.GRASS,
+                top_edge=StructureType.RIVER,
+                bottom_edge=StructureType.GRASS,
+                modifiers=[TileModifier.RIVER],
+            )
+        return Tile.starting_tile
 
     def __init__(
         self,
@@ -161,11 +170,6 @@ class Tile:
         self.modifiers = modifiers
         self.tile_type = tile_id
         self.placed_pos: tuple[int, int] | None = None
-
-        # self.left_tile: "Tile"
-        # self.right_tile: "Tile"
-        # self.top_tile: "Tile"
-        # self.bottom_tile: "Tile"
 
     def rotate_clockwise(self, number: int) -> None:
         for _ in range(number):

@@ -16,7 +16,6 @@ class GameEngine:
         self.state = GameState()
         self.validator = MoveValidator(self.state)
         self.mutator = StateMutator(self.state)
-        self.recorder = None
         self.censor = None
         # Logging
         # Output
