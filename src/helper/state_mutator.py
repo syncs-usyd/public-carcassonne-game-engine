@@ -1,6 +1,5 @@
 from helper.client_state import ClientSate
 
-from lib.interface.events.base_event import BaseEvent
 from lib.interface.events.event_meeple_placed import EventMeeplePlaced
 from lib.interface.events.event_player_bannned import EventPlayerBanned
 from lib.interface.events.event_player_turn_started import EventPlayerTurnStarted
@@ -11,7 +10,10 @@ from lib.interface.events.event_game_ended import (
     EventGameEndedPointLimitReaced,
     EventGameEndedStaleMate,
 )
-from lib.interface.events.event_game_started import EventGameStarted
+from lib.interface.events.event_game_started import (
+    EventGameStarted,
+    PublicEventGameStarted,
+)
 from lib.interface.events.event_player_drew_cards import (
     EventPlayerDrewCards,
     PublicEventPlayerDrewCards,
@@ -25,13 +27,14 @@ from lib.interface.events.moves.move_place_meeple import (
     MovePlaceMeeplePass,
 )
 from lib.interface.events.moves.move_place_tile import MovePlaceTile
+from lib.interface.events.typing import EventType
 
 
 class StateMutator:
     def __init__(self, state: ClientSate):
         self.state = state
 
-    def commit(self, i: int, event: BaseEvent):
+    def commit(self, i: int, event: EventType):
         if i != len(self.state.event_history):
             raise RuntimeError("Please send us a discord message with this error log.")
         self.state.event_history.append(event)
@@ -39,6 +42,9 @@ class StateMutator:
         match event:
             case EventGameStarted() as e:
                 self._commit_event_game_started(e)
+
+            case PublicEventGameStarted() as e:
+                self._commit_public_event_game_started(e)
 
             case EventPlayerDrewCards() as e:
                 self._commit_player_drew_cards(e)
@@ -85,9 +91,6 @@ class StateMutator:
             case EventRiverPhaseCompleted() as e:
                 self._commit_event_river_phase_completed(e)
 
-            # case EventStructureCompleted() as e:
-            #     self._commit_event_structure_completed(e)
-
             case _:
                 raise RuntimeError(f"Unrecognised event: {event}")
 
@@ -98,10 +101,18 @@ class StateMutator:
         self.state.me.tiles.extend(e.cards)
 
     def _commit_opponent_drew_cards(self, e: PublicEventPlayerDrewCards) -> None:
+        if e.player_id == self.state.me.player_id:
+            raise RuntimeError("Please send us a discord message with this error log.")
+
         self.state.players[e.player_id].num_tiles += e.num_cards
 
     def _commit_event_game_started(self, e: EventGameStarted) -> None:
-        pass
+        raise RuntimeError("Please send us a discord message with this error log.")
+
+    def _commit_public_event_game_started(self, e: PublicEventGameStarted) -> None:
+        self.state.me = e.you
+        self.state.turn_order = e.turn_order
+        self.state.players = {p.player_id: p for p in e.players}
 
     def _commit_event_player_meeple_freed(self, e: EventPlayerMeepleFreed) -> None:
         pass

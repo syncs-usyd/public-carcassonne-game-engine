@@ -17,12 +17,11 @@ from lib.interface.events.event_player_meeple_freed import EventPlayerMeepleFree
 from lib.interface.events.event_player_turn_started import EventPlayerTurnStarted
 from lib.interface.events.event_player_won import EventPlayerWon
 from lib.interface.events.event_river_phase_completed import EventRiverPhaseCompleted
-from lib.interface.events.event_structure_completed import EventStructureCompleted
 from lib.interface.events.moves.typing import MoveType
 
-from typing import Union
+from typing import TypeAlias, Union
 
-EventType = Union[
+EventType: TypeAlias = Union[
     EventGameStarted,
     EventMeeplePlaced,
     EventPlayerBanned,
@@ -30,7 +29,6 @@ EventType = Union[
     EventPlayerTurnStarted,
     EventPlayerWon,
     EventRiverPhaseCompleted,
-    EventStructureCompleted,
     EventPlayerMeepleFreed,
     EventPlayerWon,
     EventGameEndedCancelled,
