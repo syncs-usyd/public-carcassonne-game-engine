@@ -1,12 +1,11 @@
-from engine.config.game_config import STARTING_POINTS
 from engine.state.game_state import GameState
 
 from lib.interface.events.event_game_started import (
     EventGameStarted,
+    PublicEventGameStarted,
 )
 from lib.interface.events.event_player_drew_cards import EventPlayerDrewCards
 from lib.interface.events.typing import EventType
-from lib.models.player_model import PublicPlayerModel
 
 
 class CensorEvent:
@@ -22,8 +21,12 @@ class CensorEvent:
                 return e.get_public()
 
             case EventGameStarted() as e:
-                return e.get_public(
-                    PublicPlayerModel(player_id=player_id, points=STARTING_POINTS)
+                return PublicEventGameStarted(
+                    turn_order=e.turn_order,
+                    players=[player.get_public() for player in e.players],
+                    you=filter(
+                        lambda x: x.player_id == player_id, e.players
+                    ).__next__(),
                 )
 
         return event
