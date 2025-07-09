@@ -45,7 +45,7 @@ class GameEngine:
 
     def start(self):
         try:
-            self.state.__connect_players()
+            self.state._connect_players()
             self.run_game()
         except PlayerException as e:
             event = event_banned_factory(e)
@@ -55,7 +55,7 @@ class GameEngine:
 
     def run_game(self):
         assert NUM_PLAYERS == len(self.state.players)
-        turn_order = sample(self.state.turn_order, k=NUM_PLAYERS)
+        turn_order = sample(list(self.state.players.keys()), k=NUM_PLAYERS)
         self.state.turn_order = turn_order
 
         while not self.state.is_game_over():

@@ -3,6 +3,8 @@ from lib.interact.meeple import Meeple
 from lib.interact.map import Map
 from lib.interface.events.typing import EventType
 from lib.models.player_model import PlayerModel, PublicPlayerModel
+from lib.models.tile_model import TileModel
+from lib.interact.structure import StructureType
 
 
 class ClientSate:
@@ -39,3 +41,6 @@ class ClientSate:
                         meeples.append(meeple)
 
         return meeples
+
+    def get_tile_structures(self, tile: TileModel) -> dict[str, StructureType]:
+        return {}

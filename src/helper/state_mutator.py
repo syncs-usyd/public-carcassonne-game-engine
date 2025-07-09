@@ -1,6 +1,5 @@
 from helper.client_state import ClientSate
 
-from lib.interface.events.event_meeple_placed import EventMeeplePlaced
 from lib.interface.events.event_player_bannned import EventPlayerBanned
 from lib.interface.events.event_player_turn_started import EventPlayerTurnStarted
 from lib.interface.events.event_player_won import EventPlayerWon
@@ -76,9 +75,6 @@ class StateMutator:
             case EventGameEndedCancelled() as e:
                 self._commit_event_game_ended_cancelled(e)
 
-            case EventMeeplePlaced() as e:
-                self._commit_event_meeple_placed(e)
-
             case EventPlayerBanned() as e:
                 self._commit_event_player_banned(e)
 
@@ -138,9 +134,6 @@ class StateMutator:
         pass
 
     def _commit_event_game_ended_cancelled(self, e: EventGameEndedCancelled) -> None:
-        pass
-
-    def _commit_event_meeple_placed(self, e: EventMeeplePlaced) -> None:
         pass
 
     def _commit_event_player_banned(self, e: EventPlayerBanned) -> None:

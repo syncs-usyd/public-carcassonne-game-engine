@@ -2,9 +2,9 @@ from lib.interface.queries.query_place_tile import QueryPlaceTile
 from lib.interface.queries.query_place_meeple import QueryPlaceMeeple
 
 from pydantic import Field, RootModel
-from typing import Union
+from typing import TypeAlias, Union
 
-QueryType = Union[
+QueryType: TypeAlias = Union[
     QueryPlaceTile,
     QueryPlaceMeeple,
 ]

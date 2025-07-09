@@ -3,7 +3,7 @@ from engine.interface.io.player_connection import PlayerConnection
 
 from lib.interact.meeple import Meeple
 from lib.interact.tile import Tile
-from lib.models.player_model import PublicPlayerModel
+from lib.models.player_model import PlayerModel
 
 
 class PlayerState:
@@ -25,7 +25,10 @@ class PlayerState:
 
         return None
 
-    def _to_player_model(self) -> PublicPlayerModel:
-        return PublicPlayerModel(
-            player_id=self.id, team_id=self.team_id, points=self.points
+    def _to_player_model(self) -> PlayerModel:
+        return PlayerModel(
+            player_id=self.id,
+            team_id=self.team_id,
+            points=self.points,
+            tiles=[tile._to_model() for tile in self.cards],
         )

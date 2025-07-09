@@ -1,5 +1,5 @@
+from typing import TYPE_CHECKING
 from engine.config.game_config import MAX_NUM_CARDS_IN_HAND
-from engine.state.game_state import GameState
 from lib.config.map_config import MONASTARY_IDENTIFIER
 from lib.interface.events.moves.move_place_meeple import (
     MovePlaceMeeple,
@@ -18,9 +18,12 @@ VALID_TILE_TYPES.extend(string.ascii_uppercase[: string.ascii_uppercase.index("K
 VALID_ROTATIONS = [0, 90, 180, 270]
 VALID_MEEPLE_PLACMENTS = Tile.get_starting_tile().internal_edges.keys()
 
+if TYPE_CHECKING:
+    from engine.state.game_state import GameState
+
 
 class MoveValidator:
-    def __init__(self, state: GameState):
+    def __init__(self, state: "GameState"):
         self.state = state
 
     def validate(self, event: MoveType, query: BaseQuery, player_id: int) -> None:

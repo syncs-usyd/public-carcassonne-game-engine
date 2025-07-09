@@ -69,7 +69,7 @@ class Tile:
         "EdgeTuple", ["left_edge", "right_edge", "top_edge", "bottom_edge"]
     )
 
-    starting_tile: "Tile"
+    starting_tile: "Tile | None" = None
 
     @final
     @staticmethod

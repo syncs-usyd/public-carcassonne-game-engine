@@ -32,4 +32,6 @@ pyrightconfig.json
 todo.md
 
 # Submission files
-submission*/
+**/submission*/
+**/output/
+**/input/
