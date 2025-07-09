@@ -3,20 +3,26 @@ from engine.config.game_config import NUM_PLAYERS, NUM_CARDS_IN_HAND
 from engine.game.tile_subscriber import TilePublisherBus
 from engine.interface.io.player_connection import PlayerConnection
 from engine.state.player_state import PlayerState
+from engine.config.io_config import CORE_DIRECTORY
 
+from lib.interact.meeple import Meeple
 from lib.interact.tile import Tile, TileModifier
 from lib.interact.map import Map
 from lib.interface.events.typing import EventType
 
 from typing import Callable, Generator
-from collections import deque
+from collections import defaultdict, deque
 from random import sample
+import json
 
 
 class GameState:
     def __init__(self):
+        with open(f"{CORE_DIRECTORY}/input/catalog.json", "r") as f:
+            self.catalog = json.load(f)
+
         self.round = -1
-        self.players = [PlayerState(i, PlayerConnection(i)) for i in range(NUM_PLAYERS)]
+        self.players: dict[int, PlayerState]
         self.map = Map()
 
         self.game_over = False
@@ -26,10 +32,16 @@ class GameState:
         self.tile_publisher = TilePublisherBus()
 
         self.event_history: list[EventType] = []
-        self.turn_order: list[int] = [player.id for player in self.players]
+        self.turn_order: list[int] = []
+
+    def __connect_players(self):
+        self.players = {
+            i: PlayerState(i, self.catalog[i]["team_id"], PlayerConnection(i))
+            for i in range(NUM_PLAYERS)
+        }
 
     def replinish_player_cards(self) -> None:
-        for player in self.players:
+        for player in self.players.values():
             player.cards.extend(sample(self.map.available_tiles, NUM_CARDS_IN_HAND))
 
     def start_river_phase(self) -> None:
@@ -45,28 +57,42 @@ class GameState:
     def start_new_round(self) -> None:
         self.round += 1
 
-    def get_player_points(self) -> list[int]:
-        return [player.points for player in self.players]
+    def get_player_points(self) -> list[tuple[int, int]]:
+        return [(player.id, player.points) for player in self.players.values()]
+
+    def get_rankings(self) -> list[int]:
+        return [
+            player.id
+            for player in sorted(
+                self.players.values(), key=lambda p: p.points, reverse=True
+            )
+        ]
 
     def is_game_over(self) -> bool:
         return self.game_over
 
     def finalise_game(self) -> None:
         self.game_over = True
-        self.calc_final_points()
 
-    def calc_final_points(self):
-        pass
-
-    def _get_claims(self, tile: "Tile", edge: str) -> list[int]:
-        players = set()
+    def _get_claims_objs(self, tile: "Tile", edge: str) -> dict[int, list[Meeple]]:
+        players = defaultdict(list)
 
         for connected_tile, _ in self._traverse_connected_component(tile, edge):
-            edge_claim = connected_tile.internal_claims[edge]
-            if edge_claim != -1:
-                players.add(edge_claim)
+            meeple = connected_tile.internal_claims[edge]
+            if meeple is not None:
+                players[meeple.player_id].append(meeple)
 
-        return list(players)
+        return players
+
+    def _get_claims(self, tile: "Tile", edge: str) -> list[int]:
+        meeples = set()
+
+        for connected_tile, _ in self._traverse_connected_component(tile, edge):
+            meeple = connected_tile.internal_claims[edge]
+            if meeple is not None:
+                meeples.add(meeple)
+
+        return [meeple.player_id for meeple in meeples]
 
     def _get_reward(self, tile: "Tile", edge: str) -> int:
         visited_tiles = set()
@@ -101,7 +127,7 @@ class GameState:
         return edges_complete
 
     def _get_player_from_id(self, id: int) -> PlayerState | None:
-        for player in self.players:
+        for player in self.players.values():
             if player.id == id:
                 return player
 

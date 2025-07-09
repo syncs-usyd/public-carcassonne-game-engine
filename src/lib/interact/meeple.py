@@ -7,15 +7,21 @@ class Meeple:
     Meeple
     """
 
-    placed = Tile | None
-
     def __init__(self, player_id: int, is_special: bool = False) -> None:
         if not EXPANSION:
             assert not self.is_special
 
         self.is_special = is_special
-        self.player_id = id
+        self.player_id = player_id
+        self.placed: Tile | None = None
+        self.placed_edge: str = ""
 
     def _place_meeple(self, tile: Tile, edge: str):
         self.placed = tile
-        tile.internal_edge_claims[edge] = self
+        self.placed_edge = edge
+        tile.internal_claims[edge] = self
+
+    def _free_meeple(self) -> None:
+        assert self.placed
+        self.placed.internal_claims[self.placed_edge] = None
+        self.placed = None

@@ -8,5 +8,4 @@ class EventMeeplePlaced(BaseEvent):
     event_type: Literal["event_meeple_placed"] = "event_meeple_placed"
     player_id: int
     tile: Tile
-    # TODO create an enum?
     edge: str
