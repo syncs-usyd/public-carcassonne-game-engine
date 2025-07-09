@@ -1,6 +1,7 @@
 from lib.config.map_config import MONASTARY_IDENTIFIER
 from lib.config.scoring import NO_POINTS
 from lib.interact.structure import StructureType
+from lib.interact.meeple import Meeple
 
 from enum import Enum, auto
 from copy import copy
@@ -144,7 +145,7 @@ class Tile:
             _dynamic=False,
         )
 
-        self.internal_claims = DotMap(
+        self.internal_claims: dict[str, "Meeple | None"] = DotMap(
             Tile.EdgeTuple(
                 left_edge=None,
                 right_edge=None,
@@ -180,11 +181,8 @@ class Tile:
                 self.left_edge,
             )
 
-    def _claim_edge(self, player_id: int, edge: str):
-        self.internal_claims[edge] = player_id
-
-    def _to_model(self) -> "TileModel":
-        return TileModel(tile_type=self.tile_type, pos=(0, 0), rotation=0)
+    def _claim_edge(self, meeple: Meeple, edge: str):
+        self.internal_claims[edge] = meeple
 
     @final
     def clone_add(self, n: int) -> list[Self]:
@@ -193,9 +191,11 @@ class Tile:
         return cloned_tiles
 
     @final
-    def to_model(self, index: int):
+    def _to_model(self):
         return TileModel(
-            player_tile_index=index, tile_type=self.tile_type, rotation=self.rotation
+            tile_type=self.tile_type,
+            pos=self.placed_pos or (0, 0),
+            rotation=self.rotation,
         )
 
 

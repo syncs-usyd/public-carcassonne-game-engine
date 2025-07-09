@@ -6,3 +6,4 @@ from typing import Literal
 class EventPlayerWon(BaseEvent):
     event_type: Literal["event_player_won"] = "event_player_won"
     player_id: int
+    points: int

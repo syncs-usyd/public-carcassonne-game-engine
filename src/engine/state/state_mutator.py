@@ -2,8 +2,14 @@ from engine.game.tile_subscriber import MonastaryNeighbourSubsciber
 from engine.state.game_state import GameState
 
 from lib.config.map_config import MONASTARY_IDENTIFIER
+from lib.config.scoring import POINT_LIMIT
+from lib.interface.events.event_game_ended import EventGameEndedPointLimitReaced
 from lib.interface.events.event_game_started import EventGameStarted
 from lib.interface.events.event_player_drew_cards import EventPlayerDrewCards
+from lib.interface.events.event_player_meeple_freed import EventPlayerMeepleFreed
+from lib.interface.events.event_tile_placed import (
+    EventStartingTilePlaced,
+)
 from lib.interface.events.moves.move_place_meeple import (
     MovePlaceMeeple,
     MovePlaceMeeplePass,
@@ -24,6 +30,12 @@ class StateMutator:
                 pass
 
             case EventPlayerDrewCards() as e:
+                pass
+
+            case EventPlayerMeepleFreed() as e:
+                pass
+
+            case EventStartingTilePlaced() as e:
                 pass
 
             case MovePlaceTile() as e:
@@ -55,6 +67,9 @@ class StateMutator:
                 if player:
                     player.points += reward
 
+                    if player.points >= POINT_LIMIT:
+                        self.commit(EventGameEndedPointLimitReaced(player.id))
+
             meeples_to_return = list(
                 self.state._traverse_connected_component(
                     tile,
@@ -63,24 +78,47 @@ class StateMutator:
                 )
             )
 
-            # TODO Record, may change this into a functional
             for t, e in meeples_to_return:
-                t.internal_claims[e] = None
+                meeple = t.internal_claims[e]
+                assert meeple is not None
+
+                meeple._free_meeple()
+                self.commit(
+                    EventPlayerMeepleFreed(
+                        player_id=move.player_id,
+                        reward=reward,
+                        tile=t._to_model(),
+                        placed_on=e,
+                    )
+                )
 
         # Check for monastary/special completed componentes
         for subscibed_complete in self.state.tile_publisher.check_notify(tile):
             for player_id, reward, t, reward_edge in subscibed_complete._reward():
                 self.state.players[player_id].points += reward
 
-                # TODO record
-                t.internal_claims[reward_edge] = None
+                meeple = t.internal_claims[reward_edge]
+                assert meeple is not None
+
+                meeple._free_meeple()
+                self.commit(
+                    EventPlayerMeepleFreed(
+                        player_id=player_id,
+                        reward=reward,
+                        tile=t._to_model(),
+                        placed_on=reward_edge,
+                    )
+                )
 
     def _commit_place_meeple(self, move: MovePlaceMeeple) -> None:
         player = self.state.players[move.player_id]
         assert self.state.tile_placed
 
-        self.state.tile_placed.internal_claims[move.placed_on] = move.player_id
-        # player._get_available_meeple().placed =
+        # self.state.tile_placed.internal_claims[move.placed_on] = move.player_id
+        meeple = player._get_available_meeple()
+        assert meeple is not None
+
+        meeple._place_meeple(self.state.tile_placed, move.placed_on)
 
         completed_components = self.state.check_any_complete(self.state.tile_placed)
 
@@ -98,8 +136,18 @@ class StateMutator:
                     self.state.players[player_id].points += reward
                     assert player_id == move.player_id
 
-                    # TODO record
-                    t.internal_claims[e] = None
+                    meeple = t.internal_claims[e]
+                    assert meeple is not None
+
+                    meeple._free_meeple()
+                    self.commit(
+                        EventPlayerMeepleFreed(
+                            player_id=player_id,
+                            reward=reward,
+                            tile=t._to_model(),
+                            placed_on=e,
+                        )
+                    )
 
         # Check the player completed a reguar component and claimed
         elif move.placed_on in completed_components:
@@ -113,6 +161,9 @@ class StateMutator:
     def _commit_place_meeple_pass(self, move: MovePlaceMeeplePass) -> None:
         # Cleanup intermeidate state variables
         self.state.tile_placed = None
+
+    def _comit_player_meeple_freed(self, event: EventPlayerMeepleFreed) -> None:
+        pass
 
     def _check_subscibers(self) -> None:
         pass
