@@ -1,5 +1,6 @@
 from helper.client_state import ClientSate
 
+from lib.interact.tile import Tile
 from lib.interface.events.event_player_bannned import EventPlayerBanned
 from lib.interface.events.event_player_turn_started import EventPlayerTurnStarted
 from lib.interface.events.event_player_won import EventPlayerWon
@@ -94,7 +95,13 @@ class StateMutator:
         if e.player_id != self.state.me.player_id:
             raise RuntimeError("Please send us a discord message with this error log.")
 
+        print("Log I drew cards")
         self.state.me.tiles.extend(e.cards)
+        for card_model in e.cards:
+            for card in self.state.map.available_tiles:
+                if card_model.tile_type == card.tile_type:
+                    self.state.my_cards.append(card)
+                    self.state.map.available_tiles.remove(card)
 
     def _commit_opponent_drew_cards(self, e: PublicEventPlayerDrewCards) -> None:
         if e.player_id == self.state.me.player_id:
@@ -110,11 +117,16 @@ class StateMutator:
         self.state.turn_order = e.turn_order
         self.state.players = {p.player_id: p for p in e.players}
 
+        self.state.map.start_river_phase()
+
     def _commit_event_player_meeple_freed(self, e: EventPlayerMeepleFreed) -> None:
         pass
 
     def _commit_event_starting_tile_placed(self, e: EventStartingTilePlaced) -> None:
-        pass
+        x, y = e.tile_placed.pos
+        Tile.get_starting_tile().placed_pos = (x, y)
+        self.state.map._grid[y][x] = Tile.get_starting_tile()
+        self.state.map.placed_tiles.append(Tile.get_starting_tile())
 
     def _commit_move_place_tile(self, e: MovePlaceTile) -> None:
         pass

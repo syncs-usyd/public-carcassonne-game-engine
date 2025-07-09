@@ -1,3 +1,4 @@
+from lib.interact.tile import Tile
 from lib.interface.queries.query_place_tile import QueryPlaceTile
 from lib.interface.queries.query_place_meeple import QueryPlaceMeeple
 from lib.interface.queries.typing import QueryType
@@ -49,3 +50,67 @@ class Game:
         return MovePlaceMeeplePass(
             player_id=self.state.me.player_id,
         )
+
+    def can_place_tile_at(self, tile: Tile, x: int, y: int) -> bool:
+        if self.state.map._grid[y][x]:
+            return False  # Already occupied
+
+        directions = {
+            (0, 1): "top",
+            (1, 0): "right",
+            (0, -1): "bottom",
+            (-1, 0): "left",
+        }
+
+        edge_opposite = {
+            "top": "bottom",
+            "bottom": "top",
+            "left": "right",
+            "right": "left",
+        }
+
+        print(f"Checking if tile can be placed {x, y}")
+        has_any_neighbour = False
+
+        for _ in range(4):  # Try all 4 rotations
+            has_any_neighbour = False  # reset for each rotation
+
+            for (dx, dy), edge in directions.items():
+                nx, ny = x + dx, y + dy
+
+                print(
+                    f"Checking if tile neighbour compatible - {nx, ny} with rotation {tile.rotation}"
+                )
+
+                if not (
+                    0 <= ny < len(self.state.map._grid)
+                    and 0 <= nx < len(self.state.map._grid[0])
+                ):
+                    continue
+
+                neighbour_tile = self.state.map._grid[ny][nx]
+
+                if neighbour_tile is None:
+                    continue
+
+                has_any_neighbour = True
+
+                print("Cooked 1")
+
+                if tile.internal_edges(edge) != neighbour_tile.internal_edges(
+                    edge_opposite[edge]
+                ):
+                    print("Edge Missmatch")
+                    break  # mismatch, try next rotation
+
+                print("Cooked 2")
+
+            else:
+                if has_any_neighbour:
+                    print("Returning True")
+                    return True
+
+            print("Rotating")
+            tile.rotate_clockwise(1)
+
+        return False

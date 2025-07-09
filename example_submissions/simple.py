@@ -40,12 +40,39 @@ def main():
 def handle_place_tile(
     game: Game, bot_state: BotState, query: QueryPlaceTile
 ) -> MovePlaceTile:
-    """Randomly place a tile from the options available."""
-    # Naively choose the first tile
-    tile_index = 0
-    tile = game.state.me.tiles[tile_index]
-    bot_state.last_tile = tile  # Remember for next phase
-    return game.move_place_tile(query, tile, tile_index)
+    """Place a tile in the first valid location found on the board - brute force"""
+    grid = game.state.map._grid
+    height = len(grid)
+    width = len(grid[0]) if height > 0 else 0
+
+    directions = {
+        (0, 1): "top",
+        (1, 0): "right",
+        (0, -1): "bottom",
+        (-1, 0): "left",
+    }
+
+    print(game.state.event_history)
+
+    print("Cards", game.state.my_cards)
+
+    for y in range(height):
+        for x in range(width):
+            if grid[y][x] is not None:
+                print(f"Checking if tile can be placed near tile - {grid[y][x]}")
+                for tile_index, tile in enumerate(game.state.my_cards):
+                    for direction in directions:
+                        dx, dy = direction
+                        x1, y1 = (x + dx, y + dy)
+
+                        if game.can_place_tile_at(tile, x1, y1):
+                            bot_state.last_tile = tile._to_model()
+                            bot_state.last_tile.pos = (x1, y1)
+                            return game.move_place_tile(query, tile, tile_index)
+
+    raise ValueError(
+        "No valid tile placement found - this feature has not been implmented yet"
+    )
 
 
 def handle_place_meeple(
