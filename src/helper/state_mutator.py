@@ -148,6 +148,9 @@ class StateMutator:
     def _commit_event_game_ended_cancelled(self, e: EventGameEndedCancelled) -> None:
         pass
 
+    def _commit_event_meeple_placed(self, e: EventMeeplePlaced) -> None:
+        pass
+
     def _commit_event_player_banned(self, e: EventPlayerBanned) -> None:
         pass
 

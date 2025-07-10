@@ -50,7 +50,6 @@ class Game:
         return MovePlaceMeeplePass(
             player_id=self.state.me.player_id,
         )
-
     def can_place_tile_at(self, tile: Tile, x: int, y: int) -> bool:
         if self.state.map._grid[y][x]:
             return False  # Already occupied
@@ -95,22 +94,17 @@ class Game:
 
                 has_any_neighbour = True
 
-                print("Cooked 1")
-
                 if tile.internal_edges(edge) != neighbour_tile.internal_edges(
                     edge_opposite[edge]
                 ):
                     print("Edge Missmatch")
                     break  # mismatch, try next rotation
 
-                print("Cooked 2")
-
             else:
                 if has_any_neighbour:
                     print("Returning True")
                     return True
 
-            print("Rotating")
             tile.rotate_clockwise(1)
 
         return False
