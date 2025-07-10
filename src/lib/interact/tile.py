@@ -24,7 +24,7 @@ class TileModifier(Enum):
 
     RIVER = auto()
     MONASTARY = auto()
-    SHIELD = auto()
+    EMBLEM = auto()
     BROKEN_ROAD_CENTER = auto()
     OPP_ROAD_BRIDGE = auto()
     OPP_CITY_BRIDGE = auto()
@@ -48,7 +48,7 @@ class TileModifier(Enum):
         def _point_modifier_config(tm: "TileModifier") -> Callable[[int], int]:
             return {
                 TileModifier.MONASTARY: lambda x: x + 9,
-                TileModifier.SHIELD: lambda x: x + 1,
+                TileModifier.EMBLEM: lambda x: x + 1,
             }.get(tm, lambda x: x + NO_POINTS)
 
         points = StructureType.get_points(structure)
@@ -359,7 +359,7 @@ def create_base_tiles() -> list["Tile"]:
             right_edge=StructureType.CITY,
             top_edge=StructureType.CITY,
             bottom_edge=StructureType.CITY,
-            modifiers=[TileModifier.SHIELD],
+            modifiers=[TileModifier.EMBLEM],
         ).clone_add(tile_counts.C)
     )
 
@@ -393,7 +393,7 @@ def create_base_tiles() -> list["Tile"]:
             right_edge=StructureType.CITY,
             top_edge=StructureType.GRASS,
             bottom_edge=StructureType.GRASS,
-            modifiers=[TileModifier.SHIELD, TileModifier.OPP_CITY_BRIDGE],
+            modifiers=[TileModifier.EMBLEM, TileModifier.OPP_CITY_BRIDGE],
         ).clone_add(tile_counts.F)
     )
 
@@ -472,7 +472,7 @@ def create_base_tiles() -> list["Tile"]:
             right_edge=StructureType.GRASS,
             top_edge=StructureType.CITY,
             bottom_edge=StructureType.GRASS,
-            modifiers=[TileModifier.SHIELD],
+            modifiers=[TileModifier.EMBLEM],
         ).clone_add(tile_counts.M)
     )
 
@@ -495,7 +495,7 @@ def create_base_tiles() -> list["Tile"]:
             right_edge=StructureType.ROAD,
             top_edge=StructureType.CITY,
             bottom_edge=StructureType.ROAD,
-            modifiers=[TileModifier.SHIELD],
+            modifiers=[TileModifier.EMBLEM],
         ).clone_add(tile_counts.O)
     )
 
@@ -518,7 +518,7 @@ def create_base_tiles() -> list["Tile"]:
             right_edge=StructureType.CITY,
             top_edge=StructureType.CITY,
             bottom_edge=StructureType.GRASS,
-            modifiers=[TileModifier.SHIELD],
+            modifiers=[TileModifier.EMBLEM],
         ).clone_add(tile_counts.Q)
     )
 
@@ -541,7 +541,7 @@ def create_base_tiles() -> list["Tile"]:
             right_edge=StructureType.CITY,
             top_edge=StructureType.CITY,
             bottom_edge=StructureType.ROAD,
-            modifiers=[TileModifier.SHIELD],
+            modifiers=[TileModifier.EMBLEM],
         ).clone_add(tile_counts.S)
     )
 
