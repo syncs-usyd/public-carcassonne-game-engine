@@ -1,4 +1,4 @@
-from engine.state.game_state import GameState
+from typing import TYPE_CHECKING
 
 from lib.interface.events.event_game_started import (
     EventGameStarted,
@@ -7,9 +7,12 @@ from lib.interface.events.event_game_started import (
 from lib.interface.events.event_player_drew_cards import EventPlayerDrewCards
 from lib.interface.events.typing import EventType
 
+if TYPE_CHECKING:
+    from engine.state.game_state import GameState
+
 
 class CensorEvent:
-    def __init__(self, state: GameState) -> None:
+    def __init__(self, state: "GameState") -> None:
         self.state = state
 
     def censor(self, event: EventType, player_id: int) -> EventType:

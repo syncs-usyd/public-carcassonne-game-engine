@@ -1,5 +1,8 @@
+from typing import TYPE_CHECKING
 from lib.config.expansion import EXPANSION
-from lib.interact.tile import Tile
+
+if TYPE_CHECKING:
+    from lib.interact.tile import Tile
 
 
 class Meeple:
@@ -9,14 +12,14 @@ class Meeple:
 
     def __init__(self, player_id: int, is_special: bool = False) -> None:
         if not EXPANSION:
-            assert not self.is_special
+            assert not is_special
 
         self.is_special = is_special
         self.player_id = player_id
         self.placed: Tile | None = None
         self.placed_edge: str = ""
 
-    def _place_meeple(self, tile: Tile, edge: str):
+    def _place_meeple(self, tile: "Tile", edge: str):
         self.placed = tile
         self.placed_edge = edge
         tile.internal_claims[edge] = self

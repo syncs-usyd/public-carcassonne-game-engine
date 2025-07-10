@@ -34,7 +34,7 @@ class GameState:
         self.event_history: list[EventType] = []
         self.turn_order: list[int] = []
 
-    def __connect_players(self):
+    def _connect_players(self):
         self.players = {
             i: PlayerState(i, self.catalog[i]["team_id"], PlayerConnection(i))
             for i in range(NUM_PLAYERS)

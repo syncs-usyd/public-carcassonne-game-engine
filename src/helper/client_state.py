@@ -1,8 +1,11 @@
 from lib.config.map_config import MAX_MAP_LENGTH
 from lib.interact.meeple import Meeple
 from lib.interact.map import Map
+from lib.interact.tile import Tile
 from lib.interface.events.typing import EventType
 from lib.models.player_model import PlayerModel, PublicPlayerModel
+from lib.models.tile_model import TileModel
+from lib.interact.structure import StructureType
 
 
 class ClientSate:
@@ -20,6 +23,7 @@ class ClientSate:
 
         self.points = 0
         self.me: PlayerModel
+        self.my_cards: list[Tile] = []
 
     def get_meeples_placed_by(self, player_id: int | None) -> list[Meeple]:
         """
@@ -39,3 +43,11 @@ class ClientSate:
                         meeples.append(meeple)
 
         return meeples
+
+    def get_tile_structures(self, tile: TileModel) -> dict[str, StructureType]:
+        return {
+            edge: structure
+            for t in self.map.available_tiles
+            for edge, structure in t.internal_edges
+            if tile.tile_type == t.tile_type
+        }

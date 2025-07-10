@@ -5,7 +5,7 @@ from lib.interact.tile import (
     # create_expansion_tiles,
 )
 
-from lib.config.map_config import MAX_MAP_LENGTH
+from lib.config.map_config import MAP_CENTER, MAX_MAP_LENGTH
 
 
 class Map:
@@ -24,7 +24,12 @@ class Map:
     def start_river_phase(self) -> None:
         assert not self.available_tiles
 
-        self.placed_tiles.append(Tile.get_starting_tile())
+        starting_tile = Tile.get_starting_tile()
+
+        self._grid[MAP_CENTER[1]][MAP_CENTER[0]] = starting_tile
+        self.placed_tiles.append(starting_tile)
+        starting_tile.placed_pos = MAP_CENTER
+
         self.available_tiles.extend(create_river_tiles())
 
     def add_expansion_pack(self, expansion_pack) -> None:

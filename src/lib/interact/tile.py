@@ -69,7 +69,7 @@ class Tile:
         "EdgeTuple", ["left_edge", "right_edge", "top_edge", "bottom_edge"]
     )
 
-    starting_tile: "Tile"
+    starting_tile: "Tile | None" = None
 
     @final
     @staticmethod
@@ -181,6 +181,9 @@ class Tile:
                 self.left_edge,
             )
 
+        self.rotation += number
+        self.rotation %= 4
+
     def _claim_edge(self, meeple: Meeple, edge: str):
         self.internal_claims[edge] = meeple
 
@@ -197,6 +200,9 @@ class Tile:
             pos=self.placed_pos or (0, 0),
             rotation=self.rotation,
         )
+
+    def __repr__(self) -> str:
+        return f"Tile {self.tile_type} - {self.placed_pos}"
 
 
 def create_river_tiles() -> list["Tile"]:

@@ -1,9 +1,9 @@
-from lib.interface.events.typing import EventType
+from lib.interface.events.typing import DiscriminatedEvent
 
 from typing import Mapping
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class BaseQuery(BaseModel):
     query_type: str
-    update: Mapping[int, EventType] = Field(discriminator="event_type")
+    update: Mapping[int, DiscriminatedEvent]

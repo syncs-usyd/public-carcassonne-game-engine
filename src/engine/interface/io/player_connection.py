@@ -20,7 +20,6 @@ from engine.interface.io.exceptions import (
 
 from engine.interface.io.input_validator import MoveValidator
 from engine.interface.io.censor_event import CensorEvent
-from engine.state.game_state import GameState
 
 from lib.interface.queries.query_place_meeple import QueryPlaceMeeple
 from lib.interface.queries.query_place_tile import QueryPlaceTile
@@ -39,10 +38,22 @@ from math import log10, floor
 from signal import SIGALRM, alarm, signal
 from time import time
 from itertools import islice
-from typing import Callable, Optional, ParamSpec, Type, TypeVar, Union, final
+from typing import (
+    TYPE_CHECKING,
+    Callable,
+    Optional,
+    ParamSpec,
+    Type,
+    TypeVar,
+    Union,
+    final,
+)
 
 # performance boost on deserializing unions.
 cached_type_adapters: dict[frozenset[str], TypeAdapter] = {}
+
+if TYPE_CHECKING:
+    from engine.state.game_state import GameState
 
 
 class InvalidMoveError(ValueError):
@@ -242,7 +253,7 @@ class PlayerConnection:
             raise InvalidMoveError(str(e), move)
         return move
 
-    def _get_record_update_dict(self, state: GameState, censor: CensorEvent):
+    def _get_record_update_dict(self, state: "GameState", censor: CensorEvent):
         if self._record_update_watermark >= len(state.event_history):
             raise RuntimeError(
                 "Record update watermark out of sync with state, did you try to send two queries without committing the first?"
@@ -259,13 +270,13 @@ class PlayerConnection:
         return result
 
     def query_place_tile(
-        self, state: GameState, validator: MoveValidator, censor: CensorEvent
+        self, state: "GameState", validator: MoveValidator, censor: CensorEvent
     ) -> MovePlaceTile:
         query = QueryPlaceTile(update=self._get_record_update_dict(state, censor))
         return self._query_move(query, MovePlaceTile, validator)
 
     def query_place_meeple(
-        self, state: GameState, validator: MoveValidator, censor: CensorEvent
+        self, state: "GameState", validator: MoveValidator, censor: CensorEvent
     ) -> MovePlaceMeeple | MovePlaceMeeplePass:
         query = QueryPlaceMeeple(update=self._get_record_update_dict(state, censor))
         return self._query_move_union(

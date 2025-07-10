@@ -1,13 +1,16 @@
+from pydantic import Field
 from lib.interface.events.event_game_ended import (
     EventGameEndedCancelled,
     EventGameEndedPointLimitReaced,
     EventGameEndedStaleMate,
 )
+from lib.interface.events.event_tile_placed import (
+    EventStartingTilePlaced,
+)
 from lib.interface.events.event_game_started import (
     EventGameStarted,
     PublicEventGameStarted,
 )
-from lib.interface.events.event_meeple_placed import EventMeeplePlaced
 from lib.interface.events.event_player_bannned import EventPlayerBanned
 from lib.interface.events.event_player_drew_cards import (
     EventPlayerDrewCards,
@@ -19,11 +22,33 @@ from lib.interface.events.event_player_won import EventPlayerWon
 from lib.interface.events.event_river_phase_completed import EventRiverPhaseCompleted
 from lib.interface.events.moves.typing import MoveType
 
-from typing import TypeAlias, Union
+from typing import Annotated, TypeAlias, Union
+
+
+DiscriminatedEvent: TypeAlias = Annotated[
+    Union[
+        EventGameStarted,
+        EventPlayerBanned,
+        EventPlayerDrewCards,
+        EventPlayerTurnStarted,
+        EventPlayerWon,
+        EventRiverPhaseCompleted,
+        EventPlayerMeepleFreed,
+        EventPlayerWon,
+        EventGameEndedCancelled,
+        EventGameEndedPointLimitReaced,
+        EventGameEndedStaleMate,
+        EventStartingTilePlaced,
+        PublicEventGameStarted,
+        PublicEventPlayerDrewCards,
+        MoveType,
+    ],
+    Field(discriminator="event_type"),
+]
+
 
 EventType: TypeAlias = Union[
     EventGameStarted,
-    EventMeeplePlaced,
     EventPlayerBanned,
     EventPlayerDrewCards,
     EventPlayerTurnStarted,
@@ -34,6 +59,7 @@ EventType: TypeAlias = Union[
     EventGameEndedCancelled,
     EventGameEndedPointLimitReaced,
     EventGameEndedStaleMate,
+    EventStartingTilePlaced,
     PublicEventGameStarted,
     PublicEventPlayerDrewCards,
     MoveType,
