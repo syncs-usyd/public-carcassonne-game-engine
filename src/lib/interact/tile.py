@@ -23,7 +23,7 @@ class TileModifier(Enum):
     """
 
     RIVER = auto()
-    MONESTERY = auto()
+    MONASTARY = auto()
     SHIELD = auto()
     BROKEN_ROAD_CENTER = auto()
     OPP_ROAD_BRIDGE = auto()
@@ -47,7 +47,7 @@ class TileModifier(Enum):
 
         def _point_modifier_config(tm: "TileModifier") -> Callable[[int], int]:
             return {
-                TileModifier.MONESTERY: lambda x: x + 9,
+                TileModifier.MONASTARY: lambda x: x + 9,
                 TileModifier.SHIELD: lambda x: x + 1,
             }.get(tm, lambda x: x + NO_POINTS)
 
@@ -304,7 +304,7 @@ def create_river_tiles() -> list["Tile"]:
             right_edge=StructureType.RIVER,
             top_edge=StructureType.GRASS,
             bottom_edge=StructureType.ROAD_START,
-            modifiers=[TileModifier.MONESTERY],
+            modifiers=[TileModifier.MONASTARY],
         )
     )
 
@@ -347,7 +347,7 @@ def create_base_tiles() -> list["Tile"]:
             right_edge=StructureType.GRASS,
             top_edge=StructureType.GRASS,
             bottom_edge=StructureType.GRASS,
-            modifiers=[TileModifier.MONESTERY],
+            modifiers=[TileModifier.MONASTARY],
         ).clone_add(tile_counts.B)
     )
 
