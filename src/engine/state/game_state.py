@@ -23,8 +23,7 @@ class GameState:
 
         self.round = -1
         self.players: dict[int, PlayerState] = {
-            i: PlayerState(i, self.catalog[i]["team_id"])
-            for i in range(NUM_PLAYERS)
+            i: PlayerState(i, self.catalog[i]["team_id"]) for i in range(NUM_PLAYERS)
         }
         self.map = Map()
 
@@ -86,14 +85,14 @@ class GameState:
         return players
 
     def _get_claims(self, tile: "Tile", edge: str) -> list[int]:
-        meeples = set()
+        players: set[int] = set()
 
         for connected_tile, _ in self._traverse_connected_component(tile, edge):
             meeple = connected_tile.internal_claims[edge]
             if meeple is not None:
-                meeples.add(meeple)
+                players.add(meeple.player_id)
 
-        return [meeple.player_id for meeple in meeples]
+        return list(players)
 
     def _get_reward(self, tile: "Tile", edge: str) -> int:
         visited_tiles = set()
