@@ -22,7 +22,10 @@ class GameState:
             self.catalog = json.load(f)
 
         self.round = -1
-        self.players: dict[int, PlayerState]
+        self.players: dict[int, PlayerState] = {
+            i: PlayerState(i, self.catalog[i]["team_id"])
+            for i in range(NUM_PLAYERS)
+        }
         self.map = Map()
 
         self.game_over = False
@@ -35,10 +38,8 @@ class GameState:
         self.turn_order: list[int] = []
 
     def _connect_players(self):
-        self.players = {
-            i: PlayerState(i, self.catalog[i]["team_id"], PlayerConnection(i))
-            for i in range(NUM_PLAYERS)
-        }
+        for player in self.players.values():
+            player.connect()
 
     def replinish_player_cards(self) -> None:
         for player in self.players.values():
