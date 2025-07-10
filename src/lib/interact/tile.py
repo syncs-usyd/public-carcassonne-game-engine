@@ -203,7 +203,7 @@ class Tile:
 
     @final
     def clone_add(self, n: int) -> list[Self]:
-        cloned_tiles = [copy(self) for _ in range(n)]
+        cloned_tiles = [copy(self) for _ in range(n - 1)]
         cloned_tiles.append(self)
         return cloned_tiles
 
