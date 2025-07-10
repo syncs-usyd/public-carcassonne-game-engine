@@ -49,3 +49,5 @@ TileCounts = DotMap({
 
     "RE": 1,
 }, _dynamic=False)
+
+NUM_PLACEABLE_TILE_TYPES = 9
