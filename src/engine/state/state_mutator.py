@@ -14,9 +14,9 @@ from lib.interface.events.event_game_ended import (
     EventGameEndedStaleMate,
 )
 from lib.interface.events.event_game_started import EventGameStarted
-from lib.interface.events.event_player_drew_cards import (
-    EventPlayerDrewCards,
-    PublicEventPlayerDrewCards,
+from lib.interface.events.event_player_drew_tiles import (
+    EventPlayerDrewTiles,
+    PublicEventPlayerDrewTiles,
 )
 from lib.interface.events.event_player_meeple_freed import EventPlayerMeepleFreed
 from lib.interface.events.event_tile_placed import (
@@ -40,8 +40,8 @@ class StateMutator:
             case EventGameStarted() as e:
                 self._commit_event_game_started(e)
 
-            case EventPlayerDrewCards() as e:
-                self._commit_player_drew_cards(e)
+            case EventPlayerDrewTiles() as e:
+                self._commit_player_drew_tiles(e)
 
             case EventPlayerMeepleFreed() as e:
                 self._commit_event_player_meeple_freed(e)
@@ -58,8 +58,8 @@ class StateMutator:
             case MovePlaceMeeplePass() as e:
                 self._commit_move_place_meeple_pass(e)
 
-            case PublicEventPlayerDrewCards() as e:
-                self._commit_public_player_drew_cards(e)
+            case PublicEventPlayerDrewTiles() as e:
+                self._commit_public_player_drew_tiles(e)
 
             case EventGameEndedPointLimitReaced() as e:
                 self._commit_event_game_ended_point_limit(e)
@@ -84,7 +84,7 @@ class StateMutator:
 
     def _commit_place_tile(self, move: MovePlaceTile) -> None:
         # Get tile from player hand
-        tile = self.state.players[move.player_id].cards[move.player_tile_index]
+        tile = self.state.players[move.player_id].tiles[move.player_tile_index]
         self.state.map._grid[move.tile.pos[1]][move.tile.pos[0]] = tile
         self.state.map.placed_tiles.append(tile)
 
@@ -217,10 +217,10 @@ class StateMutator:
     ) -> None:
         pass
 
-    def _commit_player_drew_cards(self, e: EventPlayerDrewCards) -> None:
+    def _commit_player_drew_tiles(self, e: EventPlayerDrewTiles) -> None:
         pass
 
-    def _commit_public_player_drew_cards(self, e: PublicEventPlayerDrewCards) -> None:
+    def _commit_public_player_drew_tiles(self, e: PublicEventPlayerDrewTiles) -> None:
         pass
 
     def _commit_event_game_ended_stalemate(self, e: EventGameEndedStaleMate) -> None:

@@ -15,7 +15,7 @@ class ClientSate:
         self.map = Map()
 
         self.game_over = False
-        self.num_placed_cards = 0
+        self.num_placed_tiles = 0
 
         self.event_history: list["EventType"] = []
         self.new_events: int = 0
@@ -23,7 +23,7 @@ class ClientSate:
 
         self.points = 0
         self.me: PlayerModel
-        self.my_cards: list[Tile] = []
+        self.my_tiles: list[Tile] = []
 
     def get_meeples_placed_by(self, player_id: int | None) -> list[Meeple]:
         """

@@ -4,7 +4,7 @@ from lib.interface.events.event_game_started import (
     EventGameStarted,
     PublicEventGameStarted,
 )
-from lib.interface.events.event_player_drew_cards import EventPlayerDrewCards
+from lib.interface.events.event_player_drew_tiles import EventPlayerDrewTiles
 from lib.interface.events.typing import EventType
 
 if TYPE_CHECKING:
@@ -17,7 +17,7 @@ class CensorEvent:
 
     def censor(self, event: EventType, player_id: int) -> EventType:
         match event:
-            case EventPlayerDrewCards() as e:
+            case EventPlayerDrewTiles() as e:
                 if e.player_id == player_id:
                     return e
 

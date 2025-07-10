@@ -54,13 +54,13 @@ def handle_place_tile(
 
     print(game.state.event_history)
 
-    print("Cards", game.state.my_cards)
+    print("Tiles", game.state.my_tiles)
 
     for y in range(height):
         for x in range(width):
             if grid[y][x] is not None:
                 print(f"Checking if tile can be placed near tile - {grid[y][x]}")
-                for tile_index, tile in enumerate(game.state.my_cards):
+                for tile_index, tile in enumerate(game.state.my_tiles):
                     for direction in directions:
                         dx, dy = direction
                         x1, y1 = (x + dx, y + dy)

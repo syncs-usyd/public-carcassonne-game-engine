@@ -12,7 +12,7 @@ from lib.interface.events.event_player_bannned import EventPlayerBanned
 from lib.interface.events.event_player_won import EventPlayerWon
 from lib.interface.events.typing import EventType
 from lib.interface.events.event_game_started import EventGameStarted
-from lib.interface.events.event_player_drew_cards import EventPlayerDrewCards
+from lib.interface.events.event_player_drew_tiles import EventPlayerDrewTiles
 from lib.interface.events.event_player_meeple_freed import EventPlayerMeepleFreed
 from lib.interface.events.event_tile_placed import (
     EventStartingTilePlaced,
@@ -60,7 +60,7 @@ class EventInspector:
                 case EventGameStarted() as e:
                     visualiser_json.append(e)
 
-                case EventPlayerDrewCards() as e:
+                case EventPlayerDrewTiles() as e:
                     pass
 
                 case EventPlayerMeepleFreed() as e:

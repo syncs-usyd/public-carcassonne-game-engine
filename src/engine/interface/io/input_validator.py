@@ -1,5 +1,5 @@
 from typing import TYPE_CHECKING
-from engine.config.game_config import MAX_NUM_CARDS_IN_HAND
+from engine.config.game_config import MAX_NUM_TILES_IN_HAND
 from lib.config.map_config import MONASTARY_IDENTIFIER
 from lib.interface.events.moves.move_place_meeple import (
     MovePlaceMeeple,
@@ -60,20 +60,20 @@ class MoveValidator:
                 f"You tried placing an invalid tile type - Recieved TileType {e.tile.tile_type}"
             )
 
-        if e.player_tile_index not in range(0, MAX_NUM_CARDS_IN_HAND):
+        if e.player_tile_index not in range(0, MAX_NUM_TILES_IN_HAND):
             raise ValueError(
                 f"You tried placing a tile not in your hand - Incorrect Recieved Tile Index {e.player_tile_index}"
             )
 
         player = self.state.players[player_id]
-        if not any(card.tile_type == e.tile.tile_type for card in player.cards):
+        if not any(tile.tile_type == e.tile.tile_type for tile in player.tiles):
             raise ValueError(
                 f"You tried placing a tile not in your hand - Tile Type Not in Hand {e.tile.tile_type}"
             )
 
         else:
             tile = [
-                card for card in player.cards if card.tile_type == e.tile.tile_type
+                tile for tile in player.tiles if tile.tile_type == e.tile.tile_type
             ][0]
 
         # Validate rotation
