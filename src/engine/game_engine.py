@@ -1,6 +1,6 @@
 from engine.config.game_config import (
     MAX_ROUNDS,
-    NUM_CARDS_DRAWN_PER_ROUND,
+    NUM_TILES_DRAWN_PER_ROUND,
     NUM_PLAYERS,
 )
 from engine.interface.io.censor_event import CensorEvent
@@ -26,7 +26,7 @@ from lib.interface.events.event_game_ended import (
     EventGameEndedStaleMate,
 )
 from lib.interface.events.event_game_started import EventGameStarted
-from lib.interface.events.event_player_drew_cards import EventPlayerDrewCards
+from lib.interface.events.event_player_drew_tiles import EventPlayerDrewTiles
 from lib.interface.events.event_player_meeple_freed import EventPlayerMeepleFreed
 from lib.interface.events.event_tile_placed import EventStartingTilePlaced
 
@@ -69,15 +69,15 @@ class GameEngine:
                     )
                 )
 
-            if self.state.cards_exhausted:
-                self.state.replinish_player_cards()
+            if self.state.tiles_exhausted:
+                self.state.replinish_player_tiles()
 
                 if self.state.round != -1:
                     self.state.start_base_phase()
                     if EXPANSION:
                         self.state.extend_base_phase()
 
-                self.state.cards_exhausted = False
+                self.state.tiles_exhausted = False
 
             self.state.start_new_round()
             self.mutator.commit(
@@ -95,23 +95,23 @@ class GameEngine:
 
                 # If we are drawing the end of the river/base phase
                 if not self.state.map.available_tiles:
-                    self.state.cards_exhausted = True
+                    self.state.tiles_exhausted = True
                     self.start_player_turn(player)
                     continue
 
-                cards_drawn = sample(
-                    self.state.map.available_tiles, NUM_CARDS_DRAWN_PER_ROUND
+                tiles_drawn = sample(
+                    self.state.map.available_tiles, NUM_TILES_DRAWN_PER_ROUND
                 )
 
-                for card in cards_drawn:
-                    self.state.map.available_tiles.remove(card)
+                for tile in tiles_drawn:
+                    self.state.map.available_tiles.remove(tile)
 
-                player.cards.extend(cards_drawn)
+                player.tiles.extend(tiles_drawn)
                 self.mutator.commit(
-                    EventPlayerDrewCards(
+                    EventPlayerDrewTiles(
                         player_id=player_id,
-                        num_cards=2,
-                        cards=[tile._to_model() for tile in player.cards],
+                        num_tiles=2,
+                        tiles=[tile._to_model() for tile in player.tiles],
                     )
                 )
 
@@ -130,11 +130,11 @@ class GameEngine:
                 self.state.finalise_game()
                 self.calc_final_points()
 
-            if self.state.cards_exhausted and not any(
-                p.cards for p in self.state.players.values()
+            if self.state.tiles_exhausted and not any(
+                p.tiles for p in self.state.players.values()
             ):
                 self.mutator.commit(
-                    EventGameEndedStaleMate(reason="All player cards exhuasted")
+                    EventGameEndedStaleMate(reason="All player tiles exhuasted")
                 )
                 self.state.finalise_game()
                 self.calc_final_points()

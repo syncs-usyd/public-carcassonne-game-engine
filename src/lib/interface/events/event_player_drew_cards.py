@@ -5,21 +5,21 @@ from typing import Literal
 from lib.models.tile_model import TileModel
 
 
-class EventPlayerDrewCards(BaseEvent):
-    event_type: Literal["event_player_drew_cards"] = "event_player_drew_cards"
+class EventPlayerDrewTiles(BaseEvent):
+    event_type: Literal["event_player_drew_tiles"] = "event_player_drew_tiles"
     player_id: int
-    num_cards: int
-    cards: list[TileModel]
+    num_tiles: int
+    tiles: list[TileModel]
 
-    def get_public(self) -> "PublicEventPlayerDrewCards":
-        return PublicEventPlayerDrewCards(
-            player_id=self.player_id, num_cards=self.num_cards
+    def get_public(self) -> "PublicEventPlayerDrewTiles":
+        return PublicEventPlayerDrewTiles(
+            player_id=self.player_id, num_tiles=self.num_tiles
         )
 
 
-class PublicEventPlayerDrewCards(BaseEvent):
-    event_type: Literal["public_event_player_drew_cards"] = (
-        "public_event_player_drew_cards"
+class PublicEventPlayerDrewTiles(BaseEvent):
+    event_type: Literal["public_event_player_drew_tiles"] = (
+        "public_event_player_drew_tiles"
     )
     player_id: int
-    num_cards: int
+    num_tiles: int

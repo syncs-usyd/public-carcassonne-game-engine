@@ -12,9 +12,9 @@ from lib.interface.events.event_game_started import (
     PublicEventGameStarted,
 )
 from lib.interface.events.event_player_bannned import EventPlayerBanned
-from lib.interface.events.event_player_drew_cards import (
-    EventPlayerDrewCards,
-    PublicEventPlayerDrewCards,
+from lib.interface.events.event_player_drew_tiles import (
+    EventPlayerDrewTiles,
+    PublicEventPlayerDrewTiles,
 )
 from lib.interface.events.event_player_meeple_freed import EventPlayerMeepleFreed
 from lib.interface.events.event_player_turn_started import EventPlayerTurnStarted
@@ -29,7 +29,7 @@ DiscriminatedEvent: TypeAlias = Annotated[
     Union[
         EventGameStarted,
         EventPlayerBanned,
-        EventPlayerDrewCards,
+        EventPlayerDrewTiles,
         EventPlayerTurnStarted,
         EventPlayerWon,
         EventRiverPhaseCompleted,
@@ -40,7 +40,7 @@ DiscriminatedEvent: TypeAlias = Annotated[
         EventGameEndedStaleMate,
         EventStartingTilePlaced,
         PublicEventGameStarted,
-        PublicEventPlayerDrewCards,
+        PublicEventPlayerDrewTiles,
         MoveType,
     ],
     Field(discriminator="event_type"),
@@ -50,7 +50,7 @@ DiscriminatedEvent: TypeAlias = Annotated[
 EventType: TypeAlias = Union[
     EventGameStarted,
     EventPlayerBanned,
-    EventPlayerDrewCards,
+    EventPlayerDrewTiles,
     EventPlayerTurnStarted,
     EventPlayerWon,
     EventRiverPhaseCompleted,
@@ -61,6 +61,6 @@ EventType: TypeAlias = Union[
     EventGameEndedStaleMate,
     EventStartingTilePlaced,
     PublicEventGameStarted,
-    PublicEventPlayerDrewCards,
+    PublicEventPlayerDrewTiles,
     MoveType,
 ]

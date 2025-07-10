@@ -12,7 +12,7 @@ class PlayerState:
         self.id = player_id
         self.team_id = team_id
         self.points = 0
-        self.cards: list[Tile] = []
+        self.tiles: list[Tile] = []
         self.meeples: list["Meeple"] = [Meeple(player_id) for _ in range(NUM_MEEPLE)]
         self.connection: PlayerConnection 
 
@@ -33,5 +33,5 @@ class PlayerState:
             player_id=self.id,
             team_id=self.team_id,
             points=self.points,
-            tiles=[tile._to_model() for tile in self.cards],
+            tiles=[tile._to_model() for tile in self.tiles],
         )

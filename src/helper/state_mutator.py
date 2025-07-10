@@ -14,9 +14,9 @@ from lib.interface.events.event_game_started import (
     EventGameStarted,
     PublicEventGameStarted,
 )
-from lib.interface.events.event_player_drew_cards import (
-    EventPlayerDrewCards,
-    PublicEventPlayerDrewCards,
+from lib.interface.events.event_player_drew_tiles import (
+    EventPlayerDrewTiles,
+    PublicEventPlayerDrewTiles,
 )
 from lib.interface.events.event_player_meeple_freed import EventPlayerMeepleFreed
 from lib.interface.events.event_tile_placed import (
@@ -46,8 +46,8 @@ class StateMutator:
             case PublicEventGameStarted() as e:
                 self._commit_public_event_game_started(e)
 
-            case EventPlayerDrewCards() as e:
-                self._commit_player_drew_cards(e)
+            case EventPlayerDrewTiles() as e:
+                self._commit_player_drew_tiles(e)
 
             case EventPlayerMeepleFreed() as e:
                 self._commit_event_player_meeple_freed(e)
@@ -64,8 +64,8 @@ class StateMutator:
             case MovePlaceMeeplePass() as e:
                 self._commit_move_place_meeple_pass(e)
 
-            case PublicEventPlayerDrewCards() as e:
-                self._commit_opponent_drew_cards(e)
+            case PublicEventPlayerDrewTiles() as e:
+                self._commit_opponent_drew_tiles(e)
 
             case EventGameEndedPointLimitReaced() as e:
                 self._commit_event_game_ended_point_limit(e)
@@ -91,23 +91,23 @@ class StateMutator:
             case _:
                 raise RuntimeError(f"Unrecognised event: {event}")
 
-    def _commit_player_drew_cards(self, e: EventPlayerDrewCards) -> None:
+    def _commit_player_drew_tiles(self, e: EventPlayerDrewTiles) -> None:
         if e.player_id != self.state.me.player_id:
             raise RuntimeError("Please send us a discord message with this error log.")
 
-        print("Log I drew cards")
-        self.state.me.tiles.extend(e.cards)
-        for card_model in e.cards:
-            for card in self.state.map.available_tiles:
-                if card_model.tile_type == card.tile_type:
-                    self.state.my_cards.append(card)
-                    self.state.map.available_tiles.remove(card)
+        print("Log I drew tiles")
+        self.state.me.tiles.extend(e.tiles)
+        for tile_model in e.tiles:
+            for tile in self.state.map.available_tiles:
+                if tile_model.tile_type == tile.tile_type:
+                    self.state.my_tiles.append(tile)
+                    self.state.map.available_tiles.remove(tile)
 
-    def _commit_opponent_drew_cards(self, e: PublicEventPlayerDrewCards) -> None:
+    def _commit_opponent_drew_tiles(self, e: PublicEventPlayerDrewTiles) -> None:
         if e.player_id == self.state.me.player_id:
             raise RuntimeError("Please send us a discord message with this error log.")
 
-        self.state.players[e.player_id].num_tiles += e.num_cards
+        self.state.players[e.player_id].num_tiles += e.num_tiles
 
     def _commit_event_game_started(self, e: EventGameStarted) -> None:
         raise RuntimeError("Please send us a discord message with this error log.")

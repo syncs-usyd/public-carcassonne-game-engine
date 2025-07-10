@@ -1,5 +1,5 @@
 from engine.config.expansion_config import EXPANSION_PACKS
-from engine.config.game_config import NUM_PLAYERS, NUM_CARDS_IN_HAND
+from engine.config.game_config import NUM_PLAYERS, NUM_TILES_IN_HAND
 from engine.game.tile_subscriber import TilePublisherBus
 from engine.interface.io.player_connection import PlayerConnection
 from engine.state.player_state import PlayerState
@@ -28,7 +28,7 @@ class GameState:
         self.map = Map()
 
         self.game_over = False
-        self.cards_exhausted = True
+        self.tiles_exhausted = True
 
         self.tile_placed: Tile | None = None
         self.tile_publisher = TilePublisherBus()
@@ -40,9 +40,9 @@ class GameState:
         for player in self.players.values():
             player.connect()
 
-    def replinish_player_cards(self) -> None:
+    def replinish_player_tiles(self) -> None:
         for player in self.players.values():
-            player.cards.extend(sample(self.map.available_tiles, NUM_CARDS_IN_HAND))
+            player.tiles.extend(sample(self.map.available_tiles, NUM_TILES_IN_HAND))
 
     def start_river_phase(self) -> None:
         self.map.start_river_phase()
