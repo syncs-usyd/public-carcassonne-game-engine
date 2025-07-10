@@ -118,7 +118,7 @@ class Tile:
     def get_starting_tile() -> "Tile":
         if not Tile.starting_tile:
             Tile.starting_tile = Tile(
-                tile_id="RE0",
+                tile_id="RS",
                 left_edge=StructureType.GRASS,
                 right_edge=StructureType.GRASS,
                 top_edge=StructureType.RIVER,
