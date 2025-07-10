@@ -11,13 +11,14 @@ To get started you will have to:
 1. Install uv as seen in docs
 2. Run `uv venv` in the current folder from your terminal (or IDE Interface)
     - This creates a python virtual environment managed by uv. The game engine and all packages should be run and installed using uv.
-2. Run `uv pip install -e .` in the current folder from your terminal (or IDE Interface)
 3. `source .venv/bin/activate` (for bash and zsh). Case for MacOS and Linux.
     - `source .venv/bin/activate.fish` (for fish)
     - `source .venv/bin/activate.bat` (for Windows Powershell)
+4. Run `uv sync` in the current folder from your terminal (or IDE Interface)
+    - Alternatively Run `uv pip install -e .`
+    - You may need to run `deactivate` and then repeat just step 2
 4. Use python as you normally would
     - On VS Code (and other IDEs) you will have configure the python interpreter to be the one we just created on uv
-
 
 ### Classic Route (At your own risk)
 
