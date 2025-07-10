@@ -218,7 +218,7 @@ class StateMutator:
         pass
 
     def _commit_player_drew_tiles(self, e: EventPlayerDrewTiles) -> None:
-        
+        pass
 
     def _commit_public_player_drew_tiles(self, e: PublicEventPlayerDrewTiles) -> None:
         pass
