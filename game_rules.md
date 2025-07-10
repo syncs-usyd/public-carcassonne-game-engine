@@ -53,7 +53,13 @@ Please note that the above is a non-exhaustive list of valid placements. Tiles c
 Once a tile has been placed, the player has the option to use one of their meeples to claim a territory only upon the placed tile. They can only claim a territory if it hasn’t been previously claimed by themselves or another player. For example, if a tile is placed such that a road is now connected to a road that already exists and is claimed by another player, you will not be able to claim it.
 
 If a placed tile creates two unclaimed territories, such as a road and a town, you may claim at most one of those territories on your turn.
-Completing a Territory
+
+### No Valid Placements
+
+In the (very unlikely) scenario that none of the tiles in your current hand can be placed in any valid position,
+you may choose one of your tiles to discard and replace with a new tile in the deck.
+
+## Completing a Territory
 
 ### Roads
 Roads are completed when it has a defined start and end (these can be towns, monasteries or the road-ends) with no gaps or a loop has been formed. Once you have completed a road, you gain 1 point per tile.
