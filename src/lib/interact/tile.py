@@ -188,11 +188,16 @@ class Tile:
 
     def rotate_clockwise(self, number: int) -> None:
         for _ in range(number):
-            self.right_edge, self.bottom_edge, self.left_edge, self.top_edge = (
-                self.top_edge,
-                self.right_edge,
-                self.bottom_edge,
-                self.left_edge,
+            (
+                self.internal_edges.right_edge,
+                self.internal_edges.bottom_edge,
+                self.internal_edges.left_edge,
+                self.internal_edges.top_edge,
+            ) = (
+                self.internal_edges.top_edge,
+                self.internal_edges.right_edge,
+                self.internal_edges.bottom_edge,
+                self.internal_edges.left_edge,
             )
 
         self.rotation += number

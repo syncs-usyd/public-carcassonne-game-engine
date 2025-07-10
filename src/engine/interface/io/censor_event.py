@@ -1,5 +1,7 @@
 from typing import TYPE_CHECKING
 
+from engine.config.game_config import NUM_MEEPLES
+
 from lib.interface.events.event_game_started import (
     EventGameStarted,
     PublicEventGameStarted,
@@ -27,6 +29,7 @@ class CensorEvent:
                 return PublicEventGameStarted(
                     turn_order=e.turn_order,
                     players=[player.get_public() for player in e.players],
+                    num_starting_meeples=NUM_MEEPLES,
                     you=filter(
                         lambda x: x.player_id == player_id, e.players
                     ).__next__(),

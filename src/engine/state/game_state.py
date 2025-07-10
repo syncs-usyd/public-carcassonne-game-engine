@@ -40,10 +40,6 @@ class GameState:
         for player in self.players.values():
             player.connect()
 
-    def replinish_player_tiles(self) -> None:
-        for player in self.players.values():
-            player.tiles.extend(sample(self.map.available_tiles, NUM_TILES_IN_HAND))
-
     def start_river_phase(self) -> None:
         self.map.start_river_phase()
 

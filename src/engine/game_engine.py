@@ -2,6 +2,7 @@ from engine.config.game_config import (
     MAX_ROUNDS,
     NUM_TILES_DRAWN_PER_ROUND,
     NUM_PLAYERS,
+    NUM_TILES_IN_HAND,
 )
 from engine.interface.io.censor_event import CensorEvent
 from engine.interface.io.exceptions import PlayerException
@@ -62,6 +63,16 @@ class GameEngine:
             print(f"New round {self.state.round + 1}")
 
             if self.state.round == -1:
+                self.mutator.commit(
+                    EventGameStarted(
+                        turn_order=self.state.turn_order,
+                        players=[
+                            player._to_player_model()
+                            for player in self.state.players.values()
+                        ],
+                    )
+                )
+
                 self.state.start_river_phase()
                 self.mutator.commit(
                     EventStartingTilePlaced(
@@ -70,25 +81,38 @@ class GameEngine:
                 )
 
             if self.state.tiles_exhausted:
-                self.state.replinish_player_tiles()
-
                 if self.state.round != -1:
                     self.state.start_base_phase()
                     if EXPANSION:
                         self.state.extend_base_phase()
 
+                # Replinishes cards if moving to base phase or new game (river phase) this is before player draws tile for the round
+
+                for player in self.state.players.values():
+                    tiles_drawn = sample(
+                        list(self.state.map.available_tiles), NUM_TILES_IN_HAND
+                    )
+                    self.state.map.available_tiles.difference_update(tiles_drawn)
+
+                    for tile in tiles_drawn:
+                        self.state.map.available_tiles_by_type[tile.tile_type].remove(
+                            tile
+                        )
+
+                    player.tiles.extend(tiles_drawn)
+
+                    player.tiles.extend(tiles_drawn)
+                    self.mutator.commit(
+                        EventPlayerDrewTiles(
+                            player_id=player.id,
+                            num_tiles=2,
+                            tiles=[tile._to_model() for tile in tiles_drawn],
+                        )
+                    )
+
                 self.state.tiles_exhausted = False
 
             self.state.start_new_round()
-            self.mutator.commit(
-                EventGameStarted(
-                    turn_order=self.state.turn_order,
-                    players=[
-                        player._to_player_model()
-                        for player in self.state.players.values()
-                    ],
-                )
-            )
 
             for player_id in turn_order:
                 player = self.state.players[player_id]
@@ -100,18 +124,19 @@ class GameEngine:
                     continue
 
                 tiles_drawn = sample(
-                    self.state.map.available_tiles, NUM_TILES_DRAWN_PER_ROUND
+                    list(self.state.map.available_tiles), NUM_TILES_DRAWN_PER_ROUND
                 )
 
                 for tile in tiles_drawn:
                     self.state.map.available_tiles.remove(tile)
+                    self.state.map.available_tiles_by_type[tile.tile_type].remove(tile)
 
                 player.tiles.extend(tiles_drawn)
                 self.mutator.commit(
                     EventPlayerDrewTiles(
                         player_id=player_id,
                         num_tiles=2,
-                        tiles=[tile._to_model() for tile in player.tiles],
+                        tiles=[tile._to_model() for tile in tiles_drawn],
                     )
                 )
 

@@ -97,11 +97,9 @@ class StateMutator:
 
         self.state.me.tiles.extend(e.tiles)
         for tile_model in e.tiles:
-            tile = self.state.map.get_tile_by_type(tile_model.tile_type)
+            tile = self.state.map.get_tile_by_type(tile_model.tile_type, pop=True)
 
             self.state.my_tiles.append(tile)
-            self.state.map.available_tiles.remove(tile)
-            self.state.map.available_tiles_by_type[tile.tile_type].remove(tile)
 
     def _commit_opponent_drew_tiles(self, e: PublicEventPlayerDrewTiles) -> None:
         if e.player_id == self.state.me.player_id:
@@ -149,7 +147,7 @@ class StateMutator:
             tile = self.state.get_my_tile_by_type(e.tile.tile_type, pop=True)
 
         else:
-            tile = self.state.map.get_tile_by_type(e.tile.tile_type)
+            tile = self.state.map.get_tile_by_type(e.tile.tile_type, pop=True)
 
         self.state.map._grid[y][x] = tile
         self.state.map.placed_tiles.add(tile)
