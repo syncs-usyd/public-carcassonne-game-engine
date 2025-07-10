@@ -24,7 +24,7 @@ These are the tokens representing a player's claim over a territory. Each player
 Represents every players’ current score. The scorecard is updated whenever a territory is completed.
 
 # Game Setup
-Once meeple have been allocated, the setup phase of the game will commence. The starting river tile is placed on the board. Then, each player draws another river tile, and then places it as they wish as long as the river is maintained as a contiguous stream. Once the tile denoting the river’s end is drawn and placed, the setup phase concludes.
+Once meeple have been allocated, the setup phase of the game will commence. The starting river tile is placed on the board. Then, each player draws another river tile, and then places it as they wish as long as the river is maintained as a contiguous stream. You may **not** place a river tile in a way such that it forms a u-turn. Once the tile denoting the river’s end is drawn and placed, the setup phase concludes.
 
 ![Rivers](assets/game_rules/river_examples.png)
 
