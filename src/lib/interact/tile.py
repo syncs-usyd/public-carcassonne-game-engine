@@ -1,4 +1,4 @@
-from lib.config.map_config import MONASTARY_IDENTIFIER
+from lib.config.map_config import MONASTARY_IDENTIFIER, tile_counts
 from lib.config.scoring import NO_POINTS
 from lib.interact.structure import StructureType
 from lib.interact.meeple import Meeple
@@ -70,6 +70,7 @@ class Tile:
     )
 
     starting_tile: "Tile | None" = None
+    river_end_tile: "Tile | None" = None
 
     @final
     @staticmethod
@@ -117,7 +118,7 @@ class Tile:
     def get_starting_tile() -> "Tile":
         if not Tile.starting_tile:
             Tile.starting_tile = Tile(
-                tile_id="R0",
+                tile_id="RE0",
                 left_edge=StructureType.GRASS,
                 right_edge=StructureType.GRASS,
                 top_edge=StructureType.RIVER,
@@ -125,6 +126,19 @@ class Tile:
                 modifiers=[TileModifier.RIVER],
             )
         return Tile.starting_tile
+
+    @staticmethod
+    def get_river_end_tile() -> "Tile":
+        if not Tile.river_end_tile:
+            Tile.river_end_tile = Tile(
+                tile_id="RE",
+                left_edge=StructureType.GRASS,
+                right_edge=StructureType.GRASS,
+                top_edge=StructureType.GRASS,
+                bottom_edge=StructureType.RIVER,
+                modifiers=[TileModifier.RIVER],
+            )
+        return Tile.river_end_tile
 
     def __init__(
         self,
@@ -230,7 +244,7 @@ def create_river_tiles() -> list["Tile"]:
             right_edge=StructureType.GRASS,
             top_edge=StructureType.RIVER,
             bottom_edge=StructureType.RIVER,
-        ).clone_add(2)
+        ).clone_add(tile_counts.R2)
     )
 
     tiles.append(
@@ -246,16 +260,25 @@ def create_river_tiles() -> list["Tile"]:
     tiles.append(
         Tile(
             tile_id="R4",
-            left_edge=StructureType.CITY,
-            right_edge=StructureType.CITY,
-            top_edge=StructureType.RIVER,
-            bottom_edge=StructureType.RIVER,
+            left_edge=StructureType.RIVER,
+            right_edge=StructureType.RIVER,
+            top_edge=StructureType.CITY,
+            bottom_edge=StructureType.CITY,
         )
     )
 
     tiles.append(
         Tile(
             tile_id="R5",
+            left_edge=StructureType.RIVER,
+            right_edge=StructureType.GRASS,
+            top_edge=StructureType.RIVER,
+            bottom_edge=StructureType.GRASS,
+        )
+    )
+    tiles.append(
+        Tile(
+            tile_id="R6",
             left_edge=StructureType.ROAD,
             right_edge=StructureType.ROAD,
             top_edge=StructureType.RIVER,
@@ -266,7 +289,7 @@ def create_river_tiles() -> list["Tile"]:
 
     tiles.append(
         Tile(
-            tile_id="R6",
+            tile_id="R7",
             left_edge=StructureType.RIVER,
             right_edge=StructureType.CITY,
             top_edge=StructureType.CITY,
@@ -276,22 +299,12 @@ def create_river_tiles() -> list["Tile"]:
 
     tiles.append(
         Tile(
-            tile_id="R7",
+            tile_id="R8",
             left_edge=StructureType.RIVER,
             right_edge=StructureType.RIVER,
             top_edge=StructureType.GRASS,
-            bottom_edge=StructureType.GRASS,
+            bottom_edge=StructureType.ROAD_START,
             modifiers=[TileModifier.MONESTERY],
-        )
-    )
-
-    tiles.append(
-        Tile(
-            tile_id="R8",
-            left_edge=StructureType.GRASS,
-            right_edge=StructureType.RIVER,
-            top_edge=StructureType.RIVER,
-            bottom_edge=StructureType.GRASS,
         )
     )
 
@@ -299,9 +312,9 @@ def create_river_tiles() -> list["Tile"]:
         Tile(
             tile_id="R9",
             left_edge=StructureType.GRASS,
-            right_edge=StructureType.GRASS,
-            top_edge=StructureType.GRASS,
-            bottom_edge=StructureType.RIVER,
+            right_edge=StructureType.RIVER,
+            top_edge=StructureType.RIVER,
+            bottom_edge=StructureType.GRASS,
         )
     )
 
@@ -323,7 +336,7 @@ def create_base_tiles() -> list["Tile"]:
             right_edge=StructureType.GRASS,
             top_edge=StructureType.GRASS,
             bottom_edge=StructureType.ROAD_START,
-        ).clone_add(2)
+        ).clone_add(tile_counts.A)
     )
 
     # Tile Type B
@@ -335,7 +348,7 @@ def create_base_tiles() -> list["Tile"]:
             top_edge=StructureType.GRASS,
             bottom_edge=StructureType.GRASS,
             modifiers=[TileModifier.MONESTERY],
-        ).clone_add(4)
+        ).clone_add(tile_counts.B)
     )
 
     # Tile Type C
@@ -347,7 +360,7 @@ def create_base_tiles() -> list["Tile"]:
             top_edge=StructureType.CITY,
             bottom_edge=StructureType.CITY,
             modifiers=[TileModifier.SHIELD],
-        ).clone_add(1)
+        ).clone_add(tile_counts.C)
     )
 
     # Tile Type D
@@ -358,7 +371,7 @@ def create_base_tiles() -> list["Tile"]:
             right_edge=StructureType.CITY,
             top_edge=StructureType.ROAD,
             bottom_edge=StructureType.ROAD,
-        ).clone_add(1)
+        ).clone_add(tile_counts.D)
     )
 
     # Tile Type E
@@ -369,7 +382,7 @@ def create_base_tiles() -> list["Tile"]:
             right_edge=StructureType.GRASS,
             top_edge=StructureType.CITY,
             bottom_edge=StructureType.GRASS,
-        ).clone_add(5)
+        ).clone_add(tile_counts.E)
     )
 
     # Tile Type F
@@ -381,7 +394,7 @@ def create_base_tiles() -> list["Tile"]:
             top_edge=StructureType.GRASS,
             bottom_edge=StructureType.GRASS,
             modifiers=[TileModifier.SHIELD, TileModifier.OPP_CITY_BRIDGE],
-        ).clone_add(2)
+        ).clone_add(tile_counts.F)
     )
 
     # Tile Type G
@@ -393,7 +406,7 @@ def create_base_tiles() -> list["Tile"]:
             top_edge=StructureType.CITY,
             bottom_edge=StructureType.CITY,
             modifiers=[TileModifier.OPP_CITY_BRIDGE],
-        ).clone_add(2)
+        ).clone_add(tile_counts.G)
     )
 
     # Tile Type H
@@ -404,7 +417,7 @@ def create_base_tiles() -> list["Tile"]:
             right_edge=StructureType.CITY,
             top_edge=StructureType.GRASS,
             bottom_edge=StructureType.GRASS,
-        ).clone_add(3)
+        ).clone_add(tile_counts.H)
     )
 
     # Tile Type I
@@ -415,7 +428,7 @@ def create_base_tiles() -> list["Tile"]:
             right_edge=StructureType.CITY,
             top_edge=StructureType.GRASS,
             bottom_edge=StructureType.CITY,
-        ).clone_add(2)
+        ).clone_add(tile_counts.I)
     )
 
     # Tile Type J
@@ -426,7 +439,7 @@ def create_base_tiles() -> list["Tile"]:
             right_edge=StructureType.ROAD,
             top_edge=StructureType.CITY,
             bottom_edge=StructureType.ROAD,
-        ).clone_add(3)
+        ).clone_add(tile_counts.J)
     )
 
     # Tile Type K
@@ -437,7 +450,7 @@ def create_base_tiles() -> list["Tile"]:
             right_edge=StructureType.CITY,
             top_edge=StructureType.ROAD,
             bottom_edge=StructureType.GRASS,
-        ).clone_add(3)
+        ).clone_add(tile_counts.K)
     )
 
     # Tile Type L
@@ -448,7 +461,7 @@ def create_base_tiles() -> list["Tile"]:
             right_edge=StructureType.CITY,
             top_edge=StructureType.ROAD_START,
             bottom_edge=StructureType.ROAD_START,
-        ).clone_add(3)
+        ).clone_add(tile_counts.L)
     )
 
     # Tile Type M
@@ -460,7 +473,7 @@ def create_base_tiles() -> list["Tile"]:
             top_edge=StructureType.CITY,
             bottom_edge=StructureType.GRASS,
             modifiers=[TileModifier.SHIELD],
-        ).clone_add(2)
+        ).clone_add(tile_counts.M)
     )
 
     # Tile Type N
@@ -471,7 +484,7 @@ def create_base_tiles() -> list["Tile"]:
             right_edge=StructureType.GRASS,
             top_edge=StructureType.CITY,
             bottom_edge=StructureType.GRASS,
-        ).clone_add(3)
+        ).clone_add(tile_counts.N)
     )
 
     # Tile Type O
@@ -483,7 +496,7 @@ def create_base_tiles() -> list["Tile"]:
             top_edge=StructureType.CITY,
             bottom_edge=StructureType.ROAD,
             modifiers=[TileModifier.SHIELD],
-        ).clone_add(2)
+        ).clone_add(tile_counts.O)
     )
 
     # Tile Type P
@@ -494,7 +507,7 @@ def create_base_tiles() -> list["Tile"]:
             right_edge=StructureType.ROAD,
             top_edge=StructureType.CITY,
             bottom_edge=StructureType.ROAD,
-        ).clone_add(3)
+        ).clone_add(tile_counts.P)
     )
 
     # Tile Type Q
@@ -506,7 +519,7 @@ def create_base_tiles() -> list["Tile"]:
             top_edge=StructureType.CITY,
             bottom_edge=StructureType.GRASS,
             modifiers=[TileModifier.SHIELD],
-        ).clone_add(1)
+        ).clone_add(tile_counts.Q)
     )
 
     # Tile Type R
@@ -517,7 +530,7 @@ def create_base_tiles() -> list["Tile"]:
             right_edge=StructureType.CITY,
             top_edge=StructureType.CITY,
             bottom_edge=StructureType.GRASS,
-        ).clone_add(3)
+        ).clone_add(tile_counts.R)
     )
 
     # Tile Type S
@@ -529,7 +542,7 @@ def create_base_tiles() -> list["Tile"]:
             top_edge=StructureType.CITY,
             bottom_edge=StructureType.ROAD,
             modifiers=[TileModifier.SHIELD],
-        ).clone_add(2)
+        ).clone_add(tile_counts.S)
     )
 
     # Tile Type T
@@ -540,7 +553,7 @@ def create_base_tiles() -> list["Tile"]:
             right_edge=StructureType.CITY,
             top_edge=StructureType.CITY,
             bottom_edge=StructureType.ROAD,
-        ).clone_add(1)
+        ).clone_add(tile_counts.T)
     )
 
     # Tile Type U
@@ -551,7 +564,7 @@ def create_base_tiles() -> list["Tile"]:
             right_edge=StructureType.GRASS,
             top_edge=StructureType.ROAD,
             bottom_edge=StructureType.ROAD,
-        ).clone_add(8)
+        ).clone_add(tile_counts.U)
     )
 
     # Tile Type V
@@ -562,7 +575,7 @@ def create_base_tiles() -> list["Tile"]:
             right_edge=StructureType.GRASS,
             top_edge=StructureType.GRASS,
             bottom_edge=StructureType.ROAD,
-        ).clone_add(9)
+        ).clone_add(tile_counts.V)
     )
 
     # Tile Type W
@@ -574,7 +587,7 @@ def create_base_tiles() -> list["Tile"]:
             top_edge=StructureType.GRASS,
             bottom_edge=StructureType.ROAD_START,
             modifiers=[TileModifier.BROKEN_ROAD_CENTER],
-        ).clone_add(4)
+        ).clone_add(tile_counts.W)
     )
 
     # Tile Type X
@@ -586,7 +599,7 @@ def create_base_tiles() -> list["Tile"]:
             top_edge=StructureType.ROAD_START,
             bottom_edge=StructureType.ROAD_START,
             modifiers=[TileModifier.BROKEN_ROAD_CENTER],
-        ).clone_add(1)
+        ).clone_add(tile_counts.X)
     )
 
     return tiles
