@@ -12,6 +12,7 @@ class ClientSate:
     def __init__(self):
         self.round = -1
         self.players: dict[int, PublicPlayerModel]
+        self.players_meeples: dict[int, int]
         self.map = Map()
 
         self.game_over = False
@@ -48,6 +49,15 @@ class ClientSate:
         return {
             edge: structure
             for t in self.map.available_tiles
-            for edge, structure in t.internal_edges
+            for edge, structure in t.internal_edges.items()
             if tile.tile_type == t.tile_type
         }
+
+    def get_my_tile_by_type(self, tile_type: str, pop: bool) -> Tile:
+        for tile in self.my_tiles:
+            if tile.tile_type == tile_type:
+                if pop:
+                    self.my_tiles.remove(tile)
+                return tile
+
+        RuntimeError(f"No tile of type {tile_type} in hand")

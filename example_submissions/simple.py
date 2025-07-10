@@ -46,9 +46,9 @@ def handle_place_tile(
     width = len(grid[0]) if height > 0 else 0
 
     directions = {
-        (0, 1): "top",
+        (0, -1): "top",
         (1, 0): "right",
-        (0, -1): "bottom",
+        (0, 1): "bottom",
         (-1, 0): "left",
     }
 
@@ -59,16 +59,22 @@ def handle_place_tile(
     for y in range(height):
         for x in range(width):
             if grid[y][x] is not None:
-                print(f"Checking if tile can be placed near tile - {grid[y][x]}")
+                print(
+                    f"Checking if tile can be placed near tile - {grid[y][x]}, at {x, y}"
+                )
                 for tile_index, tile in enumerate(game.state.my_tiles):
                     for direction in directions:
                         dx, dy = direction
                         x1, y1 = (x + dx, y + dy)
 
                         if game.can_place_tile_at(tile, x1, y1):
+                            tile.placed_pos = (x1, y1)
                             bot_state.last_tile = tile._to_model()
-                            bot_state.last_tile.pos = (x1, y1)
-                            return game.move_place_tile(query, tile, tile_index)
+                            print("", end="", flush=True)
+
+                            return game.move_place_tile(
+                                query, tile._to_model(), tile_index
+                            )
 
     raise ValueError(
         "No valid tile placement found - this feature has not been implmented yet"

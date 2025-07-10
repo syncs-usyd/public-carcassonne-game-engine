@@ -188,11 +188,16 @@ class Tile:
 
     def rotate_clockwise(self, number: int) -> None:
         for _ in range(number):
-            self.right_edge, self.bottom_edge, self.left_edge, self.top_edge = (
-                self.top_edge,
-                self.right_edge,
-                self.bottom_edge,
-                self.left_edge,
+            (
+                self.internal_edges.right_edge,
+                self.internal_edges.bottom_edge,
+                self.internal_edges.left_edge,
+                self.internal_edges.top_edge,
+            ) = (
+                self.internal_edges.top_edge,
+                self.internal_edges.right_edge,
+                self.internal_edges.bottom_edge,
+                self.internal_edges.left_edge,
             )
 
         self.rotation += number
@@ -203,7 +208,7 @@ class Tile:
 
     @final
     def clone_add(self, n: int) -> list[Self]:
-        cloned_tiles = [copy(self) for _ in range(n)]
+        cloned_tiles = [copy(self) for _ in range(n - 1)]
         cloned_tiles.append(self)
         return cloned_tiles
 

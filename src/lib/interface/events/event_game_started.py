@@ -16,3 +16,4 @@ class PublicEventGameStarted(BaseEvent):
     turn_order: list[int]
     you: PlayerModel
     players: Sequence[PublicPlayerModel]
+    num_starting_meeples: int

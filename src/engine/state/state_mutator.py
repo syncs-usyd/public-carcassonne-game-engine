@@ -3,7 +3,6 @@ from engine.state.game_state import GameState
 
 from lib.config.map_config import MONASTARY_IDENTIFIER
 from lib.config.scoring import POINT_LIMIT
-from lib.interface.events.base_event import BaseEvent
 from lib.interface.events.event_player_bannned import EventPlayerBanned
 from lib.interface.events.event_player_turn_started import EventPlayerTurnStarted
 from lib.interface.events.event_player_won import EventPlayerWon
@@ -27,13 +26,14 @@ from lib.interface.events.moves.move_place_meeple import (
     MovePlaceMeeplePass,
 )
 from lib.interface.events.moves.move_place_tile import MovePlaceTile
+from lib.interface.events.typing import EventType
 
 
 class StateMutator:
     def __init__(self, state: GameState) -> None:
         self.state = state
 
-    def commit(self, event: BaseEvent):
+    def commit(self, event: EventType):
         self.state.event_history.append(event)
 
         match event:
@@ -86,7 +86,7 @@ class StateMutator:
         # Get tile from player hand
         tile = self.state.players[move.player_id].tiles[move.player_tile_index]
         self.state.map._grid[move.tile.pos[1]][move.tile.pos[0]] = tile
-        self.state.map.placed_tiles.append(tile)
+        self.state.map.placed_tiles.add(tile)
 
         # Keep track of tile placed for meeple placement
         self.state.tile_placed = tile

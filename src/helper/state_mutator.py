@@ -95,13 +95,11 @@ class StateMutator:
         if e.player_id != self.state.me.player_id:
             raise RuntimeError("Please send us a discord message with this error log.")
 
-        print("Log I drew tiles")
         self.state.me.tiles.extend(e.tiles)
         for tile_model in e.tiles:
-            for tile in self.state.map.available_tiles:
-                if tile_model.tile_type == tile.tile_type:
-                    self.state.my_tiles.append(tile)
-                    self.state.map.available_tiles.remove(tile)
+            tile = self.state.map.get_tile_by_type(tile_model.tile_type, pop=True)
+
+            self.state.my_tiles.append(tile)
 
     def _commit_opponent_drew_tiles(self, e: PublicEventPlayerDrewTiles) -> None:
         if e.player_id == self.state.me.player_id:
@@ -116,23 +114,56 @@ class StateMutator:
         self.state.me = e.you
         self.state.turn_order = e.turn_order
         self.state.players = {p.player_id: p for p in e.players}
+        self.state.players_meeples = {
+            p.player_id: e.num_starting_meeples for p in e.players
+        }
 
         self.state.map.start_river_phase()
 
     def _commit_event_player_meeple_freed(self, e: EventPlayerMeepleFreed) -> None:
-        pass
+        self.state.players_meeples[e.player_id] += 1
+
+        x, y = e.tile.pos
+        tile = self.state.map._grid[y][x]
+
+        assert tile is not None
+        tile.internal_claims[e.placed_on] = None
+
+        if e.player_id == self.state.me.player_id:
+            self.state.me.num_meeples += 1
 
     def _commit_event_starting_tile_placed(self, e: EventStartingTilePlaced) -> None:
         x, y = e.tile_placed.pos
         Tile.get_starting_tile().placed_pos = (x, y)
         self.state.map._grid[y][x] = Tile.get_starting_tile()
-        self.state.map.placed_tiles.append(Tile.get_starting_tile())
+        self.state.map.placed_tiles.add(Tile.get_starting_tile())
 
     def _commit_move_place_tile(self, e: MovePlaceTile) -> None:
-        pass
+        self.state.players[e.player_id].num_tiles -= 1
+
+        x, y = e.tile.pos
+        tile: Tile
+        if e.player_id == self.state.me.player_id:
+            tile = self.state.get_my_tile_by_type(e.tile.tile_type, pop=True)
+
+        else:
+            tile = self.state.map.get_tile_by_type(e.tile.tile_type, pop=True)
+
+        self.state.map._grid[y][x] = tile
+        self.state.map.placed_tiles.add(tile)
 
     def _commit_move_place_meeple(self, e: MovePlaceMeeple) -> None:
-        pass
+        self.state.players_meeples[e.player_id] -= 1
+
+        x, y = e.tile.pos
+        tile = self.state.map._grid[y][x]
+
+        assert tile is not None
+        # TODO need to create a serialiasbale meeple interface
+        tile.internal_claims[e.placed_on] = None
+
+        if e.player_id == self.state.me.player_id:
+            self.state.me.num_meeples -= 1
 
     def _commit_move_place_meeple_pass(self, e: MovePlaceMeeplePass) -> None:
         pass
@@ -158,4 +189,4 @@ class StateMutator:
         pass
 
     def _commit_event_river_phase_completed(self, e: EventRiverPhaseCompleted) -> None:
-        pass
+        self.state.map.start_base_phase()
