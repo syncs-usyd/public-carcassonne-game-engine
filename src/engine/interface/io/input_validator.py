@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 from engine.config.game_config import MAX_NUM_TILES_IN_HAND
-from lib.config.map_config import MONASTARY_IDENTIFIER
+from lib.config.map_config import MONASTARY_IDENTIFIER, NUM_PLACEABLE_TILE_TYPES
 from lib.interface.events.moves.move_place_meeple import (
     MovePlaceMeeple,
     MovePlaceMeeplePass,
@@ -12,11 +12,11 @@ from lib.interact.tile import Tile
 
 import string
 
-VALID_TILE_TYPES = [f"R{i}" for i in range(0, 11)]
-VALID_TILE_TYPES.extend(string.ascii_uppercase[: string.ascii_uppercase.index("X") + 1])
+VALID_PLACEABLE_TILE_TYPES = [f"R{i}" for i in range(1, NUM_PLACEABLE_TILE_TYPES + 1)]
+VALID_PLACEABLE_TILE_TYPES.extend(string.ascii_uppercase[: string.ascii_uppercase.index("X") + 1])
 
 VALID_ROTATIONS = [0, 1, 2, 3]
-VALID_MEEPLE_PLACMENTS = Tile.get_starting_tile().internal_edges.keys()
+VALID_MEEPLE_PLACEMENTS = Tile.get_starting_tile().internal_claims.keys()
 
 if TYPE_CHECKING:
     from engine.state.game_state import GameState
@@ -55,7 +55,7 @@ class MoveValidator:
         }
 
         # Validate Tile Type
-        if e.tile.tile_type not in VALID_TILE_TYPES:
+        if e.tile.tile_type not in VALID_PLACEABLE_TILE_TYPES:
             raise ValueError(
                 f"You tried placing an invalid tile type - Recieved TileType {e.tile.tile_type}"
             )
@@ -111,7 +111,7 @@ class MoveValidator:
         if player._get_available_meeple() is None:
             raise ValueError("You placed a meeple - You don't have one availble")
 
-        if e.placed_on not in VALID_MEEPLE_PLACMENTS:
+        if e.placed_on not in VALID_MEEPLE_PLACEMENTS:
             raise ValueError(
                 f"You placed a meeple on a invalid structure - Your Strcuture {e.placed_on}"
             )
