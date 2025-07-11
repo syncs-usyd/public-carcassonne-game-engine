@@ -3,7 +3,6 @@ from lib.config.map_config import MAX_MAP_LENGTH, MONASTARY_IDENTIFIER
 from lib.game.game_logic import GameLogic
 from lib.interact.meeple import Meeple
 from lib.interact.map import Map
-
 from lib.interact.tile import Tile, TileModifier
 from lib.interface.events.typing import EventType
 from lib.models.player_model import PlayerModel, PublicPlayerModel
@@ -49,7 +48,6 @@ class ClientSate(GameLogic):
         return meeples
 
     def get_tile_structures(self, tile: TileModel) -> dict[str, StructureType]:
-
         # Does not return monastary
         return {
             edge: structure

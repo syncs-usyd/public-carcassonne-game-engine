@@ -56,7 +56,6 @@ class Game:
             return False  # Already occupied
 
         directions = {
-
             (0, -1): "top_edge",
             (1, 0): "right_edge",
             (0, 1): "bottom_edge",
@@ -68,7 +67,6 @@ class Game:
             "bottom_edge": "top_edge",
             "left_edge": "right_edge",
             "right_edge": "left_edge",
-
         }
 
         print(f"Checking if tile can be placed {x, y}")

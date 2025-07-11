@@ -24,9 +24,6 @@ VALID_MEEPLE_PLACEMENTS = Tile.get_starting_tile().internal_claims.keys()
 if TYPE_CHECKING:
     from engine.state.game_state import GameState
 
-if TYPE_CHECKING:
-    from engine.state.game_state import GameState
-
 
 class MoveValidator:
     def __init__(self, state: "GameState"):
