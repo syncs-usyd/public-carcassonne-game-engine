@@ -10,6 +10,7 @@ on:
 
 jobs:
   discord-notification:
+    if: github.repository != 'syncs-usyd/private-carcassonne-game-engine'
     runs-on: ubuntu-latest
     steps:
       - name: Discord Notification
