@@ -57,6 +57,8 @@ def main():
                 case QueryPlaceMeeple() as q:
                     print("meeple")
                     return handle_place_meeple(game, bot_state, q)
+                case _:
+                    assert False
         print("sending move")
         game.send_move(choose_move(query))
 
@@ -67,20 +69,21 @@ def handle_place_tile(game: Game, bot_state: BotState, query: QueryPlaceTile):
     """
     grid = game.state.map._grid
     
-    directions = [
-        (1, 0),   # right
-        (0, 1),   # bottom  
-        (-1, 0),  # left
-        (0, -1),  # top
-    ]
+    # The direction of placing the tile in reference to the last placed tile
+    directions = {
+        (1, 0):"left_edge",   # right
+        (0, 1):"top_edge",   # bottom  
+        (-1, 0):"right_edge",  # left
+        (0, -1):"bottom_edge",  # top
+    }
     # Will either be the latest tile
-    latest_tile = list(game.state.map.placed_tiles)[-1]
+    latest_tile = game.state.map.placed_tiles[-1]
     latest_pos = latest_tile.placed_pos
     
-    
+    print(game.state.my_tiles)
     # Try to place a tile adjacent to the latest tile
     for tile_hand_index, tile_in_hand in enumerate(game.state.my_tiles):
-        for dx, dy in directions:
+        for (dx, dy), edge in directions.items():
             target_x = latest_pos[0] + dx
             target_y = latest_pos[1] + dy
             
@@ -94,11 +97,15 @@ def handle_place_tile(game: Game, bot_state: BotState, query: QueryPlaceTile):
             
             # Try placing the tile at this position
             if game.can_place_tile_at(tile_in_hand, target_x, target_y):
+                
                 # Save the tile we're placing for meeple placement
+                # while (tile_in_hand.internal_edges[edge] != latest_tile.internal_edges[Tile.get_opposite(edge)]):
+                #     tile_in_hand.rotate_clockwise(1)
+                
                 bot_state.last_tile = tile_in_hand
                 bot_state.last_tile.placed_pos = (target_x, target_y)
-                print(bot_state.last_tile.placed_pos, tile_hand_index)
-                return game.move_place_tile(query, bot_state.last_tile._to_model(), tile_hand_index)    
+                print(bot_state.last_tile.placed_pos, tile_hand_index, tile_in_hand.rotation, tile_in_hand.tile_type, flush=True)
+                return game.move_place_tile(query, tile_in_hand._to_model(), tile_hand_index)    
     # return brute_force_tile(game, bot_state, query)
    
 
