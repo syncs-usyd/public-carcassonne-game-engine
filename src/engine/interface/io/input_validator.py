@@ -113,14 +113,38 @@ class MoveValidator:
                 # Check if we successfully connected a river structure
                 if edge_structure == StructureType.RIVER: 
                     river_connections += 1
-        
+                    assert river_connections <= 1
+            
+            # Handling the case where the edge does not have a tile next to it
+            else: 
+                # U - Turn handling
+                # Logic: if there is two tile away from a disconnected river edge, it means a u-turn has occurred
+                if edge_structure == StructureType.RIVER:
+                    forcast_coordinates = {
+                        "top_edge":(0,-2),
+                        "right_edge": (2,0),
+                        "bottom_edge":(0,2),
+                        "left_edge":(-2,0),
+                        }
+                    extension = forcast_coordinates[edge]
+                    
+                    # Look at the tile two tiles away from the direction the river is facing on our current tile
+                    forecast_x = x + extension[0]
+                    forecast_y = y + extension[1]
+                    if (self.state.map._grid[forecast_y][forecast_x] is not None):
+                        raise ValueError(
+                            f"You placed a tile that will lead to a U-Turn in the river."
+                        )   
+                        
+                                        
+
         # Check if there is at least one river edge that is connected 
         if river_flag and river_connections == 0:
             raise ValueError(
                 f"You placed a river tile without connecting it to the rest of the river."
                     
             )
-
+        
                 
             
 
