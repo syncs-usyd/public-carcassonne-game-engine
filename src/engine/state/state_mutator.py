@@ -3,20 +3,23 @@ from engine.state.game_state import GameState
 
 from lib.config.map_config import MONASTARY_IDENTIFIER
 from lib.config.scoring import POINT_LIMIT
+<<<<<<< HEAD
 from lib.interface.events.base_event import BaseEvent
+=======
+>>>>>>> main
 from lib.interface.events.event_player_bannned import EventPlayerBanned
 from lib.interface.events.event_player_turn_started import EventPlayerTurnStarted
 from lib.interface.events.event_player_won import EventPlayerWon
 from lib.interface.events.event_river_phase_completed import EventRiverPhaseCompleted
 from lib.interface.events.event_game_ended import (
     EventGameEndedCancelled,
-    EventGameEndedPointLimitReaced,
+    EventGameEndedPointLimitReached,
     EventGameEndedStaleMate,
 )
 from lib.interface.events.event_game_started import EventGameStarted
-from lib.interface.events.event_player_drew_cards import (
-    EventPlayerDrewCards,
-    PublicEventPlayerDrewCards,
+from lib.interface.events.event_player_drew_tiles import (
+    EventPlayerDrewTiles,
+    PublicEventPlayerDrewTiles,
 )
 from lib.interface.events.event_player_meeple_freed import EventPlayerMeepleFreed
 from lib.interface.events.event_tile_placed import (
@@ -27,21 +30,22 @@ from lib.interface.events.moves.move_place_meeple import (
     MovePlaceMeeplePass,
 )
 from lib.interface.events.moves.move_place_tile import MovePlaceTile
+from lib.interface.events.typing import EventType
 
 
 class StateMutator:
     def __init__(self, state: GameState) -> None:
         self.state = state
 
-    def commit(self, event: BaseEvent):
+    def commit(self, event: EventType):
         self.state.event_history.append(event)
 
         match event:
             case EventGameStarted() as e:
                 self._commit_event_game_started(e)
 
-            case EventPlayerDrewCards() as e:
-                self._commit_player_drew_cards(e)
+            case EventPlayerDrewTiles() as e:
+                self._commit_player_drew_tiles(e)
 
             case EventPlayerMeepleFreed() as e:
                 self._commit_event_player_meeple_freed(e)
@@ -58,10 +62,10 @@ class StateMutator:
             case MovePlaceMeeplePass() as e:
                 self._commit_move_place_meeple_pass(e)
 
-            case PublicEventPlayerDrewCards() as e:
-                self._commit_public_player_drew_cards(e)
+            case PublicEventPlayerDrewTiles() as e:
+                self._commit_public_player_drew_tiles(e)
 
-            case EventGameEndedPointLimitReaced() as e:
+            case EventGameEndedPointLimitReached() as e:
                 self._commit_event_game_ended_point_limit(e)
 
             case EventGameEndedStaleMate() as e:
@@ -82,11 +86,16 @@ class StateMutator:
             case EventRiverPhaseCompleted() as e:
                 self._commit_event_river_phase_completed(e)
 
-    def _commit_place_tile(self, move: MovePlaceTile) -> None:
+    def _commit_move_place_tile(self, move: MovePlaceTile) -> None:
+        """
+        Player Tile Placed Event
+        """
         # Get tile from player hand
-        tile = self.state.players[move.player_id].cards[move.player_tile_index]
+        tile = self.state.players[move.player_id].tiles[move.player_tile_index]
+        tile.rotate_clockwise(move.tile.rotation)
+
         self.state.map._grid[move.tile.pos[1]][move.tile.pos[0]] = tile
-        self.state.map.placed_tiles.append(tile)
+        self.state.map.placed_tiles.add(tile)
 
         # Keep track of tile placed for meeple placement
         self.state.tile_placed = tile
@@ -106,7 +115,7 @@ class StateMutator:
                     player.points += reward
 
                     if player.points >= POINT_LIMIT:
-                        self.commit(EventGameEndedPointLimitReaced(player_id=player.id))
+                        self.commit(EventGameEndedPointLimitReached(player_id=player.id))
 
             meeples_to_return = list(
                 self.state._traverse_connected_component(
@@ -201,44 +210,88 @@ class StateMutator:
         self.state.tile_placed = None
 
     def _commit_event_game_started(self, e: EventGameStarted) -> None:
+        """
+        Game Started Event
+        Engine emits this event
+        """
         pass
 
     def _commit_event_player_meeple_freed(self, e: EventPlayerMeepleFreed) -> None:
+        """
+        Player Meeple Freed Event
+        Meeples are self update. No count tracked on engine
+        """
         pass
 
     def _commit_event_starting_tile_placed(self, e: EventStartingTilePlaced) -> None:
-        pass
-
-    def _commit_move_place_tile(self, e: MovePlaceTile) -> None:
+        """
+        Starting Tile Placed Event
+        Engine emits this event
+        """
         pass
 
     def _commit_event_game_ended_point_limit(
-        self, e: EventGameEndedPointLimitReaced
+        self, e: EventGameEndedPointLimitReached
     ) -> None:
+        self.state.game_over = True
+
+    def _commit_player_drew_tiles(self, e: EventPlayerDrewTiles) -> None:
+        """
+        Player Drew Tiles Event
+        Engine emits this event to a specific player
+        """
         pass
 
-    def _commit_player_drew_cards(self, e: EventPlayerDrewCards) -> None:
-        pass
-
-    def _commit_public_player_drew_cards(self, e: PublicEventPlayerDrewCards) -> None:
+    def _commit_public_player_drew_tiles(self, e: PublicEventPlayerDrewTiles) -> None:
+        """
+        Player Drew Tiles Event
+        Engine censors this event to specific players
+        """
         pass
 
     def _commit_event_game_ended_stalemate(self, e: EventGameEndedStaleMate) -> None:
+        """
+        Game Ended in Stalemate Event
+        Engine emits this event to specific players
+        """
         pass
 
     def _commit_event_game_ended_cancelled(self, e: EventGameEndedCancelled) -> None:
+<<<<<<< HEAD
+=======
+        """
+        Game Ended in Cancellation Event
+        Engine emits this event to specific players
+        """
+>>>>>>> main
         pass
 
     def _commit_event_player_banned(self, e: EventPlayerBanned) -> None:
+        """
+        Game Ended in Player Ban Event
+        Engine censors this event to specific player
+        """
         pass
 
     def _commit_event_player_turn_started(self, e: EventPlayerTurnStarted) -> None:
+        """
+        Player Turn Started Event
+        Engine emits this event
+        """
         pass
 
     def _commit_event_player_won(self, e: EventPlayerWon) -> None:
+        """
+        Player Won Game Event
+        Engine emits this event
+        """
         pass
 
     def _commit_event_river_phase_completed(self, e: EventRiverPhaseCompleted) -> None:
+        """
+        River Phase Completed Event
+        Engine emits this event
+        """
         pass
 
     def _check_subscibers(self) -> None:

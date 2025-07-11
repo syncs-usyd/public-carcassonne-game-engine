@@ -7,16 +7,16 @@ from lib.interface.events.event_player_won import EventPlayerWon
 from lib.interface.events.event_river_phase_completed import EventRiverPhaseCompleted
 from lib.interface.events.event_game_ended import (
     EventGameEndedCancelled,
-    EventGameEndedPointLimitReaced,
+    EventGameEndedPointLimitReached,
     EventGameEndedStaleMate,
 )
 from lib.interface.events.event_game_started import (
     EventGameStarted,
     PublicEventGameStarted,
 )
-from lib.interface.events.event_player_drew_cards import (
-    EventPlayerDrewCards,
-    PublicEventPlayerDrewCards,
+from lib.interface.events.event_player_drew_tiles import (
+    EventPlayerDrewTiles,
+    PublicEventPlayerDrewTiles,
 )
 from lib.interface.events.event_player_meeple_freed import EventPlayerMeepleFreed
 from lib.interface.events.event_tile_placed import (
@@ -46,8 +46,8 @@ class StateMutator:
             case PublicEventGameStarted() as e:
                 self._commit_public_event_game_started(e)
 
-            case EventPlayerDrewCards() as e:
-                self._commit_player_drew_cards(e)
+            case EventPlayerDrewTiles() as e:
+                self._commit_player_drew_tiles(e)
 
             case EventPlayerMeepleFreed() as e:
                 self._commit_event_player_meeple_freed(e)
@@ -64,10 +64,10 @@ class StateMutator:
             case MovePlaceMeeplePass() as e:
                 self._commit_move_place_meeple_pass(e)
 
-            case PublicEventPlayerDrewCards() as e:
-                self._commit_opponent_drew_cards(e)
+            case PublicEventPlayerDrewTiles() as e:
+                self._commit_opponent_drew_tiles(e)
 
-            case EventGameEndedPointLimitReaced() as e:
+            case EventGameEndedPointLimitReached() as e:
                 self._commit_event_game_ended_point_limit(e)
 
             case EventGameEndedStaleMate() as e:
@@ -91,10 +91,11 @@ class StateMutator:
             case _:
                 raise RuntimeError(f"Unrecognised event: {event}")
 
-    def _commit_player_drew_cards(self, e: EventPlayerDrewCards) -> None:
+    def _commit_player_drew_tiles(self, e: EventPlayerDrewTiles) -> None:
         if e.player_id != self.state.me.player_id:
             raise RuntimeError("Please send us a discord message with this error log.")
 
+<<<<<<< HEAD
         print("Log I drew cards")
         self.state.me.tiles.extend(e.cards)
         for card_model in e.cards:
@@ -102,12 +103,19 @@ class StateMutator:
                 if card_model.tile_type == card.tile_type:
                     self.state.my_cards.append(card)
                     self.state.map.available_tiles.remove(card)
+=======
+        self.state.me.tiles.extend(e.tiles)
+        for tile_model in e.tiles:
+            tile = self.state.map.get_tile_by_type(tile_model.tile_type, pop=True)
+>>>>>>> main
 
-    def _commit_opponent_drew_cards(self, e: PublicEventPlayerDrewCards) -> None:
+            self.state.my_tiles.append(tile)
+
+    def _commit_opponent_drew_tiles(self, e: PublicEventPlayerDrewTiles) -> None:
         if e.player_id == self.state.me.player_id:
             raise RuntimeError("Please send us a discord message with this error log.")
 
-        self.state.players[e.player_id].num_tiles += e.num_cards
+        self.state.players[e.player_id].num_tiles += e.num_tiles
 
     def _commit_event_game_started(self, e: EventGameStarted) -> None:
         raise RuntimeError("Please send us a discord message with this error log.")
@@ -116,29 +124,69 @@ class StateMutator:
         self.state.me = e.you
         self.state.turn_order = e.turn_order
         self.state.players = {p.player_id: p for p in e.players}
+        self.state.players_meeples = {
+            p.player_id: e.num_starting_meeples for p in e.players
+        }
+
+        self.state.map.start_river_phase()
 
         self.state.map.start_river_phase()
 
     def _commit_event_player_meeple_freed(self, e: EventPlayerMeepleFreed) -> None:
-        pass
+        self.state.players_meeples[e.player_id] += 1
+
+        x, y = e.tile.pos
+        tile = self.state.map._grid[y][x]
+
+        assert tile is not None
+        tile.internal_claims[e.placed_on] = None
+
+        if e.player_id == self.state.me.player_id:
+            self.state.me.num_meeples += 1
 
     def _commit_event_starting_tile_placed(self, e: EventStartingTilePlaced) -> None:
         x, y = e.tile_placed.pos
         Tile.get_starting_tile().placed_pos = (x, y)
         self.state.map._grid[y][x] = Tile.get_starting_tile()
+<<<<<<< HEAD
         self.state.map.placed_tiles.append(Tile.get_starting_tile())
+=======
+        self.state.map.placed_tiles.add(Tile.get_starting_tile())
+>>>>>>> main
 
     def _commit_move_place_tile(self, e: MovePlaceTile) -> None:
-        pass
+        self.state.players[e.player_id].num_tiles -= 1
+
+        x, y = e.tile.pos
+        tile: Tile
+        if e.player_id == self.state.me.player_id:
+            tile = self.state.get_my_tile_by_type(e.tile.tile_type, pop=True)
+
+        else:
+            tile = self.state.map.get_tile_by_type(e.tile.tile_type, pop=True)
+
+        tile.placed_pos = x, y
+        self.state.map._grid[y][x] = tile
+        self.state.map.placed_tiles.add(tile)
 
     def _commit_move_place_meeple(self, e: MovePlaceMeeple) -> None:
-        pass
+        self.state.players_meeples[e.player_id] -= 1
+
+        x, y = e.tile.pos
+        tile = self.state.map._grid[y][x]
+
+        assert tile is not None
+        # TODO need to create a serialiasbale meeple interface
+        tile.internal_claims[e.placed_on] = None
+
+        if e.player_id == self.state.me.player_id:
+            self.state.me.num_meeples -= 1
 
     def _commit_move_place_meeple_pass(self, e: MovePlaceMeeplePass) -> None:
         pass
 
     def _commit_event_game_ended_point_limit(
-        self, e: EventGameEndedPointLimitReaced
+        self, e: EventGameEndedPointLimitReached
     ) -> None:
         pass
 
@@ -146,9 +194,6 @@ class StateMutator:
         pass
 
     def _commit_event_game_ended_cancelled(self, e: EventGameEndedCancelled) -> None:
-        pass
-
-    def _commit_event_meeple_placed(self, e: EventMeeplePlaced) -> None:
         pass
 
     def _commit_event_player_banned(self, e: EventPlayerBanned) -> None:
@@ -161,4 +206,4 @@ class StateMutator:
         pass
 
     def _commit_event_river_phase_completed(self, e: EventRiverPhaseCompleted) -> None:
-        pass
+        self.state.map.start_base_phase()

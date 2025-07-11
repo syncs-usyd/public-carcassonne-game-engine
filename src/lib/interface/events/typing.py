@@ -1,7 +1,7 @@
 from pydantic import Field
 from lib.interface.events.event_game_ended import (
     EventGameEndedCancelled,
-    EventGameEndedPointLimitReaced,
+    EventGameEndedPointLimitReached,
     EventGameEndedStaleMate,
 )
 from lib.interface.events.event_tile_placed import (
@@ -12,9 +12,9 @@ from lib.interface.events.event_game_started import (
     PublicEventGameStarted,
 )
 from lib.interface.events.event_player_bannned import EventPlayerBanned
-from lib.interface.events.event_player_drew_cards import (
-    EventPlayerDrewCards,
-    PublicEventPlayerDrewCards,
+from lib.interface.events.event_player_drew_tiles import (
+    EventPlayerDrewTiles,
+    PublicEventPlayerDrewTiles,
 )
 from lib.interface.events.event_player_meeple_freed import EventPlayerMeepleFreed
 from lib.interface.events.event_player_turn_started import EventPlayerTurnStarted
@@ -29,18 +29,30 @@ DiscriminatedEvent: TypeAlias = Annotated[
     Union[
         EventGameStarted,
         EventPlayerBanned,
+<<<<<<< HEAD
         EventPlayerDrewCards,
+=======
+        EventPlayerDrewTiles,
+>>>>>>> main
         EventPlayerTurnStarted,
         EventPlayerWon,
         EventRiverPhaseCompleted,
         EventPlayerMeepleFreed,
         EventPlayerWon,
         EventGameEndedCancelled,
+<<<<<<< HEAD
         EventGameEndedPointLimitReaced,
         EventGameEndedStaleMate,
         EventStartingTilePlaced,
         PublicEventGameStarted,
         PublicEventPlayerDrewCards,
+=======
+        EventGameEndedPointLimitReached,
+        EventGameEndedStaleMate,
+        EventStartingTilePlaced,
+        PublicEventGameStarted,
+        PublicEventPlayerDrewTiles,
+>>>>>>> main
         MoveType,
     ],
     Field(discriminator="event_type"),
@@ -50,17 +62,17 @@ DiscriminatedEvent: TypeAlias = Annotated[
 EventType: TypeAlias = Union[
     EventGameStarted,
     EventPlayerBanned,
-    EventPlayerDrewCards,
+    EventPlayerDrewTiles,
     EventPlayerTurnStarted,
     EventPlayerWon,
     EventRiverPhaseCompleted,
     EventPlayerMeepleFreed,
     EventPlayerWon,
     EventGameEndedCancelled,
-    EventGameEndedPointLimitReaced,
+    EventGameEndedPointLimitReached,
     EventGameEndedStaleMate,
     EventStartingTilePlaced,
     PublicEventGameStarted,
-    PublicEventPlayerDrewCards,
+    PublicEventPlayerDrewTiles,
     MoveType,
 ]

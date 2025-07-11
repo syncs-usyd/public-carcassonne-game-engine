@@ -8,6 +8,7 @@ class PlayerModel(BaseModel):
     team_id: int
     points: int
     tiles: list[TileModel]
+    num_meeples: int
 
     def get_public(self) -> "PublicPlayerModel":
         return PublicPlayerModel(

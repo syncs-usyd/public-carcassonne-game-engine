@@ -1,21 +1,28 @@
-from lib.config.map_config import MAX_MAP_LENGTH
+from collections import defaultdict
+from lib.config.map_config import MAX_MAP_LENGTH, MONASTARY_IDENTIFIER
+from lib.game.game_logic import GameLogic
 from lib.interact.meeple import Meeple
 from lib.interact.map import Map
+<<<<<<< HEAD
 from lib.interact.tile import Tile
+=======
+from lib.interact.tile import Tile, TileModifier
+>>>>>>> main
 from lib.interface.events.typing import EventType
 from lib.models.player_model import PlayerModel, PublicPlayerModel
 from lib.models.tile_model import TileModel
 from lib.interact.structure import StructureType
 
 
-class ClientSate:
+class ClientSate(GameLogic):
     def __init__(self):
         self.round = -1
         self.players: dict[int, PublicPlayerModel]
+        self.players_meeples: dict[int, int]
         self.map = Map()
 
         self.game_over = False
-        self.num_placed_cards = 0
+        self.num_placed_tiles = 0
 
         self.event_history: list["EventType"] = []
         self.new_events: int = 0
@@ -23,7 +30,11 @@ class ClientSate:
 
         self.points = 0
         self.me: PlayerModel
+<<<<<<< HEAD
         self.my_cards: list[Tile] = []
+=======
+        self.my_tiles: list[Tile] = []
+>>>>>>> main
 
     def get_meeples_placed_by(self, player_id: int | None) -> list[Meeple]:
         """
@@ -45,9 +56,42 @@ class ClientSate:
         return meeples
 
     def get_tile_structures(self, tile: TileModel) -> dict[str, StructureType]:
+<<<<<<< HEAD
         return {
             edge: structure
             for t in self.map.available_tiles
             for edge, structure in t.internal_edges
             if tile.tile_type == t.tile_type
         }
+=======
+        # Does not return monastary
+        return {
+            edge: structure
+            for t in self.map.available_tiles
+            for edge, structure in t.internal_edges.items()
+            if tile.tile_type == t.tile_type
+        }
+
+    def get_placeable_structures(self, my_tile: TileModel) -> dict[str, StructureType]:
+        placable_structures = self.get_tile_structures(my_tile)
+        x, y = my_tile.pos
+        tile = self.map._grid[y][x]
+
+        assert tile is not None
+
+        if TileModifier.MONASTARY in tile.modifiers:
+            placable_structures[MONASTARY_IDENTIFIER] = StructureType.MONASTARY
+
+        # EP farm expansion
+
+        return placable_structures
+
+    def get_my_tile_by_type(self, tile_type: str, pop: bool) -> Tile:
+        for tile in self.my_tiles:
+            if tile.tile_type == tile_type:
+                if pop:
+                    self.my_tiles.remove(tile)
+                return tile
+
+        RuntimeError(f"No tile of type {tile_type} in hand")
+>>>>>>> main

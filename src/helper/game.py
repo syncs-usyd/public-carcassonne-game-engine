@@ -50,11 +50,16 @@ class Game:
         return MovePlaceMeeplePass(
             player_id=self.state.me.player_id,
         )
+<<<<<<< HEAD
+=======
+
+>>>>>>> main
     def can_place_tile_at(self, tile: Tile, x: int, y: int) -> bool:
         if self.state.map._grid[y][x]:
             return False  # Already occupied
 
         directions = {
+<<<<<<< HEAD
             (0, 1): "top",
             (1, 0): "right",
             (0, -1): "bottom",
@@ -66,6 +71,19 @@ class Game:
             "bottom": "top",
             "left": "right",
             "right": "left",
+=======
+            (0, -1): "top_edge",
+            (1, 0): "right_edge",
+            (0, 1): "bottom_edge",
+            (-1, 0): "left_edge",
+        }
+
+        edge_opposite = {
+            "top_edge": "bottom_edge",
+            "bottom_edge": "top_edge",
+            "left_edge": "right_edge",
+            "right_edge": "left_edge",
+>>>>>>> main
         }
 
         print(f"Checking if tile can be placed {x, y}")
@@ -94,13 +112,23 @@ class Game:
 
                 has_any_neighbour = True
 
+<<<<<<< HEAD
                 if tile.internal_edges(edge) != neighbour_tile.internal_edges(
                     edge_opposite[edge]
+=======
+                if (
+                    tile.internal_edges[edge]
+                    != neighbour_tile.internal_edges[edge_opposite[edge]]
+>>>>>>> main
                 ):
                     print("Edge Missmatch")
                     break  # mismatch, try next rotation
 
             else:
+<<<<<<< HEAD
+=======
+                print("Not working")
+>>>>>>> main
                 if has_any_neighbour:
                     print("Returning True")
                     return True

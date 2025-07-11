@@ -1,4 +1,4 @@
-from engine.config.game_config import NUM_MEEPLE
+from engine.config.game_config import NUM_MEEPLES
 from engine.interface.io.player_connection import PlayerConnection
 
 from lib.interact.meeple import Meeple
@@ -7,18 +7,19 @@ from lib.models.player_model import PlayerModel
 
 
 class PlayerState:
-    def __init__(
-        self, player_id: int, team_id: int, connection: PlayerConnection
-    ) -> None:
+    def __init__(self, player_id: int, team_id: int) -> None:
         self.id = player_id
         self.team_id = team_id
         self.points = 0
-        self.cards: list[Tile] = []
-        self.meeples: list["Meeple"] = [Meeple(player_id) for _ in range(NUM_MEEPLE)]
-        self.connection = connection
+        self.tiles: list[Tile] = []
+        self.meeples: list["Meeple"] = [Meeple(player_id) for _ in range(NUM_MEEPLES)]
+        self.connection: PlayerConnection
+
+    def connect(self):
+        self.connection = PlayerConnection(self.id)
 
     def _get_available_meeple(self) -> Meeple | None:
-        available_meeples = [m for m in self.meeples if m.placed is not None]
+        available_meeples = [m for m in self.meeples if m.placed is None]
 
         if available_meeples:
             return available_meeples[0]
@@ -30,5 +31,21 @@ class PlayerState:
             player_id=self.id,
             team_id=self.team_id,
             points=self.points,
+<<<<<<< HEAD
             tiles=[tile._to_model() for tile in self.cards],
+=======
+            tiles=[tile._to_model() for tile in self.tiles],
+            num_meeples=len([m for m in self.meeples if m.placed is not None]),
+>>>>>>> main
         )
+
+    def _get_available_tile_type_from_hand(self, tile_type: str, pop: bool) -> Tile:
+        for i, tile in enumerate(self.tiles):
+            if tile.tile_type == tile_type:
+                if pop:
+                    self.tiles.pop(i)
+
+                return tile
+
+        assert False
+

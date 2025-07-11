@@ -11,7 +11,7 @@ Whether you are an amateur king or a seasoned emperor, we understand that Carcas
 
 # Game Equipment
 ## Tiles
-The gameboard for Carcassonne is unique in that it is created dynamically as each game progresses. During each player's turn, they will draw a card from the pile and place it in a valid position. In total there are 72 land tiles and 12 river tiles. Each tile can display a river, a section of a city, a section of a road, or a monastery.
+The gameboard for Carcassonne is unique in that it is created dynamically as each game progresses. During each player's turn, they will draw a tile from the pile and place it in a valid position. In total there are 72 land tiles and 12 river tiles. Each tile can display a river, a section of a city, a section of a road, or a monastery.
 
 ![Tiles](assets/game_rules/tiles.png)
 
@@ -28,7 +28,7 @@ Once meeple have been allocated, the setup phase of the game will commence. The 
 
 ![Rivers](assets/game_rules/river_examples.png)
 
-As seen above, river tiles may also contain monasteries, cities or roads. If such a card is drawn and placed you will be able to place a meeple and claim it, if you desire. 
+As seen above, river tiles may also contain monasteries, cities or roads. If such a tile is drawn and placed you will be able to place a meeple and claim it, if you desire. 
 
 For more specific rules on the river, please feel free to check the rules [here](https://wikicarpedia.com/car/River). Note that we are **not** using *The River II*.
 

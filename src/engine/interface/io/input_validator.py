@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 from typing import TYPE_CHECKING
 from engine.config.game_config import MAX_NUM_CARDS_IN_HAND
 from lib.config.map_config import MONASTARY_IDENTIFIER
+=======
+from copy import copy, deepcopy
+from typing import TYPE_CHECKING
+from engine.config.game_config import MAX_NUM_TILES_IN_HAND
+from lib.config.map_config import MONASTARY_IDENTIFIER, NUM_PLACEABLE_TILE_TYPES
+>>>>>>> main
 from lib.interface.events.moves.move_place_meeple import (
     MovePlaceMeeple,
     MovePlaceMeeplePass,
@@ -12,11 +19,24 @@ from lib.interact.tile import Tile
 
 import string
 
+<<<<<<< HEAD
 VALID_TILE_TYPES = [f"R{i}" for i in range(0, 11)]
 VALID_TILE_TYPES.extend(string.ascii_uppercase[: string.ascii_uppercase.index("X") + 1])
 
 VALID_ROTATIONS = [0, 1, 2, 3]
 VALID_MEEPLE_PLACMENTS = Tile.get_starting_tile().internal_edges.keys()
+=======
+VALID_PLACEABLE_TILE_TYPES = [f"R{i}" for i in range(1, NUM_PLACEABLE_TILE_TYPES + 1)]
+VALID_PLACEABLE_TILE_TYPES.extend(
+    string.ascii_uppercase[: string.ascii_uppercase.index("X") + 1]
+)
+
+VALID_ROTATIONS = [0, 1, 2, 3]
+VALID_MEEPLE_PLACEMENTS = Tile.get_starting_tile().internal_claims.keys()
+
+if TYPE_CHECKING:
+    from engine.state.game_state import GameState
+>>>>>>> main
 
 if TYPE_CHECKING:
     from engine.state.game_state import GameState
@@ -55,26 +75,25 @@ class MoveValidator:
         }
 
         # Validate Tile Type
-        if e.tile.tile_type not in VALID_TILE_TYPES:
+        if e.tile.tile_type not in VALID_PLACEABLE_TILE_TYPES:
             raise ValueError(
                 f"You tried placing an invalid tile type - Recieved TileType {e.tile.tile_type}"
             )
 
-        if e.player_tile_index not in range(0, MAX_NUM_CARDS_IN_HAND):
+        if e.player_tile_index not in range(0, MAX_NUM_TILES_IN_HAND):
             raise ValueError(
                 f"You tried placing a tile not in your hand - Incorrect Recieved Tile Index {e.player_tile_index}"
             )
 
         player = self.state.players[player_id]
-        if not any(card.tile_type == e.tile.tile_type for card in player.cards):
+        if not any(tile.tile_type == e.tile.tile_type for tile in player.tiles):
             raise ValueError(
                 f"You tried placing a tile not in your hand - Tile Type Not in Hand {e.tile.tile_type}"
             )
 
-        else:
-            tile = [
-                card for card in player.cards if card.tile_type == e.tile.tile_type
-            ][0]
+        tile = self.state.players[player_id]._get_available_tile_type_from_hand(e.tile.tile_type, pop=False)
+        tile = deepcopy(tile)
+        tile.rotate_clockwise(e.tile.rotation)
 
         # Validate rotation
         if e.tile.rotation not in VALID_ROTATIONS:
@@ -84,20 +103,24 @@ class MoveValidator:
 
         # Validate Tile Pos
         if not any(neighbouring_tiles.values()):
+            # for row in self.state.map._grid[80:91]:
+            #     print([col for col in row[80:91]])
+
             raise ValueError(
                 f"You placed a tile in an empty space - no neighbours at {x, y}"
             )
 
         for edge, neighbour_tile in neighbouring_tiles.items():
+            # for row in self.state.map._grid[80:91]:
+            #     print([col for col in row[80:91]])
+
             if (
                 neighbour_tile
                 and neighbour_tile.internal_edges[Tile.get_opposite(edge)]
                 != tile.internal_edges[edge]
             ):
                 raise ValueError(
-                    f"You placed a tile in an mismatched position - {edge} mismatch, \
-                    your edge is {neighbour_tile.internal_edges[Tile.get_opposite(edge)]} \
-                    != {tile.internal_edges[edge]}"
+                    f"You placed a tile in an mismatched position - {edge} mismatch, your edge is {neighbour_tile.internal_edges[Tile.get_opposite(edge)]} != {tile.internal_edges[edge]}"
                 )
 
     def _validate_place_meeple(
@@ -107,11 +130,14 @@ class MoveValidator:
         if self.state.tile_placed.placed_pos != e.tile.pos:
             raise ValueError(f"You placed a meeple on an invalid tile - {e.tile.pos}")
 
+        if self.state.tile_placed.rotation != e.tile.rotation:
+            raise ValueError(f"You placed a meeple on a valid tile with an invalid/mismatched rotation - {e.tile.rotation}")
+
         player = self.state.players[player_id]
         if player._get_available_meeple() is None:
             raise ValueError("You placed a meeple - You don't have one availble")
 
-        if e.placed_on not in VALID_MEEPLE_PLACMENTS:
+        if e.placed_on not in VALID_MEEPLE_PLACEMENTS:
             raise ValueError(
                 f"You placed a meeple on a invalid structure - Your Strcuture {e.placed_on}"
             )
