@@ -61,7 +61,7 @@ class GameEngine:
         self.state.turn_order = turn_order
 
         while not self.state.is_game_over():
-            print(f"New round {self.state.round + 1}")
+            print(f"New round {self.state.round + 1}", flush=True)
 
             if self.state.round == -1:
                 self.mutator.commit(

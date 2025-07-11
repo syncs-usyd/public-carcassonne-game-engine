@@ -91,7 +91,7 @@ class StateMutator:
         tile.rotate_clockwise(move.tile.rotation)
 
         self.state.map._grid[move.tile.pos[1]][move.tile.pos[0]] = tile
-        self.state.map.placed_tiles.add(tile)
+        self.state.map.placed_tiles.append(tile)
 
         # Keep track of tile placed for meeple placement
         self.state.tile_placed = tile
