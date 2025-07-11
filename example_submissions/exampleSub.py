@@ -44,6 +44,7 @@ class BotState:
 
 
 def main():
+    
     game = Game()
     bot_state = BotState()
 
