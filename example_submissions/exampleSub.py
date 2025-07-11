@@ -36,7 +36,7 @@ from lib.interact.structure import StructureType
 """A class for us to locally the state of the game and what we find relevant"""
 class BotState:
     def __init__(self):
-        self.last_tile: TileModel | None = None
+        self.last_tile: Tile| None = None
 
         
 
@@ -57,7 +57,7 @@ def main():
                 case QueryPlaceMeeple() as q:
                     print("meeple")
                     return handle_place_meeple(game, bot_state, q)
-
+        print("sending move")
         game.send_move(choose_move(query))
 
 def handle_place_tile(game: Game, bot_state: BotState, query: QueryPlaceTile):
@@ -73,14 +73,13 @@ def handle_place_tile(game: Game, bot_state: BotState, query: QueryPlaceTile):
         (-1, 0),  # left
         (0, -1),  # top
     ]
-    
-    # Will either be the starting tile 
-    latest_tile = game.state.map.placed_tiles[-1]
+    # Will either be the latest tile
+    latest_tile = list(game.state.map.placed_tiles)[-1]
     latest_pos = latest_tile.placed_pos
     
     
     # Try to place a tile adjacent to the latest tile
-    for tile_hand_index, tile_in_hand in enumerate(game.state.my_cards):
+    for tile_hand_index, tile_in_hand in enumerate(game.state.my_tiles):
         for dx, dy in directions:
             target_x = latest_pos[0] + dx
             target_y = latest_pos[1] + dy
@@ -96,10 +95,10 @@ def handle_place_tile(game: Game, bot_state: BotState, query: QueryPlaceTile):
             # Try placing the tile at this position
             if game.can_place_tile_at(tile_in_hand, target_x, target_y):
                 # Save the tile we're placing for meeple placement
-                bot_state.last_tile = tile_hand_index._to_model()
-                bot_state.last_tile.pos = (target_x, target_y)
-                
-                return game.move_place_tile(query, tile_in_hand, tile_hand_index)    
+                bot_state.last_tile = tile_in_hand
+                bot_state.last_tile.placed_pos = (target_x, target_y)
+                print(bot_state.last_tile.placed_pos, tile_hand_index)
+                return game.move_place_tile(query, bot_state.last_tile._to_model(), tile_hand_index)    
     # return brute_force_tile(game, bot_state, query)
    
 
@@ -108,7 +107,7 @@ def handle_place_meeple(game: Game, bot_state: BotState, query: QueryPlaceMeeple
     Try to place a meeple on the most recently placed tile.
     Priority order: monastery -> Anything else
     """
-    recent_tile = game.state.tile_placed
+    recent_tile = bot_state.last_tile
     if not recent_tile:
         return game.move_place_meeple_pass(query)
     
@@ -157,13 +156,13 @@ def brute_force_tile(
 
     print(game.state.event_history)
 
-    print("Cards", game.state.my_cards)
+    print("Cards", game.state.my_tiles)
 
     for y in range(height):
         for x in range(width):
             if grid[y][x] is not None:
                 print(f"Checking if tile can be placed near tile - {grid[y][x]}")
-                for tile_index, tile in enumerate(game.state.my_cards):
+                for tile_index, tile in enumerate(game.state.my_tiles):
                     for direction in directions:
                         dx, dy = direction
                         x1, y1 = (x + dx, y + dy)
