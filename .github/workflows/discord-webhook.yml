@@ -1,0 +1,52 @@
+name: Discord Webhook Notification
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  notify-discord:
+    if: github.repository != 'syncs-usyd/private-carcassonne-game-engine'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Discord Notification
+        run: |
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               -d '{
+                 "embeds": [{
+                   "title": "🔄 New Commit to Main",
+                   "description": "A new commit has been pushed to the main branch!",
+                   "color": 3447003,
+                   "fields": [
+                     {
+                       "name": "Repository",
+                       "value": "${{ github.repository }}",
+                       "inline": true
+                     },
+                     {
+                       "name": "Author",
+                       "value": "${{ github.actor }}",
+                       "inline": true
+                     },
+                     {
+                       "name": "Commit Message",
+                       "value": "${{ github.event.head_commit.message }}",
+                       "inline": false
+                     },
+                     {
+                       "name": "Commit Hash",
+                       "value": "`${{ github.sha }}`",
+                       "inline": true
+                     },
+                     {
+                       "name": "View Commit",
+                       "value": "[Click here](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})",
+                       "inline": true
+                     }
+                   ],
+                   "timestamp": "${{ github.event.head_commit.timestamp }}"
+                 }]
+               }' \
+               ${{ secrets.DISCORD_WEBHOOK_URL }} 

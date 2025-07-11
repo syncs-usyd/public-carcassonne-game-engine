@@ -1,0 +1,30 @@
+name: Discord Notification
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  discord-notification:
+    if: github.repository != 'syncs-usyd/private-carcassonne-game-engine'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Discord Notification
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          status: ${{ job.status }}
+          title: "Carcassonne Game Engine"
+          description: |
+            **Repository:** ${{ github.repository }}
+            **Branch:** ${{ github.ref_name }}
+            **Commit:** ${{ github.sha }}
+            **Author:** ${{ github.actor }}
+            
+            ${{ github.event.head_commit.message if github.event.head_commit else 'Pull request event' }}
+          color: ${{ job.status == 'success' && 'success' || job.status == 'failure' && 'danger' || 'warning' }}
+          url: ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }} 
