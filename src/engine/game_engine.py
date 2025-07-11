@@ -101,11 +101,10 @@ class GameEngine:
 
                     player.tiles.extend(tiles_drawn)
 
-                    player.tiles.extend(tiles_drawn)
                     self.mutator.commit(
                         EventPlayerDrewTiles(
                             player_id=player.id,
-                            num_tiles=2,
+                            num_tiles=NUM_TILES_IN_HAND,
                             tiles=[tile._to_model() for tile in tiles_drawn],
                         )
                     )
@@ -135,7 +134,7 @@ class GameEngine:
                 self.mutator.commit(
                     EventPlayerDrewTiles(
                         player_id=player_id,
-                        num_tiles=2,
+                        num_tiles=NUM_TILES_DRAWN_PER_ROUND,
                         tiles=[tile._to_model() for tile in tiles_drawn],
                     )
                 )
