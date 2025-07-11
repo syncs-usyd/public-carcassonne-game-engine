@@ -39,9 +39,8 @@ class Map:
         starting_tile = Tile.get_starting_tile()
         starting_tile.placed_pos = pos
 
-        self._grid[MAP_CENTER[1]][MAP_CENTER[0]] = starting_tile
+        self._grid[pos[1]][pos[0]] = starting_tile
         self.placed_tiles.append(starting_tile)
-        starting_tile.placed_pos = MAP_CENTER
 
     def place_river_end(self, pos: tuple[int, int], rotation: int) -> None:
         river_end_tile = Tile.get_river_end_tile()
