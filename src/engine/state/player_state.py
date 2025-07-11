@@ -19,7 +19,7 @@ class PlayerState:
         self.connection = PlayerConnection(self.id)
 
     def _get_available_meeple(self) -> Meeple | None:
-        available_meeples = [m for m in self.meeples if m.placed is not None]
+        available_meeples = [m for m in self.meeples if m.placed is None]
 
         if available_meeples:
             return available_meeples[0]
@@ -39,7 +39,7 @@ class PlayerState:
         for i, tile in enumerate(self.tiles):
             if tile.tile_type == tile_type:
                 if pop:
-                    self.tiles.remove(i)
+                    self.tiles.pop(i)
 
                 return tile
 

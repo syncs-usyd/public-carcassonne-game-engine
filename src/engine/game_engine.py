@@ -89,28 +89,28 @@ class GameEngine:
                     if EXPANSION:
                         self.state.extend_base_phase()
 
-                # Replinishes cards if moving to base phase or new game (river phase) this is before player draws tile for the round
+                    # Replinishes cards if moving to base phase or new game (river phase) this is before player draws tile for the round
 
-                for player in self.state.players.values():
-                    tiles_drawn = sample(
-                        list(self.state.map.available_tiles), NUM_TILES_IN_HAND
-                    )
-                    self.state.map.available_tiles.difference_update(tiles_drawn)
-
-                    for tile in tiles_drawn:
-                        self.state.map.available_tiles_by_type[tile.tile_type].remove(
-                            tile
+                    for player in self.state.players.values():
+                        tiles_drawn = sample(
+                            list(self.state.map.available_tiles), NUM_TILES_IN_HAND
                         )
+                        self.state.map.available_tiles.difference_update(tiles_drawn)
 
-                    player.tiles.extend(tiles_drawn)
+                        for tile in tiles_drawn:
+                            self.state.map.available_tiles_by_type[tile.tile_type].remove(
+                                tile
+                            )
 
-                    self.mutator.commit(
-                        EventPlayerDrewTiles(
-                            player_id=player.id,
-                            num_tiles=NUM_TILES_IN_HAND,
-                            tiles=[tile._to_model() for tile in tiles_drawn],
+                        player.tiles.extend(tiles_drawn)
+
+                        self.mutator.commit(
+                            EventPlayerDrewTiles(
+                                player_id=player.id,
+                                num_tiles=NUM_TILES_IN_HAND,
+                                tiles=[tile._to_model() for tile in tiles_drawn],
+                            )
                         )
-                    )
 
                 self.state.tiles_exhausted = False
 

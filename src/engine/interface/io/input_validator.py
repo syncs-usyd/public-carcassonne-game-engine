@@ -86,16 +86,16 @@ class MoveValidator:
 
         # Validate Tile Pos
         if not any(neighbouring_tiles.values()):
-            for row in self.state.map._grid[80:91]:
-                print([col for col in row[80:91]])
+            # for row in self.state.map._grid[80:91]:
+            #     print([col for col in row[80:91]])
 
             raise ValueError(
                 f"You placed a tile in an empty space - no neighbours at {x, y}"
             )
 
         for edge, neighbour_tile in neighbouring_tiles.items():
-            for row in self.state.map._grid[80:91]:
-                print([col for col in row[80:91]])
+            # for row in self.state.map._grid[80:91]:
+            #     print([col for col in row[80:91]])
 
             if (
                 neighbour_tile
