@@ -141,7 +141,7 @@ class StateMutator:
 
     def _commit_move_place_tile(self, e: MovePlaceTile) -> None:
         if e.player_id != self.state.me.player_id:
-            pass
+            raise RuntimeError("Please send us a discord message with this error log.")
 
         x, y = e.tile.pos
         tile = self.state.my_tiles.pop(e.player_tile_index)
@@ -149,6 +149,7 @@ class StateMutator:
 
         self.state.map._grid[y][x] = tile
         self.state.map.placed_tiles.append(tile)
+        self.state.players[e.player_id].num_tiles -= 1
 
     def _commit_public_move_place_tile(self, e: PublicMovePlaceTile) -> None:
         self.state.players[e.player_id].num_tiles -= 1
