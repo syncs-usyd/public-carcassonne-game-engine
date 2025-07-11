@@ -108,7 +108,6 @@ class GameLogic(SharedGameState):
                     connected_internal_edges.append(Tile.get_opposite(edge))
 
             for cid in connected_internal_edges:
-                # neighbouring_tile = tile.external_edges[cid] TODO
                 assert tile.placed_pos is not None
                 neighbouring_tile = Tile.get_external_tile(
                     cid, tile.placed_pos, self.map._grid
