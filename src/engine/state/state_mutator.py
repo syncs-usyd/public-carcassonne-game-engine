@@ -117,7 +117,7 @@ class StateMutator:
                 self.state._traverse_connected_component(
                     tile,
                     edge,
-                    yield_cond=lambda t, e: t.internal_claims[edge] is not None,
+                    yield_cond=lambda t, e: t.internal_claims[e] is not None,
                 )
             )
 
