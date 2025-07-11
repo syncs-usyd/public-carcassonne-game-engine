@@ -30,8 +30,4 @@ Structure
     - A connection between the centre and (1 or 3 - this may change) Edges
     - edge case where there are two roads 
 
-## Design Choices
-
-## Game Engine
-
 ## Visualiser

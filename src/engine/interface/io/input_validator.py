@@ -13,7 +13,7 @@ from lib.interact.tile import Tile
 import string
 
 VALID_TILE_TYPES = [f"R{i}" for i in range(0, 11)]
-VALID_TILE_TYPES.extend(string.ascii_uppercase[: string.ascii_uppercase.index("K") + 1])
+VALID_TILE_TYPES.extend(string.ascii_uppercase[: string.ascii_uppercase.index("X") + 1])
 
 VALID_ROTATIONS = [0, 1, 2, 3]
 VALID_MEEPLE_PLACMENTS = Tile.get_starting_tile().internal_edges.keys()
