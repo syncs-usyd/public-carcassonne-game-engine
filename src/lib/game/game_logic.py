@@ -49,15 +49,16 @@ class GameLogic(SharedGameState):
         component = list(self._traverse_connected_component(start_tile, edge))
 
         for tile, edge in component:
-            if tile.external_edges[edge] is None:
+            assert tile.placed_pos is not None
+            if tile.get_external_tile(edge, tile.placed_pos, self.map._grid) is None:
                 return False
 
         return True
 
     def check_any_complete(self, start_tile: "Tile") -> list[str]:
         edges_complete: list[str] = []
-        for edge, tile in start_tile.external_edges.items():
-            if self._check_completed_component(tile, edge):
+        for edge, tile in start_tile.get_external_tiles(self.map._grid).items():
+            if tile and self._check_completed_component(tile, edge):
                 edges_complete.append(edge)
 
         return edges_complete
@@ -74,6 +75,10 @@ class GameLogic(SharedGameState):
         structure_bridge = TileModifier.get_bridge_modifier(structure_type)
 
         queue = deque([(start_tile, edge)])
+
+        # Not a traversable edge - ie monastary etc
+        if edge not in start_tile.internal_edges.keys():
+            return
 
         while queue:
             tile, edge = queue.popleft()
