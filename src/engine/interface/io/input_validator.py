@@ -10,6 +10,7 @@ from lib.interface.events.moves.move_place_tile import MovePlaceTile
 from lib.interface.events.moves.typing import MoveType
 from lib.interface.queries.base_query import BaseQuery
 from lib.interact.tile import Tile
+from lib.interact.structure import StructureType
 
 import string
 
@@ -92,19 +93,36 @@ class MoveValidator:
             raise ValueError(
                 f"You placed a tile in an empty space - no neighbours at {x, y}"
             )
-
+        # Validating each edge is alighed with a corrrect structure
+        river_flag= False
+        river_connections = 0
         for edge, neighbour_tile in neighbouring_tiles.items():
             # for row in self.state.map._grid[80:91]:
             #     print([col for col in row[80:91]])
-
-            if (
-                neighbour_tile
-                and neighbour_tile.internal_edges[Tile.get_opposite(edge)]
-                != tile.internal_edges[edge]
-            ):
-                raise ValueError(
+            
+            edge_structure = tile.internal_edges[edge]
+            # Flag if there is an edge with a river on this tile.
+            river_flag = edge_structure== StructureType.RIVER 
+            if (neighbour_tile):
+                # Check if edges are aligned with correct structures
+                neighboring_edge = neighbour_tile.internal_edges[Tile.get_opposite(edge)]
+                if (neighboring_edge != edge_structure):
+                    raise ValueError(
                     f"You placed a tile in an mismatched position - {edge} mismatch, your edge is {neighbour_tile.internal_edges[Tile.get_opposite(edge)]} != {tile.internal_edges[edge]}"
-                )
+                    )
+                # Check if we successfully connected a river structure
+                if edge_structure == StructureType.RIVER: 
+                    river_connections += 1
+        
+        # Check if there is at least one river edge that is connected 
+        if river_flag and river_connections == 0:
+            raise ValueError(
+                f"You placed a river tile without connecting it to the rest of the river."
+                    
+            )
+
+                
+            
 
     def _validate_place_meeple(
         self, e: MovePlaceMeeple, query: BaseQuery, player_id: int
