@@ -142,7 +142,7 @@ class StateMutator:
         x, y = e.tile.pos
         tile: Tile
         if e.player_id == self.state.me.player_id:
-            tile = self.state.get_my_tile_by_type(e.tile.tile_type, pop=True)
+            tile = self.state.my_tiles.pop(e.player_tile_index)
 
         else:
             tile = self.state.map.get_tile_by_type(e.tile.tile_type, pop=True)
