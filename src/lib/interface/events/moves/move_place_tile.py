@@ -9,3 +9,11 @@ class MovePlaceTile(BaseMove):
     player_id: int
     tile: TileModel
     player_tile_index: int
+
+    def get_public(self) -> "PublicMovePlaceTile":
+        return PublicMovePlaceTile(event_type=self.event_type, player_id=self.player_id, tile=self.tile)
+
+class PublicMovePlaceTile(BaseMove):
+    event_type: Literal["move_place_tile"] = "move_place_tile"
+    player_id: int
+    tile: TileModel
