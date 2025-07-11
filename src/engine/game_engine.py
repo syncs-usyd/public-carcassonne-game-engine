@@ -93,7 +93,7 @@ class GameEngine:
                     for e, s in tile.internal_edges.items():
                         assert tile.placed_pos is not None
 
-                        if s == StructureType.RIVER and Tile.get_external_tile(e, tile.placed_pos, self.state.map._grid):
+                        if s == StructureType.RIVER and not Tile.get_external_tile(e, tile.placed_pos, self.state.map._grid):
                             edge = e
                             break
 
