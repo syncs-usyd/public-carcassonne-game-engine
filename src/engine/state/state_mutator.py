@@ -3,10 +3,6 @@ from engine.state.game_state import GameState
 
 from lib.config.map_config import MONASTARY_IDENTIFIER
 from lib.config.scoring import POINT_LIMIT
-<<<<<<< HEAD
-from lib.interface.events.base_event import BaseEvent
-=======
->>>>>>> main
 from lib.interface.events.event_player_bannned import EventPlayerBanned
 from lib.interface.events.event_player_turn_started import EventPlayerTurnStarted
 from lib.interface.events.event_player_won import EventPlayerWon
@@ -257,13 +253,10 @@ class StateMutator:
         pass
 
     def _commit_event_game_ended_cancelled(self, e: EventGameEndedCancelled) -> None:
-<<<<<<< HEAD
-=======
         """
         Game Ended in Cancellation Event
         Engine emits this event to specific players
         """
->>>>>>> main
         pass
 
     def _commit_event_player_banned(self, e: EventPlayerBanned) -> None:

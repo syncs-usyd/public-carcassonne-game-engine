@@ -95,19 +95,9 @@ class StateMutator:
         if e.player_id != self.state.me.player_id:
             raise RuntimeError("Please send us a discord message with this error log.")
 
-<<<<<<< HEAD
-        print("Log I drew cards")
-        self.state.me.tiles.extend(e.cards)
-        for card_model in e.cards:
-            for card in self.state.map.available_tiles:
-                if card_model.tile_type == card.tile_type:
-                    self.state.my_cards.append(card)
-                    self.state.map.available_tiles.remove(card)
-=======
         self.state.me.tiles.extend(e.tiles)
         for tile_model in e.tiles:
             tile = self.state.map.get_tile_by_type(tile_model.tile_type, pop=True)
->>>>>>> main
 
             self.state.my_tiles.append(tile)
 
@@ -148,11 +138,7 @@ class StateMutator:
         x, y = e.tile_placed.pos
         Tile.get_starting_tile().placed_pos = (x, y)
         self.state.map._grid[y][x] = Tile.get_starting_tile()
-<<<<<<< HEAD
-        self.state.map.placed_tiles.append(Tile.get_starting_tile())
-=======
         self.state.map.placed_tiles.add(Tile.get_starting_tile())
->>>>>>> main
 
     def _commit_move_place_tile(self, e: MovePlaceTile) -> None:
         self.state.players[e.player_id].num_tiles -= 1

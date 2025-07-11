@@ -1,10 +1,5 @@
 from typing import TYPE_CHECKING
-<<<<<<< HEAD
-=======
-
 from engine.config.game_config import NUM_MEEPLES
->>>>>>> main
-
 from lib.interface.events.event_game_started import (
     EventGameStarted,
     PublicEventGameStarted,

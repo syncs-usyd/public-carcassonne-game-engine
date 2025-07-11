@@ -38,15 +38,14 @@ class GameState(GameLogic):
         self.turn_order: list[int] = []
 
     def _connect_players(self):
-<<<<<<< HEAD
+
         self.players = {
             i: PlayerState(i, self.catalog[i]["team_id"], PlayerConnection(i))
             for i in range(NUM_PLAYERS)
         }
 
     def replinish_player_cards(self) -> None:
-=======
->>>>>>> main
+
         for player in self.players.values():
             player.connect()
 

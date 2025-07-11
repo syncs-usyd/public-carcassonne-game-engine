@@ -29,30 +29,18 @@ DiscriminatedEvent: TypeAlias = Annotated[
     Union[
         EventGameStarted,
         EventPlayerBanned,
-<<<<<<< HEAD
-        EventPlayerDrewCards,
-=======
         EventPlayerDrewTiles,
->>>>>>> main
         EventPlayerTurnStarted,
         EventPlayerWon,
         EventRiverPhaseCompleted,
         EventPlayerMeepleFreed,
         EventPlayerWon,
         EventGameEndedCancelled,
-<<<<<<< HEAD
-        EventGameEndedPointLimitReaced,
-        EventGameEndedStaleMate,
-        EventStartingTilePlaced,
-        PublicEventGameStarted,
-        PublicEventPlayerDrewCards,
-=======
         EventGameEndedPointLimitReached,
         EventGameEndedStaleMate,
         EventStartingTilePlaced,
         PublicEventGameStarted,
         PublicEventPlayerDrewTiles,
->>>>>>> main
         MoveType,
     ],
     Field(discriminator="event_type"),

@@ -31,12 +31,8 @@ class PlayerState:
             player_id=self.id,
             team_id=self.team_id,
             points=self.points,
-<<<<<<< HEAD
-            tiles=[tile._to_model() for tile in self.cards],
-=======
             tiles=[tile._to_model() for tile in self.tiles],
             num_meeples=len([m for m in self.meeples if m.placed is not None]),
->>>>>>> main
         )
 
     def _get_available_tile_type_from_hand(self, tile_type: str, pop: bool) -> Tile:

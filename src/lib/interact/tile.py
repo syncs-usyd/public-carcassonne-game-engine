@@ -70,10 +70,7 @@ class Tile:
     )
 
     starting_tile: "Tile | None" = None
-<<<<<<< HEAD
-=======
     river_end_tile: "Tile | None" = None
->>>>>>> main
 
     @final
     @staticmethod

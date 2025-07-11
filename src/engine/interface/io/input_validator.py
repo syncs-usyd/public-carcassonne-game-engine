@@ -1,13 +1,7 @@
-<<<<<<< HEAD
-from typing import TYPE_CHECKING
-from engine.config.game_config import MAX_NUM_CARDS_IN_HAND
-from lib.config.map_config import MONASTARY_IDENTIFIER
-=======
 from copy import copy, deepcopy
 from typing import TYPE_CHECKING
 from engine.config.game_config import MAX_NUM_TILES_IN_HAND
 from lib.config.map_config import MONASTARY_IDENTIFIER, NUM_PLACEABLE_TILE_TYPES
->>>>>>> main
 from lib.interface.events.moves.move_place_meeple import (
     MovePlaceMeeple,
     MovePlaceMeeplePass,
@@ -19,13 +13,6 @@ from lib.interact.tile import Tile
 
 import string
 
-<<<<<<< HEAD
-VALID_TILE_TYPES = [f"R{i}" for i in range(0, 11)]
-VALID_TILE_TYPES.extend(string.ascii_uppercase[: string.ascii_uppercase.index("X") + 1])
-
-VALID_ROTATIONS = [0, 1, 2, 3]
-VALID_MEEPLE_PLACMENTS = Tile.get_starting_tile().internal_edges.keys()
-=======
 VALID_PLACEABLE_TILE_TYPES = [f"R{i}" for i in range(1, NUM_PLACEABLE_TILE_TYPES + 1)]
 VALID_PLACEABLE_TILE_TYPES.extend(
     string.ascii_uppercase[: string.ascii_uppercase.index("X") + 1]
@@ -36,7 +23,6 @@ VALID_MEEPLE_PLACEMENTS = Tile.get_starting_tile().internal_claims.keys()
 
 if TYPE_CHECKING:
     from engine.state.game_state import GameState
->>>>>>> main
 
 if TYPE_CHECKING:
     from engine.state.game_state import GameState

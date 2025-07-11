@@ -37,9 +37,7 @@ from lib.interact.structure import StructureType
 class BotState:
     def __init__(self):
         self.last_tile: TileModel | None = None
-        self.grid = list[list[Tile | None]] = [
-            [None for _ in range(MAX_MAP_LENGTH)] for _ in range(MAX_MAP_LENGTH)
-        ]
+
         
 
 
@@ -53,10 +51,12 @@ def main():
         def choose_move(query: QueryType) -> MoveType:
             match query:
                 case QueryPlaceTile() as q:
+                    print("placing tile")
                     return handle_place_tile(game, bot_state, q)
 
                 case QueryPlaceMeeple() as q:
-                    return handle_place_meeple(game, q)
+                    print("meeple")
+                    return handle_place_meeple(game, bot_state, q)
 
         game.send_move(choose_move(query))
 
@@ -100,7 +100,7 @@ def handle_place_tile(game: Game, bot_state: BotState, query: QueryPlaceTile):
                 bot_state.last_tile.pos = (target_x, target_y)
                 
                 return game.move_place_tile(query, tile_in_hand, tile_hand_index)    
-    return brute_force_tile(game, bot_state, query)
+    # return brute_force_tile(game, bot_state, query)
    
 
 def handle_place_meeple(game: Game, bot_state: BotState, query: QueryPlaceMeeple):
@@ -173,6 +173,7 @@ def brute_force_tile(
                             bot_state.last_tile.pos = (x1, y1)
                             return game.move_place_tile(query, tile, tile_index)
 
-    raise ValueError(
-        "No valid tile placement found - this feature has not been implmented yet"
-    )
+
+if __name__ == "__main__":
+    main()
+
