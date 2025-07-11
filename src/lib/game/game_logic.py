@@ -23,8 +23,8 @@ class GameLogic(SharedGameState):
     def _get_claims(self, tile: "Tile", edge: str) -> list[int]:
         players: set[int] = set()
 
-        for connected_tile, _ in self._traverse_connected_component(tile, edge):
-            meeple = connected_tile.internal_claims[edge]
+        for connected_tile, e in self._traverse_connected_component(tile, edge):
+            meeple = connected_tile.internal_claims[e]
             if meeple is not None:
                 players.add(meeple.player_id)
 

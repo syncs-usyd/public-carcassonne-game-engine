@@ -21,7 +21,7 @@ from engine.state.player_state import PlayerState
 from engine.state.state_mutator import StateMutator
 
 from lib.config.expansion import EXPANSION
-from lib.config.map_config import TILE_EDGE_IDS, TILE_EXTERNAL_POS
+from lib.config.map_config import MAP_CENTER, TILE_EDGE_IDS, TILE_EXTERNAL_POS
 from lib.config.scoring import POINT_LIMIT
 from lib.interact.structure import StructureType
 from lib.interact.tile import Tile
@@ -77,6 +77,7 @@ class GameEngine:
                 )
 
                 self.state.start_river_phase()
+                self.state.map.place_river_start(MAP_CENTER)
                 self.mutator.commit(
                     EventStartingTilePlaced(
                         tile_placed=Tile.get_starting_tile()._to_model()
@@ -90,7 +91,9 @@ class GameEngine:
 
                     edge: str
                     for e, s in tile.internal_edges.items():
-                        if s == StructureType.RIVER:
+                        assert tile.placed_pos is not None
+
+                        if s == StructureType.RIVER and Tile.get_external_tile(e, tile.placed_pos, self.state.map._grid):
                             edge = e
                             break
 
