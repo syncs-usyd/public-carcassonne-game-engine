@@ -1,7 +1,5 @@
-from collections import deque
 from helper.client_state import ClientSate
 
-from lib.interact.tile import Tile
 from lib.interface.events.event_player_bannned import EventPlayerBanned
 from lib.interface.events.event_player_turn_started import EventPlayerTurnStarted
 from lib.interface.events.event_player_won import EventPlayerWon
@@ -27,15 +25,18 @@ from lib.interface.events.moves.move_place_meeple import (
     MovePlaceMeeple,
     MovePlaceMeeplePass,
 )
-from lib.interface.events.moves.move_place_tile import MovePlaceTile, PublicMovePlaceTile
+from lib.interface.events.moves.move_place_tile import (
+    MovePlaceTile,
+    PublicMovePlaceTile,
+)
 from lib.interface.events.typing import EventType
 
 
 class StateMutator:
-    def __init__(self, state: ClientSate):
+    def __init__(self, state: ClientSate) -> None:
         self.state = state
 
-    def commit(self, i: int, event: EventType):
+    def commit(self, i: int, event: EventType) -> None:
         if i != len(self.state.event_history):
             raise RuntimeError("Please send us a discord message with this error log.")
         self.state.event_history.append(event)
