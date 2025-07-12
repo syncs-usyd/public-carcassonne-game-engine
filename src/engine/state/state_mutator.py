@@ -172,7 +172,7 @@ class StateMutator:
             tile_subsciber = MonastaryNeighbourSubsciber(
                 move.tile.pos, player.id, self.state.tile_placed, move.placed_on
             )
-            tile_subsciber.register_to(self.state.tile_publisher)
+            tile_subsciber.register_to(self.state.tile_publisher, self.state.map._grid)
 
             for subscibed_complete in self.state.tile_publisher.check_notify(
                 self.state.tile_placed
