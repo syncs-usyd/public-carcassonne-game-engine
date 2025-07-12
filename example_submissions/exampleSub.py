@@ -12,19 +12,20 @@ Flaws:
 - Does not take advantage of rotating the tiles
 - Does not care about moves of other players other than for the sake of validation
 - Does not account for other existing structures/linking other structures
-
-(This is 60% vibe code)
+- As of writing, cannot pass river stage
 
 """
 
 from helper.game import Game
 from lib.interact.tile import Tile
 from lib.interface.events.moves.move_place_tile import MovePlaceTile
-from lib.interface.events.moves.move_place_meeple import MovePlaceMeeple, MovePlaceMeeplePass
+from lib.interface.events.moves.move_place_meeple import (
+    MovePlaceMeeple,
+    MovePlaceMeeplePass,
+)
 from lib.interface.queries.typing import QueryType
 from lib.interface.queries.query_place_tile import QueryPlaceTile
 from lib.interface.queries.query_place_meeple import QueryPlaceMeeple
-from lib.interface.events.moves.typing import MoveType
 from lib.config.map_config import MAX_MAP_LENGTH
 from lib.config.map_config import MONASTARY_IDENTIFIER
 from lib.interact.structure import StructureType
@@ -45,7 +46,9 @@ def main() -> None:
     while True:
         query = game.get_next_query()
 
-        def choose_move(query: QueryType) -> MovePlaceMeeple |  MovePlaceMeeplePass |  MovePlaceTile | None:
+        def choose_move(
+            query: QueryType,
+        ) -> MovePlaceMeeple | MovePlaceMeeplePass | MovePlaceTile | None:
             match query:
                 case QueryPlaceTile() as q:
                     print("placing tile")
@@ -59,9 +62,11 @@ def main() -> None:
 
         print("sending move")
         game.send_move(choose_move(query))
-        return None;
 
-def handle_place_tile(game: Game, bot_state: BotState, query: QueryPlaceTile) ->MovePlaceTile | None:
+
+def handle_place_tile(
+    game: Game, bot_state: BotState, query: QueryPlaceTile
+) -> MovePlaceTile | None:
     """
     Find the most recently placed tile and try to place a new tile adjacent to it.
     Tries directions in order: right, bottom, left, top
@@ -83,13 +88,13 @@ def handle_place_tile(game: Game, bot_state: BotState, query: QueryPlaceTile) ->
     # Try to place a tile adjacent to the latest tile
     for tile_hand_index, tile_in_hand in enumerate(game.state.my_tiles):
         river_flag = False
-        for (dx, dy), edge in directions.items():
-            if tile_in_hand.internal_edges[edge] == StructureType.RIVER:
+        for find_edge in directions.values():
+            if tile_in_hand.internal_edges[find_edge] == StructureType.RIVER:
                 river_flag = True
-                break            
+                break
         for (dx, dy), edge in directions.items():
-            target_x = list(latest_pos[0]) + dx
-            target_y = list(latest_pos[1]) + dy
+            target_x = latest_pos[0] + dx
+            target_y = latest_pos[1] + dy
 
             # Check bounds
             if not (0 <= target_x < MAX_MAP_LENGTH and 0 <= target_y < MAX_MAP_LENGTH):
@@ -101,45 +106,32 @@ def handle_place_tile(game: Game, bot_state: BotState, query: QueryPlaceTile) ->
 
             # Cheeck if this is a river tile
             # Try placing the tile at this position
-            while river_flag:
-                if game.can_place_tile_at(tile_in_hand, target_x, target_y):
-                    if tile_in_hand.internal_edges[edge] != StructureType.RIVER:
-                        tile_in_hand.rotate_clockwise(1)
-                    else:
-                        bot_state.last_tile = tile_in_hand
-                        bot_state.last_tile.placed_pos = (target_x, target_y)
-                        print(
-                            bot_state.last_tile.placed_pos,
-                            tile_hand_index,
-                            tile_in_hand.rotation,
-                            tile_in_hand.tile_type,
-                            flush=True,
-                        )
-                        return game.move_place_tile(
-                            query, tile_in_hand._to_model(), tile_hand_index
-                        )
 
-                else:
-                    break
-            # Non river case
             if game.can_place_tile_at(tile_in_hand, target_x, target_y):
-                # Save the tile we're placing for meeple placemwhile
-                bot_state.last_tile = tile_in_hand
-                bot_state.last_tile.placed_pos = (target_x, target_y)
-                print(
-                    bot_state.last_tile.placed_pos,
-                    tile_hand_index,
-                    tile_in_hand.rotation,
-                    tile_in_hand.tile_type,
-                    flush=True,
-                )
-                return game.move_place_tile(
-                    query, tile_in_hand._to_model(), tile_hand_index
-                )
-    return None
+                if (
+                    river_flag
+                    and tile_in_hand.internal_edges[edge] != StructureType.RIVER
+                ):
+                    tile_in_hand.rotate_clockwise(1)
+                    continue
+                else:
+                    bot_state.last_tile = tile_in_hand
+                    bot_state.last_tile.placed_pos = (target_x, target_y)
+                    print(
+                        bot_state.last_tile.placed_pos,
+                        tile_hand_index,
+                        tile_in_hand.rotation,
+                        tile_in_hand.tile_type,
+                        flush=True,
+                    )
+                    return game.move_place_tile(
+                        query, tile_in_hand._to_model(), tile_hand_index
+                    )
 
 
-def handle_place_meeple(game: Game, bot_state: BotState, query: QueryPlaceMeeple) -> MovePlaceMeeplePass | MovePlaceMeeple:
+def handle_place_meeple(
+    game: Game, bot_state: BotState, query: QueryPlaceMeeple
+) -> MovePlaceMeeplePass | MovePlaceMeeple:
     """
     Try to place a meeple on the most recently placed tile.
     Priority order: monastery -> Anything else
