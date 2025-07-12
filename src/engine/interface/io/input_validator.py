@@ -1,4 +1,4 @@
-from copy import copy, deepcopy
+from copy import deepcopy
 from typing import TYPE_CHECKING
 from engine.config.game_config import MAX_NUM_TILES_IN_HAND
 from lib.config.map_config import MONASTARY_IDENTIFIER, NUM_PLACEABLE_TILE_TYPES
@@ -114,7 +114,9 @@ class MoveValidator:
             raise ValueError(f"You placed a meeple on an invalid tile - {e.tile.pos}")
 
         if self.state.tile_placed.rotation != e.tile.rotation:
-            raise ValueError(f"You placed a meeple on a valid tile with an invalid/mismatched rotation - {e.tile.rotation}")
+            raise ValueError(
+                f"You placed a meeple on a valid tile with an invalid/mismatched rotation - {e.tile.rotation}"
+            )
 
         player = self.state.players[player_id]
         if player._get_available_meeple() is None:
