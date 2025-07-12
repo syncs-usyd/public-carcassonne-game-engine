@@ -117,14 +117,17 @@ class MoveValidator:
 
             # Flag if there is an edge with a river on this tile.
             river_flag = edge_structure == StructureType.RIVER
+
             if neighbour_tile:
                 # Check if edges are aligned with correct structures
                 neighboring_edge = neighbour_tile.internal_edges[
                     Tile.get_opposite(edge)
                 ]
                 if neighboring_edge != edge_structure:
+                    print(tile.tile_type, tile.rotation)
+                    print(neighbour_tile.tile_type, neighbour_tile.rotation)
                     raise ValueError(
-                        f"You placed a tile in an mismatched position - {edge} mismatch, your edge is {neighbour_tile.internal_edges[Tile.get_opposite(edge)]} != {tile.internal_edges[edge]}"
+                        f"You placed a tile in an mismatched position - {edge} mismatch, your edge is {tile.internal_edges[edge]} on rotation {tile.rotation} at coordinates {e.tile.pos} != {neighbour_tile.internal_edges[Tile.get_opposite(edge)]} on rotation {neighbour_tile.rotation} at position {neighbour_tile.placed_pos}"
                     )
 
                 # Check if we successfully connected a river structure

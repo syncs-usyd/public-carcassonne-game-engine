@@ -26,6 +26,7 @@ from lib.interface.events.moves.move_place_meeple import (
 from lib.interface.queries.typing import QueryType
 from lib.interface.queries.query_place_tile import QueryPlaceTile
 from lib.interface.queries.query_place_meeple import QueryPlaceMeeple
+from lib.interface.events.moves.typing import MoveType
 from lib.config.map_config import MAX_MAP_LENGTH
 from lib.config.map_config import MONASTARY_IDENTIFIER
 from lib.interact.structure import StructureType
@@ -35,20 +36,18 @@ from lib.interact.structure import StructureType
 
 
 class BotState:
-    def __init__(self) -> None:
+    def __init__(self):
         self.last_tile: Tile | None = None
 
 
-def main() -> None:
+def main():
     game = Game()
     bot_state = BotState()
 
     while True:
         query = game.get_next_query()
 
-        def choose_move(
-            query: QueryType,
-        ) -> MovePlaceMeeple | MovePlaceMeeplePass | MovePlaceTile | None:
+        def choose_move(query: QueryType) -> MoveType:
             match query:
                 case QueryPlaceTile() as q:
                     print("placing tile")
@@ -66,7 +65,7 @@ def main() -> None:
 
 def handle_place_tile(
     game: Game, bot_state: BotState, query: QueryPlaceTile
-) -> MovePlaceTile | None:
+) -> MovePlaceTile:
     """
     Find the most recently placed tile and try to place a new tile adjacent to it.
     Tries directions in order: right, bottom, left, top
@@ -85,6 +84,8 @@ def handle_place_tile(
     latest_pos = latest_tile.placed_pos
 
     print(game.state.my_tiles)
+    assert latest_pos
+
     # Try to place a tile adjacent to the latest tile
     for tile_hand_index, tile_in_hand in enumerate(game.state.my_tiles):
         river_flag = False

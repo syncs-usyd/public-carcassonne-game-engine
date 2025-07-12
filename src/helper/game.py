@@ -103,7 +103,6 @@ class Game:
                 ):
                     print("Edge Missmatch")
                     break  # mismatch, try next rotation
-                
 
             else:
                 if has_any_neighbour:
