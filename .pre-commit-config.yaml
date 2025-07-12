@@ -14,4 +14,5 @@ repos:
   rev: v1.10.0  # or latest
   hooks:
     - id: mypy
-      args: [ --strict, --config-file=mypy.ini, --show-error-codes, src ]
+      args: [ --strict, --show-error-codes, ./src ]
+      exclude: example_submissions

@@ -34,3 +34,10 @@ dev = [
     "pre-commit>=4.2.0",
     "ruff>=0.12.0",
 ]
+
+[tool.mypy]
+files = "src"
+python_executable = ".venv/bin/python"
+strict = "true"
+disable_error_code = "import-untyped"
+exclude= 'example_submissions'
