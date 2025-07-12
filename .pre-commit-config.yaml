@@ -14,4 +14,4 @@ repos:
   rev: v1.10.0  # or latest
   hooks:
     - id: mypy
-      args: [--strict]
+      args: [ --strict, --config-file=mypy.ini, --show-error-codes, src ]
