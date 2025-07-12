@@ -1,4 +1,4 @@
-from copy import copy, deepcopy
+from copy import deepcopy
 from typing import TYPE_CHECKING
 from engine.config.game_config import MAX_NUM_TILES_IN_HAND
 from lib.config.map_config import MONASTARY_IDENTIFIER, NUM_PLACEABLE_TILE_TYPES
@@ -55,7 +55,7 @@ class MoveValidator:
 
         for row in self.state.map._grid[80:91]:
             print([col for col in row[80:91]])
-            
+
         neighbouring_tiles = {
             edge: Tile.get_external_tile(edge, (x, y), self.state.map._grid)
             for edge in Tile.get_edges()
@@ -87,72 +87,68 @@ class MoveValidator:
                 f"You tried placing with an invalid rotation - Recieved Tile Rotation {e.tile.rotation}"
             )
 
-        while (tile.rotation != e.tile.rotation):
+        while tile.rotation != e.tile.rotation:
             tile.rotate_clockwise(1)
-    # Validate Tile Pos
+        # Validate Tile Pos
         if not any(neighbouring_tiles.values()):
-
             raise ValueError(
                 f"You placed a tile in an empty space - no neighbours at {x, y}"
             )
+
         # Validating each edge is alighed with a corrrect structure
-        river_flag= False
+        river_flag = False
         river_connections = 0
         for edge, neighbour_tile in neighbouring_tiles.items():
             # for row in self.state.map._grid[80:91]:
             #     print([col for col in row[80:91]])
-            
+
             edge_structure = tile.internal_edges[edge]
-            
+
             # Flag if there is an edge with a river on this tile.
-            river_flag = edge_structure == StructureType.RIVER 
-            
-            if (neighbour_tile):
+            river_flag = edge_structure == StructureType.RIVER
+
+            if neighbour_tile:
                 # Check if edges are aligned with correct structures
-                neighboring_edge = neighbour_tile.internal_edges[Tile.get_opposite(edge)]
-                if (neighboring_edge != edge_structure):
+                neighboring_edge = neighbour_tile.internal_edges[
+                    Tile.get_opposite(edge)
+                ]
+                if neighboring_edge != edge_structure:
                     print(tile.tile_type, tile.rotation)
                     print(neighbour_tile.tile_type, neighbour_tile.rotation)
                     raise ValueError(
-                    f"You placed a tile in an mismatched position - {edge} mismatch, your edge is {tile.internal_edges[edge]} on rotation {tile.rotation} at coordinates {e.tile.pos} != {neighbour_tile.internal_edges[Tile.get_opposite(edge)]} on rotation {neighbour_tile.rotation} at position {neighbour_tile.placed_pos}"
+                        f"You placed a tile in an mismatched position - {edge} mismatch, your edge is {tile.internal_edges[edge]} on rotation {tile.rotation} at coordinates {e.tile.pos} != {neighbour_tile.internal_edges[Tile.get_opposite(edge)]} on rotation {neighbour_tile.rotation} at position {neighbour_tile.placed_pos}"
                     )
+
                 # Check if we successfully connected a river structure
-                if edge_structure == StructureType.RIVER: 
+                if edge_structure == StructureType.RIVER:
                     river_connections += 1
                     assert river_connections <= 1
-            
-            # Handling the case where the edge does not have a tile next to it
-            else: 
-                # U - Turn handling
-                # Logic: if there is two tile away from a disconnected river edge, it means a u-turn has occurred
-                if edge_structure == StructureType.RIVER:
-                    forcast_coordinates = {
-                        "top_edge":(0,-2),
-                        "right_edge": (2,0),
-                        "bottom_edge":(0,2),
-                        "left_edge":(-2,0),
-                        }
-                    extension = forcast_coordinates[edge]
-                    
-                    # Look at the tile two tiles away from the direction the river is facing on our current tile
-                    forecast_x = x + extension[0]
-                    forecast_y = y + extension[1]
-                    if (self.state.map._grid[forecast_y][forecast_x] is not None):
-                        raise ValueError(
-                            f"You placed a tile that will lead to a U-Turn in the river."
-                        )   
-                        
-                                        
 
-        # Check if there is at least one river edge that is connected 
+            # Handling the case where the edge does not have a tile next to it
+            # U - Turn handling
+            # Logic: if there is two tile away from a disconnected river edge, it means a u-turn has occurred
+            elif edge_structure == StructureType.RIVER:
+                forcast_coordinates = {
+                    "top_edge": (0, -2),
+                    "right_edge": (2, 0),
+                    "bottom_edge": (0, 2),
+                    "left_edge": (-2, 0),
+                }
+                extension = forcast_coordinates[edge]
+
+                # Look at the tile two tiles away from the direction the river is facing on our current tile
+                forecast_x = x + extension[0]
+                forecast_y = y + extension[1]
+                if self.state.map._grid[forecast_y][forecast_x] is not None:
+                    raise ValueError(
+                        "You placed a tile that will lead to a U-Turn in the river."
+                    )
+
+        # Check if there is at least one river edge that is connected
         if river_flag and river_connections == 0:
             raise ValueError(
-                f"You placed a river tile without connecting it to the rest of the river."
-                    
+                "You placed a river tile without connecting it to the rest of the river."
             )
-        
-                
-            
 
     def _validate_place_meeple(
         self, e: MovePlaceMeeple, query: BaseQuery, player_id: int
@@ -162,7 +158,9 @@ class MoveValidator:
             raise ValueError(f"You placed a meeple on an invalid tile - {e.tile.pos}")
 
         if self.state.tile_placed.rotation != e.tile.rotation:
-            raise ValueError(f"You placed a meeple on a valid tile with an invalid/mismatched rotation - {e.tile.rotation}")
+            raise ValueError(
+                f"You placed a meeple on a valid tile with an invalid/mismatched rotation - {e.tile.rotation}"
+            )
 
         player = self.state.players[player_id]
         if player._get_available_meeple() is None:

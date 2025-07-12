@@ -33,7 +33,7 @@ class StateMutator:
     def __init__(self, state: GameState) -> None:
         self.state = state
 
-    def commit(self, event: EventType):
+    def commit(self, event: EventType) -> None:
         self.state.event_history.append(event)
 
         match event:
@@ -88,7 +88,7 @@ class StateMutator:
         """
         # Get tile from player hand
         tile = self.state.players[move.player_id].tiles[move.player_tile_index]
-        while (tile.rotation != move.tile.rotation):
+        while tile.rotation != move.tile.rotation:
             tile.rotate_clockwise(1)
 
         self.state.map._grid[move.tile.pos[1]][move.tile.pos[0]] = tile
@@ -112,7 +112,9 @@ class StateMutator:
                     player.points += reward
 
                     if player.points >= POINT_LIMIT:
-                        self.commit(EventGameEndedPointLimitReached(player_id=player.id))
+                        self.commit(
+                            EventGameEndedPointLimitReached(player_id=player.id)
+                        )
 
             meeples_to_return = list(
                 self.state._traverse_connected_component(

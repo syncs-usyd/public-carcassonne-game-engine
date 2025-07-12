@@ -1,7 +1,5 @@
-from collections import deque
 from helper.client_state import ClientSate
 
-from lib.interact.tile import Tile
 from lib.interface.events.event_player_bannned import EventPlayerBanned
 from lib.interface.events.event_player_turn_started import EventPlayerTurnStarted
 from lib.interface.events.event_player_won import EventPlayerWon
@@ -27,15 +25,18 @@ from lib.interface.events.moves.move_place_meeple import (
     MovePlaceMeeple,
     MovePlaceMeeplePass,
 )
-from lib.interface.events.moves.move_place_tile import MovePlaceTile, PublicMovePlaceTile
+from lib.interface.events.moves.move_place_tile import (
+    MovePlaceTile,
+    PublicMovePlaceTile,
+)
 from lib.interface.events.typing import EventType
 
 
 class StateMutator:
-    def __init__(self, state: ClientSate):
+    def __init__(self, state: ClientSate) -> None:
         self.state = state
 
-    def commit(self, i: int, event: EventType):
+    def commit(self, i: int, event: EventType) -> None:
         if i != len(self.state.event_history):
             raise RuntimeError("Please send us a discord message with this error log.")
         self.state.event_history.append(event)
@@ -150,7 +151,7 @@ class StateMutator:
         self.state.map._grid[y][x] = tile
         self.state.map.placed_tiles.append(tile)
         self.state.players[e.player_id].num_tiles -= 1
-        
+
         assert tile.rotation == e.tile.rotation
 
     def _commit_public_move_place_tile(self, e: PublicMovePlaceTile) -> None:
@@ -162,7 +163,7 @@ class StateMutator:
         tile.placed_pos = x, y
         self.state.map._grid[y][x] = tile
         self.state.map.placed_tiles.append(tile)
-        while (tile.rotation != e.tile.rotation):
+        while tile.rotation != e.tile.rotation:
             tile.rotate_clockwise(1)
 
     def _commit_move_place_meeple(self, e: MovePlaceMeeple) -> None:
