@@ -20,6 +20,7 @@ Flaws:
 from helper.game import Game
 from lib.interact.tile import Tile
 from lib.interface.events.moves.move_place_tile import MovePlaceTile
+from lib.interface.events.moves.move_place_meeple import MovePlaceMeeple, MovePlaceMeeplePass
 from lib.interface.queries.typing import QueryType
 from lib.interface.queries.query_place_tile import QueryPlaceTile
 from lib.interface.queries.query_place_meeple import QueryPlaceMeeple
@@ -44,7 +45,7 @@ def main() -> None:
     while True:
         query = game.get_next_query()
 
-        def choose_move(query: QueryType) -> MoveType:
+        def choose_move(query: QueryType) -> MovePlaceMeeple |  MovePlaceMeeplePass |  MovePlaceTile | None:
             match query:
                 case QueryPlaceTile() as q:
                     print("placing tile")
@@ -58,9 +59,9 @@ def main() -> None:
 
         print("sending move")
         game.send_move(choose_move(query))
+        return None;
 
-
-def handle_place_tile(game: Game, bot_state: BotState, query: QueryPlaceTile):
+def handle_place_tile(game: Game, bot_state: BotState, query: QueryPlaceTile) ->MovePlaceTile | None:
     """
     Find the most recently placed tile and try to place a new tile adjacent to it.
     Tries directions in order: right, bottom, left, top
@@ -85,8 +86,7 @@ def handle_place_tile(game: Game, bot_state: BotState, query: QueryPlaceTile):
         for (dx, dy), edge in directions.items():
             if tile_in_hand.internal_edges[edge] == StructureType.RIVER:
                 river_flag = True
-
-        # Loop through all the ways that we can try placing this tile next to the target tile
+                break            
         for (dx, dy), edge in directions.items():
             target_x = list(latest_pos[0]) + dx
             target_y = list(latest_pos[1]) + dy
@@ -136,10 +136,10 @@ def handle_place_tile(game: Game, bot_state: BotState, query: QueryPlaceTile):
                 return game.move_place_tile(
                     query, tile_in_hand._to_model(), tile_hand_index
                 )
-    # return brute_force_tile(game, bot_state, query)
+    return None
 
 
-def handle_place_meeple(game: Game, bot_state: BotState, query: QueryPlaceMeeple):
+def handle_place_meeple(game: Game, bot_state: BotState, query: QueryPlaceMeeple) -> MovePlaceMeeplePass | MovePlaceMeeple:
     """
     Try to place a meeple on the most recently placed tile.
     Priority order: monastery -> Anything else
