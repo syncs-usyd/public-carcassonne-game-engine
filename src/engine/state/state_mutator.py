@@ -158,6 +158,9 @@ class StateMutator:
                 )
 
     def _commit_move_place_meeple(self, move: MovePlaceMeeple) -> None:
+        """
+        Player Meeple Placed Event
+        """
         player = self.state.players[move.player_id]
         assert self.state.tile_placed
 
