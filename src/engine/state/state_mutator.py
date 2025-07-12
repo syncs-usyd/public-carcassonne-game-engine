@@ -87,7 +87,7 @@ class StateMutator:
         Player Tile Placed Event
         """
         # Get tile from player hand
-        tile = self.state.players[move.player_id].tiles[move.player_tile_index]
+        tile = self.state.players[move.player_id].tiles.pop(move.player_tile_index)
         tile.rotate_clockwise(move.tile.rotation)
 
         self.state.map._grid[move.tile.pos[1]][move.tile.pos[0]] = tile
