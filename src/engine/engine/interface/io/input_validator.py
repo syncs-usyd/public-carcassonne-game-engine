@@ -151,8 +151,7 @@ class MoveValidator:
                 forecast_x = x + extension[0]
                 forecast_y = y + extension[1]
 
-                for i in range(4):
-                    coords = list(forcast_coordinates_one.values())[i]
+                for coords in forcast_coordinates_one.values():
                     checking_x = forecast_x + coords[0]
                     checking_y = forecast_y + coords[1]
                     if checking_x != x and checking_y != y:
@@ -173,8 +172,7 @@ class MoveValidator:
                 # Look at the tile two tiles away from the direction the river is facing on our current tile
                 forecast_x = x + extension[0]
                 forecast_y = y + extension[1]
-                for i in range(4):
-                    coords = list(forcast_coordinates_two.values())[i]
+                for coords in forcast_coordinates_two.values():
                     checking_x = forecast_x + coords[0]
                     checking_y = forecast_y + coords[1]
                     if checking_x != x and checking_y != y:
