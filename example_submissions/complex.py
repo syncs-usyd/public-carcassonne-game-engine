@@ -32,10 +32,12 @@ from lib.config.map_config import MONASTARY_IDENTIFIER
 from lib.interact.structure import StructureType
 
 
-"""A class for us to locally the state of the game and what we find relevant"""
+from helper.utils import print_map
 
 
 class BotState:
+    """A class for us to locally the state of the game and what we find relevant"""
+
     def __init__(self):
         self.last_tile: Tile | None = None
 
@@ -108,6 +110,8 @@ def handle_place_tile(
             # Cheeck if this is a river tile
             # Try placing the tile at this position
 
+            print_map(game.state.map._grid, range(75, 96))
+
             if game.can_place_tile_at(tile_in_hand, target_x, target_y):
                 if (
                     river_flag
@@ -129,8 +133,7 @@ def handle_place_tile(
                         query, tile_in_hand._to_model(), tile_hand_index
                     )
 
-    # Couldn't find a tile to place
-    assert False
+    return brute_force_tile(game, bot_state, query)
 
 
 def handle_place_meeple(
@@ -204,37 +207,41 @@ def handle_place_meeple(
 # """Copied from simple.py: brute force a valid tile"""
 
 
-# def brute_force_tile(
-#     game: Game, bot_state: BotState, query: QueryPlaceTile
-# ) -> MovePlaceTile:
-#     grid = game.state.map._grid
-#     height = len(grid)
-#     width = len(grid[0]) if height > 0 else 0
+def brute_force_tile(
+    game: Game, bot_state: BotState, query: QueryPlaceTile
+) -> MovePlaceTile:
+    grid = game.state.map._grid
+    height = len(grid)
+    width = len(grid[0]) if height > 0 else 0
 
-#     directions = {
-#         (0, 1): "top",
-#         (1, 0): "right",
-#         (0, -1): "bottom",
-#         (-1, 0): "left",
-#     }
+    directions = {
+        (0, 1): "top",
+        (1, 0): "right",
+        (0, -1): "bottom",
+        (-1, 0): "left",
+    }
 
-#     print(game.state.event_history)
+    print(game.state.event_history)
 
-#     print("Cards", game.state.my_tiles)
+    print("Cards", game.state.my_tiles)
 
-#     for y in range(height):
-#         for x in range(width):
-#             if grid[y][x] is not None:
-#                 print(f"Checking if tile can be placed near tile - {grid[y][x]}")
-#                 for tile_index, tile in enumerate(game.state.my_tiles):
-#                     for direction in directions:
-#                         dx, dy = direction
-#                         x1, y1 = (x + dx, y + dy)
+    assert bot_state.last_tile
 
-#                         if game.can_place_tile_at(tile, x1, y1):
-#                             bot_state.last_tile = tile._to_model()
-#                             bot_state.last_tile.pos = (x1, y1)
-#                             return game.move_place_tile(query, tile, tile_index)
+    for y in range(height):
+        for x in range(width):
+            if grid[y][x] is not None:
+                print(f"Checking if tile can be placed near tile - {grid[y][x]}")
+                for tile_index, tile in enumerate(game.state.my_tiles):
+                    for direction in directions:
+                        dx, dy = direction
+                        x1, y1 = (x + dx, y + dy)
+
+                        if game.can_place_tile_at(tile, x1, y1):
+                            bot_state.last_tile = tile
+                            bot_state.last_tile.placed_pos = x1, y1
+                            return game.move_place_tile(
+                                query, tile._to_model(), tile_index
+                            )
 
 
 if __name__ == "__main__":
