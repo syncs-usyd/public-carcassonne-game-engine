@@ -14,9 +14,9 @@ requires-python = ">=3.12"
 members = ["src/lib", "src/engine", "src/helper"]
 
 [tool.uv.sources]
-lib = { path = "src/lib" }
-engine = { path = "src/engine" }
-helper = { path = "src/helper" }
+lib = { workspace = true }
+engine = { workspace = true }
+helper = { workspace = true }
 
 [tool.uv]
 dev-dependencies = ["lib", "engine", "helper", "mypy", "pre-commit"]
