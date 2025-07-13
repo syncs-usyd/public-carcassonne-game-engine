@@ -110,8 +110,8 @@ class MoveValidator:
         river_flag = False
         river_connections = 0
         for edge, neighbour_tile in neighbouring_tiles.items():
-            for row in self.state.map._grid[75:96]:
-                print([col for col in row[75:96]])
+            # for row in self.state.map._grid[75:96]:
+            #     print([col for col in row[75:96]])
 
             edge_structure = tile.internal_edges[edge]
 
@@ -124,8 +124,8 @@ class MoveValidator:
                     Tile.get_opposite(edge)
                 ]
                 if neighboring_edge != edge_structure:
-                    print(tile.tile_type, tile.rotation)
-                    print(neighbour_tile.tile_type, neighbour_tile.rotation)
+                    # print(tile.tile_type, tile.rotation)
+                    # print(neighbour_tile.tile_type, neighbour_tile.rotation)
                     raise ValueError(
                         f"You placed a tile in an mismatched position - {edge} mismatch, your edge is {tile.internal_edges[edge]} on rotation {tile.rotation} at coordinates {e.tile.pos} != {neighbour_tile.internal_edges[Tile.get_opposite(edge)]} on rotation {neighbour_tile.rotation} at position {neighbour_tile.placed_pos}"
                     )
@@ -154,7 +154,7 @@ class MoveValidator:
                 for coords in forcast_coordinates_one.values():
                     checking_x = forecast_x + coords[0]
                     checking_y = forecast_y + coords[1]
-                    if checking_x != x and checking_y != y:
+                    if checking_x != x or checking_y != y:
                         if self.state.map._grid[checking_y][checking_x] is not None:
                             raise ValueError(
                                 "You placed a tile that will lead to a U-Turn in the river."
