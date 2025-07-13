@@ -1,5 +1,7 @@
 from copy import deepcopy
 from typing import TYPE_CHECKING
+
+from lib.game.game_logic import TileModifier
 from engine.config.game_config import MAX_NUM_TILES_IN_HAND
 from lib.config.map_config import MONASTARY_IDENTIFIER, NUM_PLACEABLE_TILE_TYPES
 from lib.interface.events.moves.move_place_meeple import (
@@ -21,6 +23,12 @@ VALID_PLACEABLE_TILE_TYPES.extend(
 
 VALID_ROTATIONS = [0, 1, 2, 3]
 VALID_MEEPLE_PLACEMENTS = Tile.get_starting_tile().internal_claims.keys()
+VALID_STRUCTURE_CLAIMS = [
+    StructureType.MONASTARY,
+    StructureType.CITY,
+    StructureType.ROAD,
+    StructureType.ROAD_START,
+]
 
 if TYPE_CHECKING:
     from engine.state.game_state import GameState
@@ -205,6 +213,21 @@ class MoveValidator:
                 raise ValueError(
                     "You tried placing a meeple on an unclaimable Structure - \
                     adjacent structure claimed by an opponent"
+                )
+
+            if (
+                self.state.tile_placed.internal_edges[e.placed_on]
+                not in VALID_STRUCTURE_CLAIMS
+            ):
+                raise ValueError(
+                    f"You placed a meeple on a invalid edge - Edge Strcuture is {self.state.tile_placed.internal_edges[e.placed_on]}"
+                )
+
+        if e.placed_on == MONASTARY_IDENTIFIER:
+            if TileModifier.MONASTARY not in self.state.tile_placed.modifiers:
+                raise ValueError(
+                    "You tried placing a meeple on a Monastary - \
+                    There is no Monastary on the tile "
                 )
 
     def _validate_place_meeple_pass(
