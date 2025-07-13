@@ -173,11 +173,15 @@ class MoveValidator:
                 # Look at the tile two tiles away from the direction the river is facing on our current tile
                 forecast_x = x + extension[0]
                 forecast_y = y + extension[1]
-                if self.state.map._grid[forecast_y][forecast_x] is not None:
-                    raise ValueError(
-                        "You placed a tile that will lead to a U-Turn in the river."
-                    )
-
+                for i in range(4):
+                    coords = list(forcast_coordinates_two.values())[i]
+                    checking_x = forecast_x + coords[0]
+                    checking_y = forecast_y + coords[1]
+                    if checking_x != x and checking_y != y:
+                        if self.state.map._grid[checking_y][checking_x] is not None:
+                            raise ValueError(
+                                "You placed a tile that will lead to a U-Turn in the river."
+                            )
         # Check if there is at least one river edge that is connected
         if river_flag and river_connections == 0:
             raise ValueError(
