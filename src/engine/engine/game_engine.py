@@ -237,7 +237,7 @@ class GameEngine:
 
             for pm in players_meeples[1:]:
                 if pm and len(pm) == len(players_meeples[0]):
-                    partial_rewarded_meeples.append(pm[0]}
+                    partial_rewarded_meeples.append(pm[0])
 
                 elif pm:
                     returning_meeples.append(pm[0])
