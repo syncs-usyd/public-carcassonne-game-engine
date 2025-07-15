@@ -339,6 +339,7 @@ def create_base_tiles() -> list["Tile"]:
             right_edge=StructureType.GRASS,
             top_edge=StructureType.GRASS,
             bottom_edge=StructureType.ROAD_START,
+            modifiers=[TileModifier.MONASTARY],
         ).clone_add(tile_counts.A)
     )
 
