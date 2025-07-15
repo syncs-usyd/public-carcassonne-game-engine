@@ -278,7 +278,7 @@ class GameEngine:
                 elif pm:
                     returning_meeples.append(pm[0])
 
-            reward = self.state._get_reward(tile, edge)
+            reward = self.state._get_reward(tile, edge, partial=True)
 
             for meeple in partial_rewarded_meeples:
                 self.state.players[meeple.player_id].points += reward
