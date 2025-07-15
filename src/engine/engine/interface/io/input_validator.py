@@ -233,6 +233,12 @@ class MoveValidator:
                     There is no Monastary on the tile "
                 )
 
+        elif e.placed_on in self.state.tile_placed_claims:
+            raise ValueError(
+                f"You tried placing a meeple on a edge/structure that is completed - \
+                    {e.placed_on} "
+            )
+
     def _validate_place_meeple_pass(
         self, e: MovePlaceMeeplePass, query: BaseQuery, player_id: int
     ) -> None:
