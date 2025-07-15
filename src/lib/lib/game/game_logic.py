@@ -97,14 +97,15 @@ class GameLogic(SharedGameState):
         modify: Callable[[Tile, str], None] = lambda _1, _2: None,
     ) -> Iterator[tuple["Tile", str]]:
         visited = set()
-        structure_type = start_tile.internal_edges[edge]
-        structure_bridge = TileModifier.get_bridge_modifier(structure_type)
-
-        queue = deque([(start_tile, edge)])
 
         # Not a traversable edge - ie monastary etc
         if edge not in start_tile.internal_edges.keys():
             return
+
+        structure_type = start_tile.internal_edges[edge]
+        structure_bridge = TileModifier.get_bridge_modifier(structure_type)
+
+        queue = deque([(start_tile, edge)])
 
         while queue:
             tile, edge = queue.popleft()
