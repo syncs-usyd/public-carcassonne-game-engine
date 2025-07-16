@@ -72,7 +72,7 @@ class MonastaryNeighbourSubsciber(TileSubsciber):
             (x + i, y + j)
             for i in range(-1, 2)
             for j in range(-1, 2)
-            if not (i == j == 0)
+            # if not (i == j == 0)
         ]
 
     @final

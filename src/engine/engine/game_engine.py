@@ -246,7 +246,7 @@ class GameEngine:
                 assert len(subsribers) == 1
                 assert meeple is not None
 
-                reward = len(subsribers[0].filled) + 1
+                reward = len(subsribers[0].filled)
                 meeple._free_meeple()
                 self.mutator.commit(
                     EventPlayerMeepleFreed(
