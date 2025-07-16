@@ -1,7 +1,7 @@
 from copy import deepcopy
 from typing import TYPE_CHECKING
 
-# from helper.utils import print_map
+from helper.utils import print_map
 from lib.game.game_logic import TileModifier
 from engine.config.game_config import MAX_NUM_TILES_IN_HAND
 from lib.config.map_config import MONASTARY_IDENTIFIER, NUM_PLACEABLE_TILE_TYPES
@@ -63,9 +63,9 @@ class MoveValidator:
         tile: Tile
 
         # R3
-        # print("Validator recieved tile type", e.tile.tile_type)
+        print("Validator recieved tile type", e.tile.tile_type)
 
-        # print_map(self.state.map._grid, range(75, 96))
+        print_map(self.state.map._grid, range(75, 96))
 
         neighbouring_tiles = {
             edge: Tile.get_external_tile(edge, (x, y), self.state.map._grid)
@@ -131,7 +131,7 @@ class MoveValidator:
                     # print(tile.tile_type, tile.rotation)
                     # print(neighbour_tile.tile_type, neighbour_tile.rotation)
                     raise ValueError(
-                        f"You placed a tile in an mismatched position - {edge} mismatch, your edge is {tile.internal_edges[edge]} on rotation {tile.rotation} at coordinates {e.tile.pos} != {neighbour_tile.internal_edges[Tile.get_opposite(edge)]} on rotation {neighbour_tile.rotation} at position {neighbour_tile.placed_pos}"
+                        f"You placed a tile in an mismatched position - {edge} mismatch, your edge is {neighboring_edge} on rotation {tile.rotation} at coordinates {e.tile.pos} != {neighbour_tile.internal_edges[Tile.get_opposite(edge)]} on rotation {neighbour_tile.rotation} at position {neighbour_tile.placed_pos}"
                     )
 
                 # Check if we successfully connected a river structure
