@@ -1,3 +1,4 @@
+from re import sub
 from typing import cast
 from lib.interface.events.typing import EventPlayerWon
 from engine.config.game_config import (
@@ -241,9 +242,11 @@ class GameEngine:
                     cast(MonastaryNeighbourSubsciber, s)
                     for s in self.state.tile_publisher.watchers[tile.placed_pos]
                     if isinstance(s, MonastaryNeighbourSubsciber)
+                    and cast(MonastaryNeighbourSubsciber, s).center == tile.placed_pos
                 ]
 
                 assert len(subsribers) == 1
+
                 assert meeple is not None
 
                 reward = len(subsribers[0].filled)
@@ -259,10 +262,11 @@ class GameEngine:
 
                 continue
 
-            # Only rewarded once
+            # Only check reward once
             if (tile, edge) in structures_visited:
                 continue
 
+            # Redundant safe add
             structures_visited.add((tile, edge))
 
             players = self.state._get_claims_objs(tile, edge)
@@ -271,12 +275,28 @@ class GameEngine:
             partial_rewarded_meeples = [players_meeples[0][0]]
             returning_meeples = []
 
+            assert (
+                partial_rewarded_meeples[0].placed is not None
+                and partial_rewarded_meeples[0].placed_edge != ""
+            )
+
+            structures_visited.add(
+                (
+                    partial_rewarded_meeples[0].placed,
+                    partial_rewarded_meeples[0].placed_edge,
+                )
+            )
+
             for pm in players_meeples[1:]:
                 if pm and len(pm) == len(players_meeples[0]):
                     partial_rewarded_meeples.append(pm[0])
 
                 elif pm:
                     returning_meeples.append(pm[0])
+
+                for m in pm:
+                    assert m.placed is not None and m.placed_edge != ""
+                    structures_visited.add((m.placed, m.placed_edge))
 
             reward = self.state._get_reward(tile, edge, partial=True)
 
