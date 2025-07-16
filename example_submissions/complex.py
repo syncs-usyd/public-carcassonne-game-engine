@@ -241,10 +241,12 @@ def handle_place_meeple(
         else:
             # Check if edge has a claimable structure
             assert bot_state.last_tile
-            # structures = list(game.state.get_placeable_structures(
-            #         bot_state.last_tile._to_model()
-            #     ).items())
-            # print("structurees: ", structures)
+            structures = list(
+                game.state.get_placeable_structures(
+                    bot_state.last_tile._to_model()
+                ).items()
+            )
+            print("structurees: ", structures)
             # e, structure = structures[0] if structures else None, None
             # print("e: ", e)
             # print("structure:", structure)
@@ -252,6 +254,7 @@ def handle_place_meeple(
             if recent_tile.internal_claims.get(edge) is None:
                 print("Edge:", edge)
                 # Check if the structure is actually unclaimed (not connected to claimed structures)
+                print(game.state._get_claims(recent_tile, edge))
                 if (
                     not game.state._get_claims(recent_tile, edge)
                     and bot_state.last_tile.internal_edges[edge] != StructureType.RIVER
