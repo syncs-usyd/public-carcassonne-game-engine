@@ -65,7 +65,7 @@ class MoveValidator:
         # R3
         # print("Validator recieved tile type", e.tile.tile_type)
 
-        print_map(self.state.map._grid, range(75, 96))
+        # print_map(self.state.map._grid, range(75, 96))
 
         neighbouring_tiles = {
             edge: Tile.get_external_tile(edge, (x, y), self.state.map._grid)
