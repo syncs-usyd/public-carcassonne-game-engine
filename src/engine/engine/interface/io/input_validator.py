@@ -63,7 +63,7 @@ class MoveValidator:
         tile: Tile
 
         # R3
-        print("Validator recieved tile type", e.tile.tile_type)
+        # print("Validator recieved tile type", e.tile.tile_type)
 
         # print_map(self.state.map._grid, range(75, 96))
 
@@ -124,14 +124,16 @@ class MoveValidator:
 
             if neighbour_tile:
                 # Check if edges are aligned with correct structures
-                neighboring_edge = neighbour_tile.internal_edges[
+                neighbouring_structure = neighbour_tile.internal_edges[
                     Tile.get_opposite(edge)
                 ]
-                if neighboring_edge != edge_structure:
+                if not StructureType.is_compatible(
+                    edge_structure, neighbouring_structure
+                ):
                     # print(tile.tile_type, tile.rotation)
                     # print(neighbour_tile.tile_type, neighbour_tile.rotation)
                     raise ValueError(
-                        f"You placed a tile in an mismatched position - {edge} mismatch, your edge is {tile.internal_edges[edge]} on rotation {tile.rotation} at coordinates {e.tile.pos} != {neighbour_tile.internal_edges[Tile.get_opposite(edge)]} on rotation {neighbour_tile.rotation} at position {neighbour_tile.placed_pos}"
+                        f"You placed a tile in an mismatched position - {edge} mismatch, your edge is {edge_structure} on rotation {tile.rotation} at coordinates {e.tile.pos} != {neighbouring_structure} on rotation {neighbour_tile.rotation} at position {neighbour_tile.placed_pos}"
                     )
 
                 # Check if we successfully connected a river structure

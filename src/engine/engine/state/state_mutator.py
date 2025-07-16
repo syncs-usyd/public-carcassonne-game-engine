@@ -107,9 +107,8 @@ class StateMutator:
         for edge in completed_components:
             reward = self.state._get_reward(tile, edge)
 
-            self.state.tile_placed_claims.add(edge)
-
-            for player_id in self.state._get_claims(tile, edge):
+            claims = self.state._get_claims(tile, edge)
+            for player_id in claims:
                 player = self.state._get_player_from_id(player_id)
 
                 if player:
@@ -117,6 +116,9 @@ class StateMutator:
 
                     if player.points >= POINT_LIMIT:
                         player_point_limit = player.id
+
+            if claims:
+                self.state.tile_placed_claims.add(edge)
 
             meeples_to_return = list(
                 self.state._traverse_connected_component(
@@ -133,7 +135,7 @@ class StateMutator:
                 meeple._free_meeple()
                 self.commit(
                     EventPlayerMeepleFreed(
-                        player_id=move.player_id,
+                        player_id=meeple.player_id,
                         reward=reward,
                         tile=t._to_model(),
                         placed_on=e,

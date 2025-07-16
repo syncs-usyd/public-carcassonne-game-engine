@@ -84,7 +84,7 @@ class GameLogic(SharedGameState):
     def check_any_complete(self, start_tile: "Tile") -> list[str]:
         edges_complete: list[str] = []
         for edge, tile in start_tile.get_external_tiles(self.map._grid).items():
-            if tile and self._check_completed_component(tile, edge):
+            if tile and self._check_completed_component(start_tile, edge):
                 edges_complete.append(edge)
 
         return edges_complete
@@ -120,19 +120,36 @@ class GameLogic(SharedGameState):
             if yield_cond(tile, edge):
                 yield tile, edge
 
-            connected_internal_edges = []
+            connected_internal_edges = [edge]
 
             for adjacent_edge in Tile.adjacent_edges(edge):
                 if tile.internal_edges[adjacent_edge] == structure_type:
-                    connected_internal_edges.append(adjacent_edge)
+                    if not (
+                        TileModifier.BROKEN_CITY in tile.modifiers
+                        and structure_type == StructureType.CITY
+                    ):
+                        connected_internal_edges.append(adjacent_edge)
+
+                        for adjacent_edge2 in Tile.adjacent_edges(adjacent_edge):
+                            if (
+                                tile.internal_edges[adjacent_edge]
+                                == tile.internal_edges[adjacent_edge2]
+                                and adjacent_edge2 not in connected_internal_edges
+                            ):
+                                connected_internal_edges.append(adjacent_edge2)
 
             if (
-                not connected_internal_edges
+                len(connected_internal_edges) == 1
                 and structure_bridge
                 and structure_bridge in tile.modifiers
             ):
-                if tile.internal_edges[Tile.get_opposite(edge)] == structure_type:
+                if StructureType.is_compatible(
+                    structure_type, tile.internal_edges[Tile.get_opposite(edge)]
+                ):
                     connected_internal_edges.append(Tile.get_opposite(edge))
+
+            if structure_type == StructureType.ROAD_START:
+                structure_type = StructureType.ROAD
 
             for cid in connected_internal_edges:
                 assert tile.placed_pos is not None
@@ -142,6 +159,15 @@ class GameLogic(SharedGameState):
 
                 if neighbouring_tile:
                     neighbouring_tile_edge = tile.get_opposite(cid)
+                    neighbouring_structure_type = neighbouring_tile.internal_edges[
+                        neighbouring_tile_edge
+                    ]
+
+                    if (
+                        structure_type == StructureType.ROAD
+                        and neighbouring_structure_type == StructureType.ROAD_START
+                    ):
+                        continue
 
                     if (neighbouring_tile, neighbouring_tile_edge) not in visited:
                         queue.append((neighbouring_tile, neighbouring_tile_edge))
