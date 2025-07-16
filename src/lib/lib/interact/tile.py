@@ -298,7 +298,6 @@ def create_river_tiles() -> list["Tile"]:
             right_edge=StructureType.CITY,
             top_edge=StructureType.CITY,
             bottom_edge=StructureType.RIVER,
-            modifiers=[TileModifier.OPP_ROAD_BRIDGE],
         )
     )
 
