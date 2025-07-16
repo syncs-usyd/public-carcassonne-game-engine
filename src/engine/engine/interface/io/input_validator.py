@@ -63,7 +63,7 @@ class MoveValidator:
         tile: Tile
 
         # R3
-        print("Validator recieved tile type", e.tile.tile_type)
+        # print("Validator recieved tile type", e.tile.tile_type)
 
         # print_map(self.state.map._grid, range(75, 96))
 
