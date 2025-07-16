@@ -250,6 +250,7 @@ class GameEngine:
                 assert meeple is not None
 
                 reward = len(subsribers[0].filled)
+                self.state.players[meeple.player_id].points += reward
                 meeple._free_meeple()
                 self.mutator.commit(
                     EventPlayerMeepleFreed(
