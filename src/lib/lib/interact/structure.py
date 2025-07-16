@@ -30,7 +30,7 @@ class StructureType(Enum):
         return {
             StructureType.ROAD: ROAD_POINTS,
             StructureType.ROAD_START: ROAD_POINTS,
-            StructureType.CITY: CITY_POINTS,
+            StructureType.CITY: CITY_POINTS / 2,
             # StructureType.GRASS: FARM_POINTS,
         }.get(structure_type, NO_POINTS)
 
