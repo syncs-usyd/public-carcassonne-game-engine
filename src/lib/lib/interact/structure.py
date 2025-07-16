@@ -1,6 +1,9 @@
+from typing import Optional
 from lib.config.scoring import NO_POINTS, ROAD_POINTS, CITY_POINTS
 
 from enum import Enum, auto
+
+from lib.interact.tile import TileModifier
 
 
 class StructureType(Enum):
@@ -38,3 +41,17 @@ class StructureType(Enum):
             StructureType.CITY: True,
             # StructureType.GRASS: True,
         }.get(structure_type, False)
+
+    @staticmethod
+    def is_compatible(
+        s1: "StructureType",
+        s2: "StructureType",
+        m1: Optional[list[TileModifier]] = None,
+        m2: Optional[list[TileModifier]] = None,
+    ) -> bool:
+        return s2 in {
+            StructureType.ROAD: [StructureType.ROAD, StructureType.ROAD_START],
+            StructureType.ROAD_START: [StructureType.ROAD],
+            StructureType.CITY: [StructureType.CITY],
+            # StructureType.GRASS: [StructureType.GRASS],
+        }.get(s1, [])
