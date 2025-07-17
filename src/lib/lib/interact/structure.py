@@ -1,5 +1,5 @@
 from typing import TYPE_CHECKING, Optional
-from lib.config.scoring import NO_POINTS, ROAD_POINTS, CITY_POINTS
+from lib.config.scoring import CITY_PARTIAL_POINTS, NO_POINTS, ROAD_POINTS, CITY_POINTS
 
 from enum import Enum, auto
 
@@ -30,7 +30,7 @@ class StructureType(Enum):
         return {
             StructureType.ROAD: ROAD_POINTS,
             StructureType.ROAD_START: ROAD_POINTS,
-            StructureType.CITY: CITY_POINTS / 2,
+            StructureType.CITY: CITY_PARTIAL_POINTS,
             # StructureType.GRASS: FARM_POINTS,
         }.get(structure_type, NO_POINTS)
 
@@ -50,9 +50,11 @@ class StructureType(Enum):
         m1: Optional[list["TileModifier"]] = None,
         m2: Optional[list["TileModifier"]] = None,
     ) -> bool:
+        # Compatibility with ecternal edge
         return s2 in {
             StructureType.ROAD: [StructureType.ROAD, StructureType.ROAD_START],
-            StructureType.ROAD_START: [StructureType.ROAD],
+            StructureType.ROAD_START: [StructureType.ROAD, StructureType.ROAD_START],
             StructureType.CITY: [StructureType.CITY],
-            # StructureType.GRASS: [StructureType.GRASS],
+            StructureType.RIVER: [StructureType.RIVER],
+            StructureType.GRASS: [StructureType.GRASS],
         }.get(s1, [])
