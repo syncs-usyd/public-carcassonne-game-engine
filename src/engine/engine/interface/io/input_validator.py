@@ -114,7 +114,6 @@ class MoveValidator:
 
         # Validating each edge is alighed with a corrrect structure
         river_flag = False
-        river_connections = 0
 
         for edge, neighbour_tile in neighbouring_tiles.items():
             edge_structure = tile.internal_edges[edge]
@@ -136,61 +135,23 @@ class MoveValidator:
                         f"You placed a tile in an mismatched position - {edge} mismatch, your edge is {edge_structure} on rotation {tile.rotation} at coordinates {e.tile.pos} != {neighbouring_structure} on rotation {neighbour_tile.rotation} at position {neighbour_tile.placed_pos}"
                     )
 
-                # Check if we successfully connected a river structure
-                if edge_structure == StructureType.RIVER:
-                    river_connections += 1
-                    assert river_connections <= 1
-
             # Handling the case where the edge does not have a tile next to it
             # U - Turn handling
-            elif edge_structure == StructureType.RIVER:
-                # Handling direct u-turns: propagate one out from the proposed disconnected river edge, and check surroundings
+            # Handling direct u-turns: propagate one out from the proposed disconnected river edge, and check surroundings
 
-                forcast_coordinates_one = {
-                    "top_edge": (0, -1),
-                    "right_edge": (1, 0),
-                    "bottom_edge": (0, 1),
-                    "left_edge": (-1, 0),
-                }
-
-                extension = forcast_coordinates_one[edge]
-                forecast_x = x + extension[0]
-                forecast_y = y + extension[1]
-
-                for coords in forcast_coordinates_one.values():
-                    checking_x = forecast_x + coords[0]
-                    checking_y = forecast_y + coords[1]
-                    if not (checking_x == x and checking_y == y):
-                        if self.state.map._grid[checking_y][checking_x] is not None:
-                            raise ValueError(
-                                "You placed a tile that will lead to a U-Turn in the river."
-                            )
-
-                # Handling problematic u-turn: if there is two tile away from a disconnected river edge, it means a u-turn has occurred
-                forcast_coordinates_two = {
-                    "top_edge": (0, -2),
-                    "right_edge": (2, 0),
-                    "bottom_edge": (0, 2),
-                    "left_edge": (-2, 0),
-                }
-                extension = forcast_coordinates_two[edge]
-
-                # Look at the tile two tiles away from the direction the river is facing on our current tile
-                forecast_x = x + extension[0]
-                forecast_y = y + extension[1]
-                for coords in forcast_coordinates_one.values():
-                    checking_x = forecast_x + coords[0]
-                    checking_y = forecast_y + coords[1]
-
-                    if self.state.map._grid[checking_y][checking_x] is not None:
-                        raise ValueError(
-                            "You placed a tile that will lead to a U-Turn in the river."
-                        )
         # Check if there is at least one river edge that is connected
-        if river_flag and river_connections == 0:
-            raise ValueError(
-                "You placed a river tile without connecting it to the rest of the river."
-            )
+        if river_flag:
+            match self.state.map.river_validation(tile, x, y):
+                case "disjoint":
+                    raise ValueError(
+                        "You placed a river tile without connecting it to the rest of the river."
+                    )
+                case "uturn":
+                    raise ValueError(
+                        "You placed a tile that will lead to a U-Turn in the river."
+                    )
+                case "pass":
+                    pass
 
     def _validate_place_meeple(
         self, e: MovePlaceMeeple, query: BaseQuery, player_id: int
