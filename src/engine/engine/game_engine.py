@@ -277,6 +277,10 @@ class GameEngine:
 
             players = self.state._get_claims_objs(tile, edge)
             players_meeples = sorted(players.values(), key=len, reverse=True)
+            for player_meeples in players_meeples:
+                for m in player_meeples:
+                    assert m.placed is not None
+                    structures_visited.add((m.placed, m.placed_edge))
 
             partial_rewarded_meeples = [players_meeples[0][0]]
             returning_meeples = []
@@ -284,13 +288,6 @@ class GameEngine:
             assert (
                 partial_rewarded_meeples[0].placed is not None
                 and partial_rewarded_meeples[0].placed_edge != ""
-            )
-
-            structures_visited.add(
-                (
-                    partial_rewarded_meeples[0].placed,
-                    partial_rewarded_meeples[0].placed_edge,
-                )
             )
 
             for pm in players_meeples[1:]:
@@ -302,7 +299,6 @@ class GameEngine:
 
                 for m in pm:
                     assert m.placed is not None and m.placed_edge != ""
-                    structures_visited.add((m.placed, m.placed_edge))
 
             reward = self.state._get_reward(tile, edge, partial=True)
 

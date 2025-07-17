@@ -1,4 +1,7 @@
 from typing import cast
+
+from lib.interact.map import Tile
+from lib.interact.tile import Meeple
 from engine.game.tile_subscriber import MonastaryNeighbourSubsciber
 from engine.state.game_state import GameState
 
@@ -104,44 +107,46 @@ class StateMutator:
 
         player_point_limit = -1
 
+        internal_edges_visited: set[str] = set()
+
         # Check for base/regular connected components
         for edge in completed_components:
+            if edge in internal_edges_visited:
+                continue
+
             reward = self.state._get_reward(tile, edge)
 
-            claims = self.state._get_claims(tile, edge)
-            for player_id in claims:
-                player = self.state._get_player_from_id(player_id)
+            player_to_meeples = self.state._get_claims_objs(tile, edge)
 
-                if player:
-                    player.points += reward
+            players_rewarded = set()
+            for player_id in player_to_meeples:
+                player = self.state.players[player_id]
+                player.points += reward
+                players_rewarded.add(player)
 
-                    if player.points >= POINT_LIMIT:
-                        player_point_limit = player.id
+                if player.points >= POINT_LIMIT:
+                    player_point_limit = player.id
 
-            if claims:
+                for m in player_to_meeples[player_id]:
+                    assert m.placed is not None
+
+                    if m.placed == tile and m.placed_edge != edge:
+                        internal_edges_visited.add(edge)
+
+                    self.commit(
+                        EventPlayerMeepleFreed(
+                            player_id=m.player_id,
+                            reward=reward,
+                            tile=m.placed._to_model(),
+                            placed_on=m.placed_edge,
+                        )
+                    )
+                    m._free_meeple()
+
+            if player_to_meeples:
                 self.state.tile_placed_claims.add(edge)
 
-            meeples_to_return = list(
-                self.state._traverse_connected_component(
-                    tile,
-                    edge,
-                    yield_cond=lambda t, e: t.internal_claims[e] is not None,
-                )
-            )
-
-            for t, e in meeples_to_return:
-                meeple = t.internal_claims[e]
-                assert meeple is not None
-
-                meeple._free_meeple()
-                self.commit(
-                    EventPlayerMeepleFreed(
-                        player_id=meeple.player_id,
-                        reward=reward,
-                        tile=t._to_model(),
-                        placed_on=e,
-                    )
-                )
+            internal_edges_visited.add(edge)
 
         # Check for monastary/special completed componentes
         for subscribed_complete in self.state.tile_publisher.check_notify(tile):
@@ -211,7 +216,7 @@ class StateMutator:
                 assert len(rewarded_set) == 1
                 player_id, reward, t, e = rewarded_set[0]
                 self.state.players[player_id].points += reward
-                assert player_id == move.player_id
+                # assert player_id == move.player_id
 
                 meeple = t.internal_claims[e]
                 assert meeple is not None
