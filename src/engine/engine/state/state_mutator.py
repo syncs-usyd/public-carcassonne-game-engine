@@ -1,3 +1,4 @@
+from typing import cast
 from engine.game.tile_subscriber import MonastaryNeighbourSubsciber
 from engine.state.game_state import GameState
 
@@ -139,8 +140,8 @@ class StateMutator:
                 )
 
         # Check for monastary/special completed componentes
-        for subscibed_complete in self.state.tile_publisher.check_notify(tile):
-            for player_id, reward, t, reward_edge in subscibed_complete._reward():
+        for subscribed_complete in self.state.tile_publisher.check_notify(tile):
+            for player_id, reward, t, reward_edge in subscribed_complete._reward():
                 self.state.players[player_id].points += reward
 
                 if (
@@ -161,6 +162,8 @@ class StateMutator:
                         placed_on=reward_edge,
                     )
                 )
+
+                player_point_limit = player_id
 
         if player_point_limit >= 0:
             self.commit(EventGameEndedPointLimitReached(player_id=player_point_limit))
@@ -187,25 +190,37 @@ class StateMutator:
             )
             tile_subsciber.register_to(self.state.tile_publisher, self.state.map._grid)
 
-            for subscibed_complete in self.state.tile_publisher.check_notify(
+            for subscribed_complete in self.state.tile_publisher.check_notify(
                 self.state.tile_placed
             ):
-                for player_id, reward, t, e in subscibed_complete._reward():
-                    self.state.players[player_id].points += reward
-                    assert player_id == move.player_id
+                if not isinstance(MonastaryNeighbourSubsciber, subscribed_complete):
+                    continue
 
-                    meeple = t.internal_claims[e]
-                    assert meeple is not None
+                subscribed_complete = cast(
+                    MonastaryNeighbourSubsciber, subscribed_complete
+                )
 
-                    meeple._free_meeple()
-                    self.commit(
-                        EventPlayerMeepleFreed(
-                            player_id=player_id,
-                            reward=reward,
-                            tile=t._to_model(),
-                            placed_on=e,
-                        )
+                if move.placed_on != subscribed_complete.center:
+                    continue
+
+                rewarded_set = subscribed_complete._reward()
+                assert len(rewarded_set) == 1
+                player_id, reward, t, e = rewarded_set[0]
+                self.state.players[player_id].points += reward
+                assert player_id == move.player_id
+
+                meeple = t.internal_claims[e]
+                assert meeple is not None
+
+                meeple._free_meeple()
+                self.commit(
+                    EventPlayerMeepleFreed(
+                        player_id=player_id,
+                        reward=reward,
+                        tile=t._to_model(),
+                        placed_on=e,
                     )
+                )
 
         # Check the player completed a reguar component and claimed
         elif move.placed_on in completed_components:
