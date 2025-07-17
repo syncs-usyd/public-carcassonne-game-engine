@@ -7,6 +7,7 @@ from lib.interact.tile import (
 )
 
 from lib.config.map_config import MAX_MAP_LENGTH
+from lib.interact.structure import StructureType
 
 
 class Map:
@@ -59,3 +60,66 @@ class Map:
             return tile
 
         return self.available_tiles_by_type[type][0]
+
+    # Returns
+    def river_validation(self, tile: Tile, x: int, y: int) -> str:
+        neighbouring_tiles = {
+            edge: Tile.get_external_tile(edge, (x, y), self.state.map._grid)
+            for edge in Tile.get_edges()
+        }
+        river_connections = 0
+
+        for edge, neighbour_tile in neighbouring_tiles.items():
+            edge_structure = tile.internal_edges[edge]
+
+            if neighbour_tile:
+                # Check if we successfully connected a river structure
+                if edge_structure == StructureType.RIVER:
+                    river_connections += 1
+                    assert river_connections <= 1
+
+            # Handling the case where the edge does not have a tile next to it
+            # U - Turn handling
+            elif edge_structure == StructureType.RIVER:
+                # Handling direct u-turns: propagate one out from the proposed disconnected river edge, and check surroundings
+
+                forcast_coordinates_one = {
+                    "top_edge": (0, -1),
+                    "right_edge": (1, 0),
+                    "bottom_edge": (0, 1),
+                    "left_edge": (-1, 0),
+                }
+
+                extension = forcast_coordinates_one[edge]
+                forecast_x = x + extension[0]
+                forecast_y = y + extension[1]
+
+                for coords in forcast_coordinates_one.values():
+                    checking_x = forecast_x + coords[0]
+                    checking_y = forecast_y + coords[1]
+                    if not (checking_x == x and checking_y == y):
+                        if self.state.map._grid[checking_y][checking_x] is not None:
+                            return "uturn"
+
+                # Handling problematic u-turn: if there is two tile away from a disconnected river edge, it means a u-turn has occurred
+                forcast_coordinates_two = {
+                    "top_edge": (0, -2),
+                    "right_edge": (2, 0),
+                    "bottom_edge": (0, 2),
+                    "left_edge": (-2, 0),
+                }
+                extension = forcast_coordinates_two[edge]
+
+                # Look at the tile two tiles away from the direction the river is facing on our current tile
+                forecast_x = x + extension[0]
+                forecast_y = y + extension[1]
+                for coords in forcast_coordinates_one.values():
+                    checking_x = forecast_x + coords[0]
+                    checking_y = forecast_y + coords[1]
+
+                    if self.state.map._grid[checking_y][checking_x] is not None:
+                        return "f-uturn"
+        # Check if there is at least one river edge that is connected
+        if river_connections == 0:
+            return "disjoint"
+        return "pass"
