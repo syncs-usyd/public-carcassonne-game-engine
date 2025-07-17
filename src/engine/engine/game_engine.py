@@ -27,7 +27,7 @@ from engine.state.state_mutator import StateMutator
 from lib.config.expansion import EXPANSION
 from lib.config.map_config import MAP_CENTER, TILE_EDGE_IDS, TILE_EXTERNAL_POS
 from lib.interact.structure import StructureType
-from lib.interact.tile import MONASTARY_IDENTIFIER, Tile
+from lib.interact.tile import MONASTARY_IDENTIFIER, NO_POINTS, Tile
 from lib.interface.events.event_game_ended import (
     EventGameEndedStaleMate,
 )
@@ -308,26 +308,28 @@ class GameEngine:
 
             for meeple in partial_rewarded_meeples:
                 self.state.players[meeple.player_id].points += reward
-                meeple._free_meeple()
+                assert meeple.placed
                 self.mutator.commit(
                     EventPlayerMeepleFreed(
                         player_id=meeple.player_id,
                         reward=reward,
-                        tile=tile._to_model(),
+                        tile=meeple.placed._to_model(),
                         placed_on=edge,
                     )
                 )
+                meeple._free_meeple()
 
             for meeple in returning_meeples:
-                meeple._free_meeple()
+                assert meeple.placed
                 self.mutator.commit(
                     EventPlayerMeepleFreed(
                         player_id=meeple.player_id,
-                        reward=0,
-                        tile=tile._to_model(),
+                        reward=NO_POINTS,
+                        tile=meeple.placed._to_model(),
                         placed_on=edge,
                     )
                 )
+                meeple._free_meeple()
 
         player, points = self.state.get_player_points()[0]
         self.mutator.commit(EventPlayerWon(player_id=player, points=points))

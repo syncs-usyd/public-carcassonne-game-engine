@@ -157,7 +157,6 @@ class StateMutator:
                 meeple = t.internal_claims[reward_edge]
                 assert meeple is not None
 
-                meeple._free_meeple()
                 self.commit(
                     EventPlayerMeepleFreed(
                         player_id=player_id,
@@ -166,6 +165,7 @@ class StateMutator:
                         placed_on=reward_edge,
                     )
                 )
+                meeple._free_meeple()
 
                 player_point_limit = player_id
 
