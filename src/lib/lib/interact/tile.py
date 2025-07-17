@@ -170,7 +170,6 @@ class Tile:
         top_edge: StructureType,
         bottom_edge: StructureType,
         modifiers: list[TileModifier] = list(),
-        straight_river=False,
     ) -> None:
         self.internal_edges = DotMap(
             Tile.EdgeTuple(
@@ -198,7 +197,6 @@ class Tile:
         self.modifiers = modifiers if modifiers else []
         self.tile_type = tile_id
         self.placed_pos: tuple[int, int] | None = None
-        self.straight_river: bool = False
 
     def rotate_clockwise(self, number: int) -> None:
         for _ in range(number):
@@ -237,6 +235,19 @@ class Tile:
     def __repr__(self) -> str:
         return f"Tile {self.tile_type} - {self.placed_pos}"
 
+    def straight_river(self):
+        top_bottom = (
+            self.internal_edges.top_edge
+            == self.internal_edges.bottom_edge
+            == StructureType.RIVER
+        )
+        left_right = (
+            self.internal_edges.right_edge
+            == self.internal_edges.left_edge
+            == StructureType.RIVER
+        )
+        return top_bottom or left_right
+
 
 def create_river_tiles() -> list["Tile"]:
     """
@@ -253,7 +264,6 @@ def create_river_tiles() -> list["Tile"]:
             right_edge=StructureType.CITY,
             top_edge=StructureType.RIVER,
             bottom_edge=StructureType.RIVER,
-            straight_river=True,
         )
     )
 
@@ -264,7 +274,6 @@ def create_river_tiles() -> list["Tile"]:
             right_edge=StructureType.GRASS,
             top_edge=StructureType.RIVER,
             bottom_edge=StructureType.RIVER,
-            straight_river=True,
         ).clone_add(tile_counts.R2)
     )
 
@@ -285,7 +294,6 @@ def create_river_tiles() -> list["Tile"]:
             right_edge=StructureType.RIVER,
             top_edge=StructureType.CITY,
             bottom_edge=StructureType.CITY,
-            straight_river=True,
         )
     )
 
@@ -306,7 +314,6 @@ def create_river_tiles() -> list["Tile"]:
             top_edge=StructureType.RIVER,
             bottom_edge=StructureType.RIVER,
             modifiers=[TileModifier.OPP_ROAD_BRIDGE],
-            straight_river=True,
         )
     )
 
@@ -328,7 +335,6 @@ def create_river_tiles() -> list["Tile"]:
             top_edge=StructureType.GRASS,
             bottom_edge=StructureType.ROAD_START,
             modifiers=[TileModifier.MONASTARY],
-            straight_river=True,
         )
     )
 
