@@ -215,6 +215,7 @@ class StateMutator:
 
                 meeple = t.internal_claims[e]
                 assert meeple is not None
+                assert player_id == move.player_id
 
                 meeple._free_meeple()
                 self.commit(
@@ -226,9 +227,6 @@ class StateMutator:
                     )
                 )
 
-                if self.state.players[player_id].points > POINT_LIMIT:
-                    self.commit(EventGameEndedPointLimitReached(player_id=player_id))
-
         # Check the player completed a reguar component and claimed
         elif move.placed_on in completed_components:
             player.points += self.state._get_reward(
@@ -238,6 +236,9 @@ class StateMutator:
         # Cleanup intermeidate state variables
         self.state.tile_placed = None
         self.state.tile_placed_claims = set()
+
+        if self.state.players[move.player_id].points > POINT_LIMIT:
+            self.commit(EventGameEndedPointLimitReached(player_id=move.player_id))
 
     def _commit_move_place_meeple_pass(self, move: MovePlaceMeeplePass) -> None:
         # Cleanup intermeidate state variables
