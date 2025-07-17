@@ -1,7 +1,7 @@
 from typing import cast
 
 from lib.interact.map import Tile
-from lib.interact.tile import Meeple
+from lib.interact.tile import NO_POINTS, Meeple
 from engine.game.tile_subscriber import MonastaryNeighbourSubsciber
 from engine.state.game_state import GameState
 
@@ -143,6 +143,10 @@ class StateMutator:
                     )
                     m._free_meeple()
 
+                    # Set points to zero for remaining meeples
+                    reward = NO_POINTS
+
+            # If meeples freed -> don't reclaim later
             if player_to_meeples:
                 self.state.tile_placed_claims.add(edge)
 
@@ -155,7 +159,7 @@ class StateMutator:
 
                 if (
                     self.state.players[player_id].points >= POINT_LIMIT
-                    and not player_point_limit
+                    and player_point_limit < 0
                 ):
                     player_point_limit = player_id
 
@@ -171,8 +175,6 @@ class StateMutator:
                     )
                 )
                 meeple._free_meeple()
-
-                player_point_limit = player_id
 
         if player_point_limit >= 0:
             self.commit(EventGameEndedPointLimitReached(player_id=player_point_limit))
@@ -213,16 +215,16 @@ class StateMutator:
                     continue
 
                 rewarded_set = subscribed_complete._reward()
+
+                # In meeple placement phase only one should be rewarded
                 assert len(rewarded_set) == 1
                 player_id, reward, t, e = rewarded_set[0]
                 self.state.players[player_id].points += reward
-                # assert player_id == move.player_id
 
                 meeple = t.internal_claims[e]
                 assert meeple is not None
                 assert player_id == move.player_id
 
-                meeple._free_meeple()
                 self.commit(
                     EventPlayerMeepleFreed(
                         player_id=player_id,
@@ -231,6 +233,7 @@ class StateMutator:
                         placed_on=e,
                     )
                 )
+                meeple._free_meeple()
 
         # Check the player completed a reguar component and claimed
         elif move.placed_on in completed_components:
@@ -242,7 +245,7 @@ class StateMutator:
         self.state.tile_placed = None
         self.state.tile_placed_claims = set()
 
-        if self.state.players[move.player_id].points > POINT_LIMIT:
+        if self.state.players[move.player_id].points >= POINT_LIMIT:
             self.commit(EventGameEndedPointLimitReached(player_id=move.player_id))
 
     def _commit_move_place_meeple_pass(self, move: MovePlaceMeeplePass) -> None:
