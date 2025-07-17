@@ -193,7 +193,7 @@ class StateMutator:
             for subscribed_complete in self.state.tile_publisher.check_notify(
                 self.state.tile_placed
             ):
-                if not isinstance(MonastaryNeighbourSubsciber, subscribed_complete):
+                if not isinstance(subscribed_complete, MonastaryNeighbourSubsciber):
                     continue
 
                 subscribed_complete = cast(
