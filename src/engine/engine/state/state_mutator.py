@@ -97,6 +97,8 @@ class StateMutator:
 
         self.state.map._grid[move.tile.pos[1]][move.tile.pos[0]] = tile
         self.state.map.placed_tiles.append(tile)
+        if move.tile.straight_river:
+            self.state.map.straight_rivers -= 1
 
         # Keep track of tile placed for meeple placement
         self.state.tile_placed = tile

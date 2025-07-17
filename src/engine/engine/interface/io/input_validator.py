@@ -114,12 +114,11 @@ class MoveValidator:
 
         # Validating each edge is alighed with a corrrect structure
         river_flag = False
-
         for edge, neighbour_tile in neighbouring_tiles.items():
             edge_structure = tile.internal_edges[edge]
-
             # Flag if there is an edge with a river on this tile.
-            river_flag = edge_structure == StructureType.RIVER
+            if not river_flag:
+                river_flag = edge_structure == StructureType.RIVER
 
             if neighbour_tile:
                 # Check if edges are aligned with correct structures
@@ -141,6 +140,7 @@ class MoveValidator:
 
         # Check if there is at least one river edge that is connected
         if river_flag:
+            # print("river tile")
             match self.state.map.river_validation(tile, x, y):
                 case "disjoint":
                     raise ValueError(

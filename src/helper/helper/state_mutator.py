@@ -152,6 +152,8 @@ class StateMutator:
 
         self.state.map._grid[y][x] = tile
         self.state.map.placed_tiles.append(tile)
+        if e.tile.straight_river:
+            self.state.map.straight_rivers -= 1
         self.state.players[e.player_id].num_tiles -= 1
 
         assert tile.rotation == e.tile.rotation
