@@ -226,6 +226,9 @@ class StateMutator:
                     )
                 )
 
+                if self.state.players[player_id].points > POINT_LIMIT:
+                    self.commit(EventGameEndedPointLimitReached(player_id=player_id))
+
         # Check the player completed a reguar component and claimed
         elif move.placed_on in completed_components:
             player.points += self.state._get_reward(
