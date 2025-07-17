@@ -160,6 +160,10 @@ class GameEngine:
         )
         self.mutator.commit(response)
 
+        # Tile placed ended the game
+        if self.state.game_over:
+            return
+
         response2 = player.connection.query_place_meeple(
             self.state, self.validator, self.censor
         )
