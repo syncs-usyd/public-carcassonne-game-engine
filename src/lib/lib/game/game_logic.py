@@ -84,7 +84,7 @@ class GameLogic(SharedGameState):
     def check_any_complete(self, start_tile: "Tile") -> list[str]:
         edges_complete: list[str] = []
         for edge, tile in start_tile.get_external_tiles(self.map._grid).items():
-            if tile and self._check_completed_component(tile, edge):
+            if tile and self._check_completed_component(start_tile, edge):
                 edges_complete.append(edge)
 
         return edges_complete
