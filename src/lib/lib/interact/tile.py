@@ -222,6 +222,19 @@ class Tile:
     def __repr__(self) -> str:
         return f"Tile {self.tile_type} - {self.placed_pos}"
 
+    def straight_river(self):
+        top_bottom = (
+            self.internal_edges.top_edge
+            == self.internal_edges.bottom_edge
+            == StructureType.RIVER
+        )
+        left_right = (
+            self.internal_edges.right_edge
+            == self.internal_edges.left_edge
+            == StructureType.RIVER
+        )
+        return top_bottom or left_right
+
 
 def create_river_tiles() -> list["Tile"]:
     """

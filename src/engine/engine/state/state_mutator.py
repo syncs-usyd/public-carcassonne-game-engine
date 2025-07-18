@@ -1,7 +1,5 @@
 from typing import cast
 
-from lib.interact.map import Tile
-from lib.interact.tile import Meeple
 from engine.game.tile_subscriber import MonastaryNeighbourSubsciber
 from engine.state.game_state import GameState
 
@@ -97,6 +95,8 @@ class StateMutator:
 
         self.state.map._grid[move.tile.pos[1]][move.tile.pos[0]] = tile
         self.state.map.placed_tiles.append(tile)
+        if tile.straight_river():
+            self.state.map.straight_rivers -= 1
 
         # Keep track of tile placed for meeple placement
         self.state.tile_placed = tile
