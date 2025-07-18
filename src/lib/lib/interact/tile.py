@@ -43,7 +43,7 @@ class TileModifier(Enum):
     def apply_point_modifiers(mods: list["TileModifier"], points: int) -> int:
         def _point_modifier_config(_mod: "TileModifier") -> Callable[[int], int]:
             return {
-                TileModifier.EMBLEM: lambda x: x + 1,
+                TileModifier.EMBLEM: lambda x: x + 2,
             }.get(_mod, lambda x: x + NO_POINTS)
 
         for mod in mods:
