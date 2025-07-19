@@ -72,6 +72,7 @@ class GameLogic(SharedGameState):
         return total_points
 
     def _check_completed_component(self, start_tile: Tile, edge: str) -> bool:
+        print("THIS IS DEPRECATED")
         component = list(self._traverse_connected_component(start_tile, edge))
 
         for tile, edge in component:
@@ -82,6 +83,7 @@ class GameLogic(SharedGameState):
         return True
 
     def check_any_complete(self, start_tile: "Tile") -> list[str]:
+        print("THIS IS DEPRECATED")
         edges_complete: list[str] = []
         for edge, tile in start_tile.get_external_tiles(self.map._grid).items():
             if tile and self._check_completed_component(start_tile, edge):

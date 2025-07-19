@@ -1,6 +1,6 @@
 from typing import cast
 
-from lib.interact.tile import NO_POINTS, StructureType
+from lib.interact.tile import NO_POINTS, TileModifier, StructureType
 from engine.game.tile_subscriber import MonastaryNeighbourSubsciber
 from engine.state.game_state import GameState
 
@@ -119,6 +119,9 @@ class StateMutator:
             reward = StructureType.get_points(tile.internal_edges[internal_edge]) * len(
                 set([t for t, _ in connected_component])
             )
+
+            for t, _ in connected_component:
+                reward = TileModifier.apply_point_modifiers(t.modifiers, reward)
 
             players_rewarded: set[int] = set()
 
