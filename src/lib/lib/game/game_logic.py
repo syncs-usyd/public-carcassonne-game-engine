@@ -174,8 +174,15 @@ class GameLogic(SharedGameState):
                 ):
                     continue
 
+                if structure_type == StructureType.ROAD_START and (
+                    tile.internal_edges[adjacent_edge] == StructureType.ROAD_START
+                    or TileModifier.BROKEN_ROAD_CENTER in _)
+                ):
+                    continue
+
+                print(adjacent_edge, tile.internal_edges[adjacent_edge])
                 if tile.internal_edges[adjacent_edge] == structure_type:
-                    connected_internal_edges.append(opposite_edge)
+                    connected_internal_edges.append(adjacent_edge)
 
             # Opposite edge if adajcent connection
             if (
@@ -195,6 +202,15 @@ class GameLogic(SharedGameState):
             if structure_type == StructureType.ROAD_START:
                 structure_type = StructureType.ROAD
 
+            print(connected_internal_edges)
+
+            for adjacent_edge in connected_internal_edges[1:]:
+                visited.add((tile, adjacent_edge))
+                modify(tile, adjacent_edge)
+
+                if yield_cond(tile, adjacent_edge):
+                    yield tile, adjacent_edge
+
             # External Tiles
             for ce in connected_internal_edges:
                 assert tile.placed_pos
@@ -204,5 +220,13 @@ class GameLogic(SharedGameState):
                     ce, tile.placed_pos, self.map._grid
                 )
 
-                if external_tile and (external_tile, ce_neighbour) not in visited:
+                if external_tile is None:
+                    continue
+
+                if not StructureType.is_compatible(
+                    structure_type, external_tile.internal_edges[ce_neighbour]
+                ):
+                    continue
+
+                if (external_tile, ce_neighbour) not in visited:
                     queue.append((external_tile, Tile.get_opposite(ce)))
