@@ -1,4 +1,3 @@
-from re import sub
 from typing import cast
 from lib.interface.events.typing import EventPlayerWon
 from engine.config.game_config import (
@@ -89,11 +88,11 @@ class GameEngine:
 
             self.state.start_new_round()
 
-            print(
-                "Points:",
-                [player.points for player in self.state.players.values()],
-                flush=True,
-            )
+            # print(
+            #     "Points:",
+            #     [player.points for player in self.state.players.values()],
+            #     flush=True,
+            # )
 
             for player_id in turn_order:
                 if self.state.game_over:
@@ -138,19 +137,19 @@ class GameEngine:
 
             # If mutator ended game
             if self.state.game_over:
-                print(
-                    "Points SMGO:",
-                    [player.points for player in self.state.players.values()],
-                    flush=True,
-                )
+                # print(
+                #     "Points SMGO:",
+                #     [player.points for player in self.state.players.values()],
+                #     flush=True,
+                # )
                 self.calc_final_points()
 
             elif self.state.round > MAX_ROUNDS:
-                print(
-                    "Points MRGO:",
-                    [player.points for player in self.state.players.values()],
-                    flush=True,
-                )
+                # print(
+                #     "Points MRGO:",
+                #     [player.points for player in self.state.players.values()],
+                #     flush=True,
+                # )
                 self.mutator.commit(
                     EventGameEndedStaleMate(
                         reason="Reached maximum feasible round limit"
@@ -164,11 +163,11 @@ class GameEngine:
                 and not self.state.river_phase
                 and not any(p.tiles for p in self.state.players.values())
             ):
-                print(
-                    "Points TOGO:",
-                    [player.points for player in self.state.players.values()],
-                    flush=True,
-                )
+                # print(
+                #     "Points TOGO:",
+                #     [player.points for player in self.state.players.values()],
+                #     flush=True,
+                # )
                 self.mutator.commit(
                     EventGameEndedStaleMate(reason="All player tiles exhuasted")
                 )

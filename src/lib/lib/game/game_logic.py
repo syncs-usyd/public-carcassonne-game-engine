@@ -151,6 +151,7 @@ class GameLogic(SharedGameState):
         queue = deque([(start_tile, edge)])
 
         while queue:
+            # print(queue)
             tile, edge = queue.popleft()
 
             if (tile, edge) in visited:
@@ -176,11 +177,10 @@ class GameLogic(SharedGameState):
 
                 if structure_type == StructureType.ROAD_START and (
                     tile.internal_edges[adjacent_edge] == StructureType.ROAD_START
-                    or TileModifier.BROKEN_ROAD_CENTER in _)
                 ):
                     continue
 
-                print(adjacent_edge, tile.internal_edges[adjacent_edge])
+                # print(adjacent_edge, tile.internal_edges[adjacent_edge])
                 if tile.internal_edges[adjacent_edge] == structure_type:
                     connected_internal_edges.append(adjacent_edge)
 
@@ -201,8 +201,9 @@ class GameLogic(SharedGameState):
 
             if structure_type == StructureType.ROAD_START:
                 structure_type = StructureType.ROAD
+                structure_bridge = TileModifier.get_bridge_modifier(structure_type)
 
-            print(connected_internal_edges)
+            # print(connected_internal_edges)
 
             for adjacent_edge in connected_internal_edges[1:]:
                 visited.add((tile, adjacent_edge))
