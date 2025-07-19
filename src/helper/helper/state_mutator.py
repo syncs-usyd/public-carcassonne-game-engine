@@ -136,9 +136,11 @@ class StateMutator:
         assert tile is not None
         tile.internal_claims[e.placed_on] = None
         self.state.players_meeples[e.player_id] += 1
+        self.state.players[e.player_id].points += e.reward
 
         if e.player_id == self.state.me.player_id:
             self.state.me.num_meeples += 1
+            self.state.me.points += e.reward
 
     def _commit_event_starting_tile_placed(self, e: EventStartingTilePlaced) -> None:
         self.state.map.place_river_start(e.tile_placed.pos)
