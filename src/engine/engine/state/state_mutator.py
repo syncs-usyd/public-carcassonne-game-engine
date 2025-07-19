@@ -158,7 +158,8 @@ class StateMutator:
 
                 if (
                     player_point_limit < 0
-                    and self.state.players[connected_meeple.player_id]
+                    and self.state.players[connected_meeple.player_id].points
+                    >= POINT_LIMIT
                 ):
                     player_point_limit = connected_meeple.player_id
 
