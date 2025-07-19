@@ -126,10 +126,12 @@ class StateMutator:
             players_rewarded: set[int] = set()
 
             for connected_tile, connected_edge in connected_component:
-                connected_meeple = connected_tile.internal_edges[connected_edge]
+                connected_meeple = connected_tile.internal_claims[connected_edge]
 
                 if connected_meeple is None:
                     continue
+
+                assert connected_meeple.placed
 
                 if connected_meeple.player_id in players_rewarded:
                     self.commit(
@@ -158,7 +160,7 @@ class StateMutator:
                     player_point_limit < 0
                     and self.state.players[connected_meeple.player_id]
                 ):
-                    player_point_limit = connected_meeple.playerd_id
+                    player_point_limit = connected_meeple.player_id
 
                 players_rewarded.add(connected_meeple.player_id)
 
