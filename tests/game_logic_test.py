@@ -62,33 +62,36 @@ class TestPlaceTile(unittest.TestCase):
 
     def test_basic_city_traversal(self) -> None:
         self.state.start_base_phase()
-        H1 = self.state.map.get_tile_by_type("H", pop=True)
+        E1 = self.state.map.get_tile_by_type("E", pop=True)
+        e1_pos = (85, 85)
+        E1.placed_pos = e1_pos
+        E1.rotate_clockwise(1)
+        self.state.map._grid[e1_pos[1]][e1_pos[0]] = E1
+        assert not self.state.get_completed_components(E1)
+
+        E2 = self.state.map.get_tile_by_type("E", pop=True)
+        e2_pos = (87, 85)
+        E2.placed_pos = e2_pos
+        E2.rotate_clockwise(3)
+        self.state.map._grid[e2_pos[1]][e2_pos[0]] = E2
+        assert not self.state.get_completed_components(E1)
+
         F1 = self.state.map.get_tile_by_type("F", pop=True)
-        F2 = self.state.map.get_tile_by_type("F", pop=True)
+        f1_pos = (86, 85)
+        F1.placed_pos = f1_pos
+        self.state.map._grid[f1_pos[1]][f1_pos[0]] = F1
+        assert self.state.get_completed_components(E1)
 
-        pos1 = (85, 85)
-        pos2 = (86, 85)
-        pos3 = (87, 85)
-
-        H1.placed_pos = pos1
-        F1.placed_pos = pos2
-        F2.placed_pos = pos3
-
-        self.state.map._grid[pos1[1]][pos1[0]] = H1
-        self.state.map._grid[pos2[1]][pos2[0]] = F1
-        self.state.map._grid[pos3[1]][pos3[0]] = F2
-
-        assert set(self.state._traverse_connected_component(H1, "right_edge")) == set(
+        assert set(self.state._traverse_connected_component(E1, "right_edge")) == set(
             [
-                (H1, "right_edge"),
-                (F1, "left_edge"),
                 (F1, "right_edge"),
-                (F2, "left_edge"),
-                (F2, "right_edge"),
+                (F1, "left_edge"),
+                (E1, "right_edge"),
+                (E2, "left_edge"),
             ]
         )
 
-        assert not self.state.get_completed_components(H1)
+        assert self.state._get_reward(E1, "right_edge") == 8
 
     @unittest.skip("Not implmented")
     def test_basic_monastarty(self) -> None:
