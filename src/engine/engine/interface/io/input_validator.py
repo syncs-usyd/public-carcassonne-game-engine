@@ -175,6 +175,20 @@ class MoveValidator:
             )
 
         if e.placed_on not in [MONASTARY_IDENTIFIER]:
+            print("####################################")
+            print(
+                e.tile.pos, self.state._get_claims(self.state.tile_placed, e.placed_on)
+            )
+
+            print(
+                list(
+                    self.state._traverse_connected_component(
+                        self.state.tile_placed, e.placed_on
+                    )
+                )
+            )
+            print("")
+            print("####################################")
             if self.state._get_claims(self.state.tile_placed, e.placed_on):
                 raise ValueError(
                     "You tried placing a meeple on an unclaimable Structure - \
