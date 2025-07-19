@@ -1,5 +1,5 @@
 from typing import cast
-from lib.interface.events.typing import EventPlayerWon
+from lib.interface.events.typing import EventPlayerTurnStarted, EventPlayerWon
 from engine.config.game_config import (
     MAX_ROUNDS,
     NUM_TILES_DRAWN_PER_ROUND,
@@ -175,6 +175,8 @@ class GameEngine:
                 self.calc_final_points()
 
     def start_player_turn(self, player: PlayerState) -> None:
+        self.mutator.commit(EventPlayerTurnStarted(player_id=player.id))
+
         response = player.connection.query_place_tile(
             self.state, self.validator, self.censor
         )
