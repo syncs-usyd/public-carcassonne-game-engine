@@ -127,6 +127,7 @@ class StateMutator:
 
         self.state.me.num_meeples = e.num_starting_meeples
         self.state.map.start_river_phase()
+        self.state.round = 0
 
     def _commit_event_player_meeple_freed(self, e: EventPlayerMeepleFreed) -> None:
         x, y = e.tile.pos
@@ -200,7 +201,8 @@ class StateMutator:
         pass
 
     def _commit_event_player_turn_started(self, e: EventPlayerTurnStarted) -> None:
-        pass
+        if e.player_id == self.state.turn_order[0]:
+            self.state.round += 1
 
     def _commit_event_player_won(self, e: EventPlayerWon) -> None:
         pass

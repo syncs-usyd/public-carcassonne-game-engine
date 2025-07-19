@@ -217,7 +217,6 @@ class GameEngine:
         self.state.map._grid[y1][x1] = river_end
         self.state.map.placed_tiles.append(river_end)
 
-        print("River End Tile")
         self.mutator.commit(EventRiverPhaseCompleted(end_tile=river_end._to_model()))
 
         if EXPANSION:

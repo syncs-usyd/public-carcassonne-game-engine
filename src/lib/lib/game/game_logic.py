@@ -214,7 +214,7 @@ class GameLogic(SharedGameState):
                 if yield_cond(tile, adjacent_edge):
                     yield tile, adjacent_edge
 
-            print(connected_internal_edges)
+            # print(connected_internal_edges)
 
             for adjacent_edge in connected_internal_edges[1:]:
                 visited.add((tile, adjacent_edge))
