@@ -94,6 +94,11 @@ class GameLogic(SharedGameState):
     def get_completed_components(
         self, start_tile: "Tile"
     ) -> dict[str, set[tuple["Tile", str]]]:
+        """
+        Get Completed Components
+        _Takes a starting tile and returns a map of internal edge to connected component if complete_
+        - Does not include internal edge if this was found earlier as part of another connected component
+        """
         edge_to_connected_component: dict[str, set[tuple["Tile", str]]] = {}
         internal_visited_edges: set[str] = set()
 
