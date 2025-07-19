@@ -111,8 +111,8 @@ class GameLogic(SharedGameState):
             if internal_edge in internal_visited_edges:
                 continue
 
-            connected_component = self._traverse_connected_component(
-                start_tile, internal_edge
+            connected_component = list(
+                self._traverse_connected_component(start_tile, internal_edge)
             )
 
             for connected_tile, connected_edge in connected_component:
@@ -126,7 +126,7 @@ class GameLogic(SharedGameState):
                 if not external_tile:
                     break
 
-                assert (external_tile, external_edge) not in connected_component
+                assert (external_tile, external_edge) in connected_component
 
                 # Check if we are revisiting tile
                 if connected_tile == tile and internal_edge != connected_edge:
