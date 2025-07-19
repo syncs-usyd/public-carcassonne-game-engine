@@ -212,6 +212,15 @@ class GameLogic(SharedGameState):
                 if yield_cond(tile, adjacent_edge):
                     yield tile, adjacent_edge
 
+            print(connected_internal_edges)
+
+            for adjacent_edge in connected_internal_edges[1:]:
+                visited.add((tile, adjacent_edge))
+                modify(tile, adjacent_edge)
+
+                if yield_cond(tile, adjacent_edge):
+                    yield tile, adjacent_edge
+
             # External Tiles
             for ce in connected_internal_edges:
                 assert tile.placed_pos
