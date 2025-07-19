@@ -66,7 +66,7 @@ class GameLogic(SharedGameState):
                 total_points += StructureType.get_partial_points(structure_type)
 
             total_points = TileModifier.apply_point_modifiers(
-                tile.modifiers, total_points
+                connected_tile.modifiers, total_points
             )
 
         return total_points
@@ -129,7 +129,7 @@ class GameLogic(SharedGameState):
                 assert (external_tile, external_edge) in connected_component
 
                 # Check if we are revisiting tile
-                if connected_tile == tile and internal_edge != connected_edge:
+                if connected_tile == start_tile and internal_edge != connected_edge:
                     internal_visited_edges.add(connected_edge)
 
             # Runs if code didn't break

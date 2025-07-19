@@ -2,7 +2,8 @@ import unittest
 
 from engine.state.game_state import GameState
 from lib.interact.map import Map
-from lib.interact.tile import Tile
+from lib.interact.structure import StructureType
+from lib.interact.tile import Tile, TileModifier
 
 
 class TestPlaceTile(unittest.TestCase):
@@ -202,7 +203,95 @@ class TestPlaceTile(unittest.TestCase):
         self.assertEqual(set(result), expected_set)
 
     def test_complex_city_traversal(self) -> None:
-        pass
+        self.state.start_base_phase()
+
+        expected_set: set[tuple["Tile", str]] = set()
+
+        C1 = self.state.map.get_tile_by_type("C", pop=True)
+        c1_pos = (85, 85)
+        C1.placed_pos = c1_pos
+        self.state.map._grid[c1_pos[1]][c1_pos[0]] = C1
+        expected_set.add((C1, "left_edge"))
+        expected_set.add((C1, "right_edge"))
+        expected_set.add((C1, "bottom_edge"))
+        expected_set.add((C1, "top_edge"))
+        assert not self.state.get_completed_components(C1)
+
+        M1 = self.state.map.get_tile_by_type("M", pop=True)
+        m1_pos = (86, 85)
+        M1.placed_pos = m1_pos
+        self.state.map._grid[m1_pos[1]][m1_pos[0]] = M1
+        expected_set.add((M1, "top_edge"))
+        expected_set.add((M1, "left_edge"))
+        assert not self.state.get_completed_components(C1)
+
+        N1 = self.state.map.get_tile_by_type("N", pop=True)
+        n1_pos = (86, 84)
+        N1.placed_pos = n1_pos
+        N1.rotate_clockwise(2)
+        self.state.map._grid[n1_pos[1]][n1_pos[0]] = N1
+        expected_set.add((N1, "bottom_edge"))
+        expected_set.add((N1, "right_edge"))
+        assert not self.state.get_completed_components(C1)
+
+        E1 = self.state.map.get_tile_by_type("E", pop=True)
+        e1_pos = (87, 84)
+        E1.placed_pos = e1_pos
+        E1.rotate_clockwise(3)
+        self.state.map._grid[e1_pos[1]][e1_pos[0]] = E1
+        expected_set.add((E1, "left_edge"))
+        assert not self.state.get_completed_components(C1)
+
+        E2 = self.state.map.get_tile_by_type("E", pop=True)
+        e2_pos = (85, 84)
+        E2.placed_pos = e2_pos
+        E2.rotate_clockwise(2)
+        self.state.map._grid[e2_pos[1]][e2_pos[0]] = E2
+        expected_set.add((E2, "bottom_edge"))
+        assert not self.state.get_completed_components(C1)
+
+        E3 = self.state.map.get_tile_by_type("E", pop=True)
+        e3_pos = (84, 85)
+        E3.placed_pos = e3_pos
+        E3.rotate_clockwise(1)
+        self.state.map._grid[e3_pos[1]][e3_pos[0]] = E3
+        expected_set.add((E3, "right_edge"))
+        assert not self.state.get_completed_components(C1)
+
+        I1 = self.state.map.get_tile_by_type("I", pop=True)
+        i1_pos = (85, 86)
+        I1.placed_pos = i1_pos
+        I1.rotate_clockwise(2)
+        self.state.map._grid[i1_pos[1]][i1_pos[0]] = I1
+        expected_set.add((I1, "top_edge"))
+        # print_map(self.state.map._grid, range(75, 96))
+        assert self.state.get_completed_components(C1)
+
+        result = set(self.state._traverse_connected_component(C1, "right_edge"))
+        self.assertEqual(result, expected_set)
+
+        result = self.state.get_completed_components(C1)
+        assert len(result) == 1
+
+        EXPECTED_REWARD = 18
+        EXPECTED_REWARD_NO_MODS = 14
+
+        for connected_component in result.values():
+            assert len(set([t for t, _ in connected_component])) == 7
+
+            reward = StructureType.get_points(C1.internal_edges["right_edge"]) * len(
+                set([t for t, _ in connected_component])
+            )
+
+            assert reward == EXPECTED_REWARD_NO_MODS
+
+            for t in set([t for t, _ in connected_component]):
+                reward = TileModifier.apply_point_modifiers(t.modifiers, reward)
+
+            assert reward == EXPECTED_REWARD
+
+        reward = self.state._get_reward(C1, "right_edge")
+        self.assertEqual(reward, EXPECTED_REWARD)
 
 
 class TestPlaceMeeple(unittest.TestCase):

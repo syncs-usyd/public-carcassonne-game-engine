@@ -115,12 +115,13 @@ class StateMutator:
             if internal_edge in internal_edges_visited:
                 continue
 
+            unique_connected_tiles = set([t for t, _ in connected_component])
             # Get number of unique tiles
             reward = StructureType.get_points(tile.internal_edges[internal_edge]) * len(
-                set([t for t, _ in connected_component])
+                unique_connected_tiles
             )
 
-            for t, _ in connected_component:
+            for t in unique_connected_tiles:
                 reward = TileModifier.apply_point_modifiers(t.modifiers, reward)
 
             players_rewarded: set[int] = set()
