@@ -123,11 +123,10 @@ class GameLogic(SharedGameState):
                 external_edge = Tile.get_opposite(connected_edge)
 
                 # Break if no neighbour
-                if (
-                    not external_tile
-                    or (external_tile, external_edge) not in connected_component
-                ):
+                if not external_tile:
                     break
+
+                assert (external_tile, external_edge) not in connected_component
 
                 # Check if we are revisiting tile
                 if connected_tile == tile and internal_edge != connected_edge:
