@@ -69,7 +69,6 @@ class Map:
             for edge in Tile.get_edges()
         }
         river_connections = 0
-        print("from river validation: ", self.straight_rivers, flush=True)
         for edge, neighbour_tile in neighbouring_tiles.items():
             edge_structure = tile.internal_edges[edge]
 

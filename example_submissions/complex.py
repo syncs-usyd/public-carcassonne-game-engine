@@ -90,7 +90,8 @@ def handle_place_tile(
     latest_tile = game.state.map.placed_tiles[-1]
     latest_pos = latest_tile.placed_pos
 
-    print(game.state.my_tiles)
+    print("Round:", game.state.round)
+    print(game.state.event_history)
     assert latest_pos
 
     # Try to place a tile adjacent to the latest tile
