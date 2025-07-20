@@ -263,6 +263,7 @@ def handle_place_meeple(
 
                 if (
                     not game.state._get_claims(recent_tile, edge)
+                    and not game.state._check_completed_component(recent_tile, edge)
                     and bot_state.last_tile.internal_edges[edge] != StructureType.RIVER
                     and bot_state.last_tile.internal_edges[edge] != StructureType.GRASS
                 ):
