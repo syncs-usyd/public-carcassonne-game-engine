@@ -233,7 +233,8 @@ class StateMutator:
                     MonastaryNeighbourSubsciber, subscribed_complete
                 )
 
-                if move.placed_on != subscribed_complete.center:
+                if move.tile.pos != subscribed_complete.center:
+                    assert False
                     continue
 
                 rewarded_set = subscribed_complete._reward()
