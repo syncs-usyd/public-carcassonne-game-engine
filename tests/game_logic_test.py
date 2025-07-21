@@ -289,7 +289,9 @@ class TestPlaceTile(unittest.TestCase):
             assert reward == EXPECTED_REWARD_NO_MODS
 
             for t in set([t for t, _ in connected_component]):
-                reward = TileModifier.apply_point_modifiers(t.modifiers, reward)
+                reward = TileModifier.apply_point_modifiers(
+                    t, StructureType.CITY, reward
+                )
 
             assert reward == EXPECTED_REWARD
 
