@@ -242,9 +242,6 @@ def brute_force_tile(
     game: Game, bot_state: BotState, query: QueryPlaceTile
 ) -> MovePlaceTile:
     grid = game.state.map._grid
-    height = len(grid)
-    width = len(grid[0]) if height > 0 else 0
-
     directions = {
         (0, 1): "top",
         (1, 0): "right",
@@ -258,8 +255,8 @@ def brute_force_tile(
 
     # assert bot_state.last_tile
 
-    for y in range(height):
-        for x in range(width):
+    for y in range(70, 90):
+        for x in range(70, 90):
             if grid[y][x] is not None:
                 print(f"Checking if tile can be placed near tile - {grid[y][x]}")
                 for tile_index, tile in enumerate(game.state.my_tiles):
